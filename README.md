@@ -1,0 +1,1 @@
+Frontend development for the MusePath application
