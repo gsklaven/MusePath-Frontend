@@ -1,0 +1,125 @@
+.questionnaire-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--background);
+}
+
+.questionnaire-container .card {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 4px;
+  margin: 20px 0 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--secondary-color);
+  transition: width 0.3s ease;
+}
+
+.question-section {
+  margin-top: 30px;
+}
+
+.question-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.option-button {
+  padding: 15px 20px;
+  border: 2px solid var(--border-color);
+  background-color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.option-button:hover {
+  border-color: var(--secondary-color);
+  background-color: #f8f9fa;
+}
+
+.option-button.selected {
+  border-color: var(--secondary-color);
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.button-group button {
+  flex: 1;
+}
+
+.custom-interest {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.custom-interest input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.selected-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.interest-tag {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interest-tag button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+}

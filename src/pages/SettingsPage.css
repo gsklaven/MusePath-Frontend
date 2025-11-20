@@ -1,0 +1,75 @@
+.settings-container {
+  padding: 40px 20px;
+}
+
+.settings-container h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.settings-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.settings-card:hover {
+  transform: translateX(5px);
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.settings-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.settings-content {
+  flex: 1;
+}
+
+.settings-content h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: var(--text-primary);
+}
+
+.settings-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.settings-arrow {
+  font-size: 28px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.settings-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.settings-actions button {
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .settings-container h1 {
+    font-size: 24px;
+  }
+
+  .settings-icon {
+    font-size: 24px;
+  }
+
+  .settings-content h3 {
+    font-size: 16px;
+  }
+}

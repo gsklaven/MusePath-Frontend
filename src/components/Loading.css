@@ -1,0 +1,7 @@
+/* Spinner styles are in global index.css */
+
+.loading-message {
+  margin-top: 15px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
