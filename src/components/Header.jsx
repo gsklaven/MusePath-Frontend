@@ -18,7 +18,8 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <Link to="/map" className="logo">
-          MusePath
+          <img src="/logo.png" alt="MusePath Logo" className="logo-icon" />
+          <span className="logo-text">MusePath</span>
         </Link>
         
         <div className="header-right">

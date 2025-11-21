@@ -21,32 +21,56 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (email, password) => {
-    // Basic authentication - encode credentials
-    const token = btoa(`${email}:${password}`);
-    const userData = {
-      email,
-      token,
-      id: Date.now(), // Mock user ID
-    };
-    
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    return userData;
+    return new Promise((resolve, reject) => {
+      try {
+        console.log('AuthContext login: Starting login', { email });
+        
+        // Basic authentication - encode credentials
+        // Use encodeURIComponent to handle special characters
+        const token = btoa(encodeURIComponent(`${email}:${password}`));
+        const userData = {
+          email,
+          token,
+          id: Date.now(), // Mock user ID
+        };
+        
+        console.log('AuthContext login: Setting user data', userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        console.log('AuthContext login: User state updated, resolving promise');
+        resolve(userData);
+      } catch (error) {
+        console.error('AuthContext login error:', error);
+        reject(error);
+      }
+    });
   };
 
   const register = (email, password) => {
-    // Basic authentication - encode credentials
-    const token = btoa(`${email}:${password}`);
-    const userData = {
-      email,
-      token,
-      id: Date.now(), // Mock user ID
-      isNewUser: true,
-    };
-    
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    return userData;
+    return new Promise((resolve, reject) => {
+      try {
+        console.log('AuthContext register: Starting registration', { email });
+        
+        // Basic authentication - encode credentials
+        // Use encodeURIComponent to handle special characters
+        const token = btoa(encodeURIComponent(`${email}:${password}`));
+        const userData = {
+          email,
+          token,
+          id: Date.now(), // Mock user ID
+          isNewUser: true,
+        };
+        
+        console.log('AuthContext register: Setting user data', userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        console.log('AuthContext register: User state updated, resolving promise');
+        resolve(userData);
+      } catch (error) {
+        console.error('AuthContext register error:', error);
+        reject(error);
+      }
+    });
   };
 
   const logout = () => {

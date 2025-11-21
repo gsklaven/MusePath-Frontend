@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { validateEmail, validatePassword } from '../utils/validators';
@@ -10,10 +10,19 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { register } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+  const { register, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // Redirect after successful registration
+  useEffect(() => {
+    if (user && user.isNewUser) {
+      navigate('/profile-setup', { replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const newErrors = {};
@@ -35,17 +44,34 @@ const RegisterPage = () => {
       return;
     }
     
+    setIsLoading(true);
+    setErrors({});
+    
     try {
-      register(email, password);
-      navigate('/profile-setup');
+      await register(email, password);
+      // Navigation will happen automatically via useEffect
+      // when user state updates
     } catch (error) {
       setErrors({ general: 'Registration failed. Please try again.' });
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="auth-logo">
+          {!logoError ? (
+            <img 
+              src="/logo.png" 
+              alt="MusePath Logo" 
+              className="auth-logo-icon"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <div className="auth-logo-fallback">🏛️</div>
+          )}
+        </div>
         <h1 className="auth-title">MusePath</h1>
         <h2 className="auth-subtitle">Create Your Account</h2>
         
@@ -95,8 +121,8 @@ const RegisterPage = () => {
             )}
           </div>
           
-          <Button type="submit" variant="primary" className="auth-button">
-            Register
+          <Button type="submit" variant="primary" className="auth-button" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Register'}
           </Button>
         </form>
         

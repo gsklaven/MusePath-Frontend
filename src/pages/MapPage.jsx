@@ -39,18 +39,35 @@ const MapPage = () => {
   }, [gpsError]);
 
   const loadDestinations = async () => {
-    try {
-      setLoading(true);
-      const data = await getDestinations();
-      setDestinations(data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load destinations');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    try {
+      setLoading(true);
+      const response = await getDestinations(); // Άλλαξα το όνομα σε response για σαφήνεια
+      
+      // --- Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ ---
+      // Ελέγχουμε αν η απάντηση έχει τη μορφή { data: [...] }
+      if (response && Array.isArray(response.data)) {
+          setDestinations(response.data);
+      } 
+      // Ελέγχουμε μήπως είναι σκέτος πίνακας [...] (περίπτωση Α)
+      else if (Array.isArray(response)) {
+          setDestinations(response);
+      } 
+      // Αν δεν είναι τίποτα από τα δύο, βάζουμε κενή λίστα για ασφάλεια
+      else {
+          console.error("Unexpected data format:", response);
+          setDestinations([]);
+      }
+      // -----------------------------
+
+      setError(null);
+    } catch (err) {
+      setError('Failed to load destinations');
+      console.error(err);
+      setDestinations([]); // Ασφάλεια σε περίπτωση λάθους
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async (searchTerm) => {
     if (!searchTerm.trim()) {

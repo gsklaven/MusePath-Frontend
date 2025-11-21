@@ -61,7 +61,10 @@ const QuestionnairePage = () => {
     <div className="questionnaire-container">
       <div className="container">
         <Card>
-          <h1>Personalize Your Experience</h1>
+          <div className="questionnaire-header">
+            <img src="/logo.png" alt="MusePath Logo" className="questionnaire-logo" />
+            <h1>Personalize Your Experience</h1>
+          </div>
           <div className="progress-bar">
             <div 
               className="progress-fill" 

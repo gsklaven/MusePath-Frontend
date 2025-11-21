@@ -28,6 +28,9 @@ const ProfileSetupPage = () => {
         showCloseButton={false}
       >
         <div className="profile-setup-modal">
+          <div className="modal-logo">
+            <img src="/logo.png" alt="MusePath Logo" className="modal-logo-icon" />
+          </div>
           <p className="modal-text">
             Would you like to complete your profile setup? 
             Answer a few questions about your preferences to get personalized 
