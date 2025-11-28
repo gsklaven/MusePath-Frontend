@@ -30,6 +30,9 @@ import PersonalizedRoutePage from '../pages/PersonalizedRoutePage';
 import OfflineContentPage from '../pages/OfflineContentPage';
 import ManageOfflinePage from '../pages/ManageOfflinePage';
 
+// API Test
+import ApiTestPage from '../pages/ApiTestPage';
+
 const AppRouter = () => {
   const { user } = useAuth();
 
@@ -134,6 +137,12 @@ const AppRouter = () => {
             <ManageOfflinePage />
           </ProtectedRoute>
         }
+      />
+
+      {/* API Test Page - Public για testing */}
+      <Route
+        path="/api-test"
+        element={<ApiTestPage />}
       />
 
       {/* Default Route */}

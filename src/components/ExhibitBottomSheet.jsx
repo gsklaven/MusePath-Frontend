@@ -1,5 +1,9 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { addToFavourites, removeFromFavourites, getUserCoordinates } from '../api/users';
+import { getExhibitAudio } from '../api/exhibits';
+import { createRoute } from '../api/routes';
 import './ExhibitBottomSheet.css';
 
 const featureIcons = {
@@ -18,18 +22,171 @@ const statusColors = {
 };
 
 const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [audioError, setAudioError] = useState(null);
+  const [isCreatingRoute, setIsCreatingRoute] = useState(false);
+  const [routeError, setRouteError] = useState(null);
+  const audioRef = useRef(null);
 
   useMemo(() => {
-    if (exhibit && Array.isArray(exhibit.favouredBy)) {
-      setIsFavourite(exhibit.favouredBy.length > 0);
+    if (exhibit) {
+      // Check if exhibit is in localStorage favourites
+      try {
+        const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+        const isInFavourites = storedFavourites.some(fav => fav.exhibit_id === exhibit.exhibit_id);
+        setIsFavourite(isInFavourites);
+      } catch (err) {
+        setIsFavourite(false);
+      }
     }
   }, [exhibit]);
 
-  const handleToggleFavourite = (e) => {
+  const handleToggleFavourite = async (e) => {
     e.stopPropagation();
-    setIsFavourite((prev) => !prev);
+    
+    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
+    if (!exhibitId) return;
+
+    try {
+      if (isFavourite) {
+        // Remove from favourites
+        await removeFromFavourites(user?.id || 1, exhibitId);
+        
+        // Update localStorage
+        const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+        const updatedFavourites = storedFavourites.filter(fav => fav.exhibit_id !== exhibitId);
+        localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
+        
+        setIsFavourite(false);
+      } else {
+        // Add to favourites
+        await addToFavourites(user?.id || 1, exhibitId);
+        
+        // Update localStorage
+        const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+        const newFavourite = {
+          exhibit_id: exhibitId,
+          title: exhibit.title || exhibit.name,
+          subtitle: exhibit.subtitle,
+        };
+        storedFavourites.push(newFavourite);
+        localStorage.setItem('favourites', JSON.stringify(storedFavourites));
+        
+        setIsFavourite(true);
+      }
+    } catch (err) {
+      console.error('Error toggling favourite:', err);
+    }
+  };
+
+  // Audio Guide Handler
+  const handlePlayAudio = async () => {
+    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
+    if (!exhibitId) return;
+
+    try {
+      if (isPlayingAudio && audioRef.current) {
+        // Pause audio
+        audioRef.current.pause();
+        setIsPlayingAudio(false);
+      } else {
+        // Load and play audio
+        setAudioError(null);
+        console.log(`🎵 API Call: GET /exhibits/${exhibitId}/audio`);
+        
+        const audioBlob = await getExhibitAudio(exhibitId, 'online');
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Create or update audio element
+        if (!audioRef.current) {
+          audioRef.current = new Audio(audioUrl);
+          audioRef.current.onended = () => setIsPlayingAudio(false);
+        } else {
+          audioRef.current.src = audioUrl;
+        }
+        
+        await audioRef.current.play();
+        setIsPlayingAudio(true);
+        console.log(`✅ Audio playing for exhibit ${exhibitId}`);
+      }
+    } catch (err) {
+      console.error('❌ Error playing audio:', err);
+      setAudioError('Failed to load audio guide');
+      setIsPlayingAudio(false);
+    }
+  };
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Reset audio when exhibit changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    }
+    setAudioError(null);
+    setRouteError(null);
+  }, [exhibit]);
+
+  // Create Route with User Location
+  const handleCreateRoute = async () => {
+    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
+    if (!exhibitId) return;
+
+    try {
+      setIsCreatingRoute(true);
+      setRouteError(null);
+
+      // Use user ID 1 as default for mock data
+      const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
+
+      // Step 1: Get user's current location
+      console.log(`📍 Getting user location for route creation (userId: ${userId})...`);
+      const userCoords = await getUserCoordinates(userId);
+
+      if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
+        throw new Error('Could not get your current location');
+      }
+
+      // Handle both latitude/longitude and lat/lng formats
+      const lat = userCoords.latitude || userCoords.lat;
+      const lng = userCoords.longitude || userCoords.lng;
+      
+      console.log(`✅ User location: ${lat}, ${lng}`);
+
+      // Step 2: Create route from user location to exhibit
+      console.log(`🗺️ Creating route to exhibit ${exhibitId}...`);
+      const routeData = {
+        user_id: userId,
+        destination_id: exhibitId,
+        startLat: lat,
+        startLng: lng,
+      };
+
+      const newRoute = await createRoute(routeData);
+      console.log(`✅ Route created successfully:`, newRoute);
+
+      // Step 3: Navigate to NavigationPage with the new route
+      onClose(); // Close the bottom sheet
+      navigate('/navigation', { state: { route: newRoute } });
+    } catch (err) {
+      console.error('❌ Error creating route:', err);
+      setRouteError(err.message || 'Failed to create route. Please try again.');
+    } finally {
+      setIsCreatingRoute(false);
+    }
   };
 
   function splitTextIntoPages(text, maxLen = 400) {
@@ -76,15 +233,6 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
   }, [exhibit]);
 
   if (!open || !exhibit) return null;
-
-  const handleAudio = (e) => {
-    e.stopPropagation();
-    const url = exhibit.audioGuideUrl || exhibit.audioGuide;
-    if (url) {
-      const audio = new window.Audio(process.env.PUBLIC_URL + url);
-      audio.play();
-    }
-  };
 
   return (
     <div className="exhibit-bottomsheet-backdrop" onClick={() => { setPage(0); onClose(); }}>
@@ -151,6 +299,34 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
           {subtitle && (
             <div className="exhibit-bottomsheet-subtitle" style={{fontSize: '1rem', color: '#555', marginTop: 2}}>{subtitle}</div>
           )}
+          {/* Audio Error Message */}
+          {audioError && (
+            <div style={{
+              background: '#FFE6E6',
+              color: '#D32F2F',
+              padding: '10px 16px',
+              borderRadius: 8,
+              marginTop: 12,
+              fontSize: '0.95rem',
+              fontWeight: 600,
+            }}>
+              ❌ {audioError}
+            </div>
+          )}
+          {/* Route Error Message */}
+          {routeError && (
+            <div style={{
+              background: '#FFE6E6',
+              color: '#D32F2F',
+              padding: '10px 16px',
+              borderRadius: 8,
+              marginTop: 12,
+              fontSize: '0.95rem',
+              fontWeight: 600,
+            }}>
+              ❌ {routeError}
+            </div>
+          )}
           {/* Bottom action buttons (mockup style) */}
           <div style={{
             position: 'fixed',
@@ -167,24 +343,26 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
             pointerEvents: 'none', // allow clicks only on buttons
           }}>
             <button
+              onClick={handleCreateRoute}
+              disabled={isCreatingRoute}
               style={{
-                background: '#BBD689',
+                background: isCreatingRoute ? '#ccc' : '#BBD689',
                 color: '#222',
                 border: 'none',
                 borderRadius: 16,
                 padding: '12px 32px',
                 fontWeight: 700,
                 fontSize: '1.08rem',
-                cursor: 'pointer',
+                cursor: isCreatingRoute ? 'not-allowed' : 'pointer',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: 0.2,
                 minWidth: 120,
                 pointerEvents: 'auto',
+                opacity: isCreatingRoute ? 0.6 : 1,
               }}
-              // TODO: Add onClick handler for Route
             >
-              Route
+              {isCreatingRoute ? '🔄 Creating...' : '🗺️ Route'}
             </button>
             <button
               style={{
@@ -214,10 +392,35 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
             {features.map((feature, idx) => {
               if (feature === 'Audio Guide') {
                 return (
-                  <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '1.12rem', color: '#444', background: '#f5f7f2', borderRadius: 14, padding: '8px 22px', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                    <img src={process.env.PUBLIC_URL + featureIcons['Audio Guide']} alt="Audio Guide Available" style={{ width: 24, height: 24, marginRight: 6 }} />
-                    Audio Guide Available
-                  </span>
+                  <button
+                    key={idx}
+                    onClick={handlePlayAudio}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 10, 
+                      fontSize: '1.12rem', 
+                      color: '#444', 
+                      background: isPlayingAudio ? '#BBD689' : '#f5f7f2', 
+                      borderRadius: 14, 
+                      padding: '8px 22px', 
+                      fontWeight: 600, 
+                      whiteSpace: 'nowrap',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.3s ease',
+                      fontFamily: 'Montserrat, sans-serif',
+                    }}
+                  >
+                    {featureIcons[feature] && (
+                      <img
+                        src={process.env.PUBLIC_URL + featureIcons[feature]}
+                        alt={feature}
+                        style={{ width: 20, height: 20, objectFit: 'contain' }}
+                      />
+                    )}
+                    {isPlayingAudio ? '⏸️ Pause Audio' : '▶️ Play Audio'}
+                  </button>
                 );
               } else if (featureIcons[feature]) {
                 return (

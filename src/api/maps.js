@@ -2,9 +2,11 @@ import apiClient from './client';
 
 // Get map by ID
 export const getMapById = async (mapId, zoom = null, rotation = null, mode = 'online') => {
+  console.log(`🔍 API Call: GET /maps/${mapId}?mode=${mode}`);
   const response = await apiClient.get(`/maps/${mapId}`, {
     params: { zoom, rotation, mode },
   });
+  console.log(`✅ Response: GET /maps/${mapId}`, response.data);
   return response.data;
 };
 

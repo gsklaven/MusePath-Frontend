@@ -2,9 +2,11 @@ import apiClient from './client';
 
 // Add exhibit to favourites
 export const addToFavourites = async (userId, exhibitId) => {
+  console.log(`🔍 API Call: POST /users/${userId}/favourites (exhibitId=${exhibitId})`);
   const response = await apiClient.post(`/users/${userId}/favourites`, {
     exhibit_id: exhibitId,
   });
+  console.log(`✅ Response: POST /users/${userId}/favourites`, response.data);
   return response.data;
 };
 
@@ -24,8 +26,12 @@ export const updateUserPreferences = async (userId, interests) => {
 
 // Get user coordinates
 export const getUserCoordinates = async (userId) => {
+  console.log(`📍 API Call: GET /coordinates/${userId}`);
   const response = await apiClient.get(`/coordinates/${userId}`);
-  return response.data;
+  console.log(`✅ Response: GET /coordinates/${userId}`, response.data);
+  // Backend returns { success, data, message, error }
+  // We need the actual coordinate data
+  return response.data.data || response.data;
 };
 
 // Update user coordinates

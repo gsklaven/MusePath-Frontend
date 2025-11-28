@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { getExhibitById } from '../api/exhibits';
+import { getExhibitById, searchExhibits } from '../api/exhibits';
 import { useNavigate } from 'react-router-dom';
 import './MapPage.css';
 import ExhibitBottomSheet from '../components/ExhibitBottomSheet';
@@ -47,6 +47,9 @@ const mockExhibits = [
 
 const MapPage = () => {
   const [selectedExhibit, setSelectedExhibit] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const navigate = useNavigate();
 
   // Handler for marker click
@@ -59,6 +62,48 @@ const MapPage = () => {
     } catch (err) {
       // fallback to mock data if API fails
       setSelectedExhibit(exhibit);
+    }
+  };
+
+  // Handle search
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    try {
+      console.log('🔎 Searching for:', searchTerm);
+      const results = await searchExhibits(searchTerm, null, 'online');
+      const exhibitsArray = results && results.data ? results.data : results;
+      setSearchResults(exhibitsArray || []);
+      setShowSearchResults(true);
+    } catch (err) {
+      console.error('Search error:', err);
+      setSearchResults([]);
+      setShowSearchResults(true);
+    }
+  };
+
+  // Handle search result click
+  const handleSearchResultClick = async (result) => {
+    setShowSearchResults(false);
+    setSearchTerm('');
+    
+    // Find matching exhibit in mockExhibits or fetch from API
+    const mockExhibit = mockExhibits.find(e => e.exhibitId === result.exhibit_id);
+    if (mockExhibit) {
+      await handleMarkerClick(mockExhibit);
+    } else {
+      try {
+        const data = await getExhibitById(result.exhibit_id, 'online');
+        const exhibitData = data && data.data ? data.data : data;
+        setSelectedExhibit(exhibitData);
+      } catch (err) {
+        console.error('Error fetching exhibit:', err);
+      }
     }
   };
 
@@ -233,33 +278,76 @@ const MapPage = () => {
           fontFamily: 'Montserrat, sans-serif',
         }}
       >
-        <div className="search-bar-mockup-input" style={{ display: 'flex', alignItems: 'center', background: '#e3ecd6', borderRadius: 16, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontFamily: 'Montserrat, sans-serif' }}>
-          {/* Menu icon on the left */}
-          <img
-            src={process.env.PUBLIC_URL + '/assets/icons/menu.png'}
-            alt="Menu"
-            style={{ marginLeft: 12, marginRight: 8, width: 24, height: 24, cursor: 'pointer' }}
-          />
-          <input
-            type="text"
-            placeholder="Search Exhibit"
-            style={{
-              border: 'none',
-              outline: 'none',
-              background: 'transparent',
-              fontSize: '1.1rem',
-              color: '#222',
-              width: '100%',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          />
-          {/* Search icon on the right */}
-          <img
-            src={process.env.PUBLIC_URL + '/assets/icons/search.png'}
-            alt="Search"
-            style={{ marginLeft: 8, marginRight: 12, width: 22, height: 22, cursor: 'pointer', color: '#7f8c8d' }}
-          />
-        </div>
+        <form onSubmit={handleSearch}>
+          <div className="search-bar-mockup-input" style={{ display: 'flex', alignItems: 'center', background: '#e3ecd6', borderRadius: 16, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontFamily: 'Montserrat, sans-serif' }}>
+            {/* Menu icon on the left */}
+            <img
+              src={process.env.PUBLIC_URL + '/assets/icons/menu.png'}
+              alt="Menu"
+              style={{ marginLeft: 12, marginRight: 8, width: 24, height: 24, cursor: 'pointer' }}
+            />
+            <input
+              type="text"
+              placeholder="Search Exhibit"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                fontSize: '1.1rem',
+                color: '#222',
+                width: '100%',
+                fontFamily: 'Montserrat, sans-serif',
+              }}
+            />
+            {/* Search icon on the right */}
+            <button type="submit" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+              <img
+                src={process.env.PUBLIC_URL + '/assets/icons/search.png'}
+                alt="Search"
+                style={{ marginLeft: 8, marginRight: 12, width: 22, height: 22, color: '#7f8c8d' }}
+              />
+            </button>
+          </div>
+        </form>
+
+        {/* Search Results */}
+        {showSearchResults && (
+          <div style={{
+            marginTop: 8,
+            background: '#fff',
+            borderRadius: 12,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            maxHeight: 300,
+            overflowY: 'auto',
+            padding: 8,
+          }}>
+            {searchResults.length > 0 ? (
+              searchResults.map((result) => (
+                <div
+                  key={result.exhibit_id}
+                  onClick={() => handleSearchResultClick(result)}
+                  style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid #eee',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  <div style={{ fontWeight: 600, color: '#222' }}>{result.title}</div>
+                  {result.subtitle && <div style={{ fontSize: '0.9rem', color: '#666', marginTop: 4 }}>{result.subtitle}</div>}
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
+                No exhibits found
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

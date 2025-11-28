@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     const userData = {
       email,
       token,
-      id: Date.now(), // Mock user ID
+      id: 1, // Mock user ID for backend compatibility
     };
     
     localStorage.setItem('user', JSON.stringify(userData));
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     const userData = {
       email,
       token,
-      id: Date.now(), // Mock user ID
+      id: 1, // Mock user ID for backend compatibility
       isNewUser: true,
     };
     
