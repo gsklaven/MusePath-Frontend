@@ -27,12 +27,12 @@ const SettingsPage = () => {
         <div className="settings-section-header">Content</div>
         <div className="settings-list">
           <div className="settings-list-item" onClick={() => navigate('/favourites')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>❤️</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/heart_filled.png'} alt="Favourites" style={{ width: 24, height: 24 }} /></span>
             <span>My Favourites</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
           <div className="settings-list-item" onClick={() => navigate('/ratings')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>⭐</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/star5.png'} alt="Ratings" style={{ width: 24, height: 24 }} /></span>
             <span>My Ratings</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
@@ -43,22 +43,22 @@ const SettingsPage = () => {
         <div className="settings-section-header">Preferences</div>
         <div className="settings-list">
           <div className="settings-list-item" onClick={() => navigate('/language')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🌐</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/translate.png'} alt="Language" style={{ width: 24, height: 24 }} /></span>
             <span>Language</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
           <div className="settings-list-item" onClick={() => navigate('/questionnaire')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🎨</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/pencil.png'} alt="Preferences" style={{ width: 24, height: 24 }} /></span>
             <span>Change my Preferences</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
           <div className="settings-list-item" onClick={() => navigate('/offline-content')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>📥</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/download.png'} alt="Download" style={{ width: 24, height: 24 }} /></span>
             <span>Download for Offline Use</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
           <div className="settings-list-item" onClick={() => navigate('/manage-offline')}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>📂</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/no-wifi.png'} alt="Manage Offline" style={{ width: 24, height: 24 }} /></span>
             <span>Manage Offline Content</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
@@ -69,7 +69,7 @@ const SettingsPage = () => {
         <div className="settings-section-header">Account</div>
         <div className="settings-list">
           <div className="settings-list-item" onClick={handleLogout} style={{ color: '#D32F2F' }}>
-            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🚪</span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/logout.png'} alt="Logout" style={{ width: 24, height: 24 }} /></span>
             <span>Logout</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>

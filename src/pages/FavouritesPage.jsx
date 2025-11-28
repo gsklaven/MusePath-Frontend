@@ -44,8 +44,8 @@ const FavouritesPage = () => {
   return (
     <div className="settings-outer-container" style={{ fontFamily: 'Montserrat, sans-serif', background: '#fff', minHeight: '100vh' }}>
       <div className="settings-profile">
-        <div className="settings-avatar-circle" style={{ background: '#FFE6E6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '3rem' }}>❤️</span>
+        <div className="settings-avatar-circle" style={{ background: '#e3ecd6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={process.env.PUBLIC_URL + '/assets/icons/heart_filled.png'} alt="Favourites" style={{ width: 48, height: 48 }} />
         </div>
         <div className="settings-username" style={{ color: '#222', fontWeight: 600 }}>My Favourites</div>
       </div>
@@ -66,7 +66,7 @@ const FavouritesPage = () => {
               {favourites.map((item) => (
                 <div className="favourites-list-item" key={item.exhibit_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #eee' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <img src={process.env.PUBLIC_URL + '/assets/icons/heart.png'} alt="Favourite" style={{ width: 24, height: 24 }} />
+                    <img src={process.env.PUBLIC_URL + '/assets/icons/museum.png'} alt="Museum" style={{ width: 24, height: 24 }} />
                     <span style={{ fontSize: '1rem', color: '#222' }}>{item.title || `Exhibit ${item.exhibit_id}`}</span>
                   </div>
                   <button

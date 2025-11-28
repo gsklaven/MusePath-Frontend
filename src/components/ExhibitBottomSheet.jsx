@@ -221,7 +221,8 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     if (exhibit.wheelchairAccessible) arr.push('Wheelchair Accessible');
     if (exhibit.brailleSupport) arr.push('Braille Support');
     if (exhibit.audioGuideUrl || exhibit.audioGuide) arr.push('Audio Guide');
-    return arr;
+    // Remove 'Audio Guide Available' to avoid duplicate button
+    return arr.filter(f => f !== 'Audio Guide Available');
   }, [exhibit]);
 
   const pages = useMemo(() => {
@@ -334,7 +335,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
             bottom: 24,
             transform: 'translateX(-50%)',
             display: 'flex',
-            gap: 2,
+            gap: 16,
             zIndex: 1200,
             width: '100%',
             maxWidth: 720,
@@ -347,7 +348,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
               disabled={isCreatingRoute}
               style={{
                 background: isCreatingRoute ? '#ccc' : '#BBD689',
-                color: '#222',
+                color: '#2C3343',
                 border: 'none',
                 borderRadius: 16,
                 padding: '12px 32px',
@@ -360,15 +361,37 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
                 minWidth: 120,
                 pointerEvents: 'auto',
                 opacity: isCreatingRoute ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
               }}
             >
-              {isCreatingRoute ? '🔄 Creating...' : '🗺️ Route'}
+              {isCreatingRoute ? (
+                <>
+                  <img
+                    src={process.env.PUBLIC_URL + '/assets/icons/route.png'}
+                    alt="Creating route"
+                    style={{ width: 22, height: 22, verticalAlign: 'middle', filter: 'brightness(0) saturate(100%) invert(18%) sepia(12%) saturate(1162%) hue-rotate(181deg) brightness(97%) contrast(92%)' }}
+                  />
+                  <span style={{ color: '#2C3343', fontWeight: 700, fontSize: '1.08rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Creating...</span>
+                </>
+              ) : (
+                <>
+                  <img
+                    src={process.env.PUBLIC_URL + '/assets/icons/route.png'}
+                    alt="Navigate icon"
+                    style={{ width: 22, height: 22, verticalAlign: 'middle', filter: 'brightness(0) saturate(100%) invert(18%) sepia(12%) saturate(1162%) hue-rotate(181deg) brightness(97%) contrast(92%)' }}
+                  />
+                  <span style={{ color: '#2C3343', fontWeight: 700, fontSize: '1.08rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Navigate</span>
+                </>
+              )}
             </button>
             <button
               style={{
-                background: '#fff',
-                color: '#222',
-                border: '2px solid #BBD689',
+                background: '#BBD689',
+                color: '#2C3343',
+                border: 'none',
                 borderRadius: 16,
                 padding: '12px 32px',
                 fontWeight: 700,
@@ -379,6 +402,11 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
                 letterSpacing: 0.2,
                 minWidth: 120,
                 pointerEvents: 'auto',
+                opacity: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
               }}
               // TODO: Add onClick handler for More Details
             >
@@ -419,7 +447,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
                         style={{ width: 20, height: 20, objectFit: 'contain' }}
                       />
                     )}
-                    {isPlayingAudio ? '⏸️ Pause Audio' : '▶️ Play Audio'}
+                    {isPlayingAudio ? '⏸ Pause Audio' : 'Audio Guide Available'}
                   </button>
                 );
               } else if (featureIcons[feature]) {
