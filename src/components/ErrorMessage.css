@@ -1,0 +1,15 @@
+.error-container {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.error-text {
+  color: var(--error-color);
+  font-size: 18px;
+  margin-bottom: 20px;
+}

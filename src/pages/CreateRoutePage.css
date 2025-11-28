@@ -1,0 +1,156 @@
+.create-route-container {
+  padding: 40px 20px;
+}
+
+.create-route-container .card {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.route-header h1 {
+  font-size: 28px;
+  color: var(--text-primary);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.route-details {
+  margin-bottom: 30px;
+}
+
+.route-item {
+  margin-bottom: 20px;
+}
+
+.route-item label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.route-item input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.destination-display {
+  padding: 12px;
+  background-color: var(--background);
+  border-radius: 6px;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--background);
+  border-radius: 6px;
+}
+
+.stop-item span {
+  flex: 1;
+  font-size: 16px;
+}
+
+.stop-item button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0 8px;
+}
+
+.stop-item button:hover {
+  color: var(--error-color);
+}
+
+.add-stops-btn {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.add-stops-section {
+  padding: 20px;
+  background-color: var(--background);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.search-results {
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.result-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.result-card:hover {
+  background-color: #f8f9fa;
+}
+
+.add-icon {
+  font-size: 24px;
+  color: var(--secondary-color);
+}
+
+.route-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .route-header h1 {
+    font-size: 24px;
+  }
+
+  .route-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,82 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './SettingsPage.css';
+
+
+const SettingsPage = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <div className="settings-outer-container">
+      <div className="settings-profile">
+        <div className="settings-avatar-circle">
+          {/* If you have a user avatar, use it here. Otherwise, fallback to SVG or placeholder */}
+          <img src={process.env.PUBLIC_URL + '/assets/icons/avatar.png'} alt="User avatar" className="settings-avatar-img" onError={e => {e.target.onerror=null; e.target.src=process.env.PUBLIC_URL + '/assets/icons/profile-placeholder.png';}} />
+        </div>
+        <div className="settings-username">{user?.name || 'User'}</div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">Content</div>
+        <div className="settings-list">
+          <div className="settings-list-item" onClick={() => navigate('/favourites')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>❤️</span>
+            <span>My Favourites</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+          <div className="settings-list-item" onClick={() => navigate('/ratings')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>⭐</span>
+            <span>My Ratings</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">Preferences</div>
+        <div className="settings-list">
+          <div className="settings-list-item" onClick={() => navigate('/language')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🌐</span>
+            <span>Language</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+          <div className="settings-list-item" onClick={() => navigate('/questionnaire')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🎨</span>
+            <span>Change my Preferences</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+          <div className="settings-list-item" onClick={() => navigate('/offline-content')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>📥</span>
+            <span>Download for Offline Use</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+          <div className="settings-list-item" onClick={() => navigate('/manage-offline')}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>📂</span>
+            <span>Manage Offline Content</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">Account</div>
+        <div className="settings-list">
+          <div className="settings-list-item" onClick={handleLogout} style={{ color: '#D32F2F' }}>
+            <span className="settings-list-icon" style={{ fontSize: '1.5rem' }}>🚪</span>
+            <span>Logout</span>
+            <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SettingsPage;

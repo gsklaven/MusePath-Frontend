@@ -1,0 +1,255 @@
+{
+  "exportDate": "2025-11-20T12:08:50.035Z",
+  "diagramType": "mockups",
+  "totalDiagrams": 16,
+  "diagrams": [
+    {
+      "id": "M-1",
+      "title": "Unavailable Feature",
+      "description": "This screen pops up when the user is in offline mode and tries to access a feature that is only available when there is internet connection.\n\nThis is the project's link on Figma: https://www.figma.com/design/3gueECb1kO17gvW6ljcNKM/MusePath?node-id=0-1&t=WLCNjQvLrCh2r91S-1",
+      "filename": "18.png",
+      "linkedStories": [
+        {
+          "id": "S-3",
+          "title": "Offline Mode Functionality"
+        }
+      ]
+    },
+    {
+      "id": "M-2",
+      "title": "Inaccesible Destination",
+      "description": "This screen pops up if a destination is not accesible (e.g., an exhibit is closed)",
+      "filename": "11.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ]
+    },
+    {
+      "id": "M-3",
+      "title": "GPS Signal Lost",
+      "description": "This screen pops up when the GPS signal is lost",
+      "filename": "12.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-8",
+          "title": "Main Map"
+        }
+      ]
+    },
+    {
+      "id": "M-4",
+      "title": "Registration",
+      "description": "This screen pops up when the user has selected ''Registration''. The system demands from the user to fill out their email and to create a password. These informations are necessary for login.",
+      "filename": "17.png",
+      "nextScreens": [
+        {
+          "id": "M-6",
+          "title": "Profile Setup Suggestion"
+        }
+      ]
+    },
+    {
+      "id": "M-5",
+      "title": "Login/Registration Screen",
+      "description": "In this screen the user can either select ''Register'' or ''Login''. The first option refers to usersthet are nes and do not have an existing account, while the second one refers to users that have previously created an account and can use their credentials in order to have access to it.",
+      "filename": "5.png",
+      "nextScreens": [
+        {
+          "id": "M-4",
+          "title": "Registration"
+        }
+      ]
+    },
+    {
+      "id": "M-6",
+      "title": "Profile Setup Suggestion",
+      "description": "This screen pops up right after registration. It suggests that the user completes the profile setup by answering a set of questions (about his preferences in historical time periods, artists, civilizations etc). This will lead in a more personalized experience for the user.",
+      "filename": "1.png",
+      "linkedStories": [
+        {
+          "id": "S-4",
+          "title": "Profile Personalization"
+        }
+      ]
+    },
+    {
+      "id": "M-7",
+      "title": "Questionnaire",
+      "description": "This is an example of the set of questions that the user will have to answer if he selects to setup his profile after registration",
+      "filename": "16.png",
+      "linkedStories": [
+        {
+          "id": "S-4",
+          "title": "Profile Personalization"
+        }
+      ]
+    },
+    {
+      "id": "M-8",
+      "title": "Main Map",
+      "description": "This is the main map screen. From here the user can select ''Generate Personalized Route'' and get a route based on his preferences. He can also search for an exhibit, exit or a restroom either by using the search bar or by selecting directly from the map.",
+      "filename": "8.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-13",
+          "title": "Personalized Route Informations"
+        },
+        {
+          "id": "M-2",
+          "title": "Inaccesible Destination"
+        }
+      ]
+    },
+    {
+      "id": "M-9",
+      "title": "Settings",
+      "description": "This screen pops up if the user selects the ''Gear'' icon. From here the user can access their favourites list and the ratings that they have made. Additionally, the user can select the ''Language'' option, in order to change the language or select ''Change my Preferences'' in order to ''retake'' the questionnaire and change their preferences. Lastly, from here the user can manage their download content (''Manage Offline Content'' button) or download some more content (Download for Offline Use).",
+      "filename": "2.png",
+      "linkedStories": [
+        {
+          "id": "S-4",
+          "title": "Profile Personalization"
+        }
+      ]
+    },
+    {
+      "id": "M-10",
+      "title": "Exhibit ''More Details''",
+      "description": "This screen pops up when the user selects the ''More Details'' button",
+      "filename": "10.png",
+      "linkedStories": [
+        {
+          "id": "S-2",
+          "title": "Exhibit Information"
+        }
+      ]
+    },
+    {
+      "id": "M-11",
+      "title": "Navigation Screen",
+      "description": "This is the screen that the user sees when the navigation to a destination has started",
+      "filename": "7.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ]
+    },
+    {
+      "id": "M-12",
+      "title": "Creating route",
+      "description": "This screen pops up when the user has selected the ''Route'' button from the previous screen. From here the user has the option to modify the route by changing the starting point or the destination. The user can also select the ''Add Stops'' button, in order to add to the route more exhibits or a restroom for example. Lastly, the user can either discard the route by selecting the ''X'' icon or start the navigation by selecting the ''Navigate'' button.",
+      "filename": "13.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-11",
+          "title": "Navigation Screen"
+        },
+        {
+          "id": "M-15",
+          "title": "Added Stops to Route"
+        },
+        {
+          "id": "M-8",
+          "title": "Main Map"
+        }
+      ]
+    },
+    {
+      "id": "M-13",
+      "title": "Personalized Route Informations",
+      "description": "This screen pops up when the user has selected the ''Generate Personalized Route'' button. This screen shows to the user the route with all the included stops.",
+      "filename": "15.png",
+      "linkedStories": [
+        {
+          "id": "S-4",
+          "title": "Profile Personalization"
+        },
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-11",
+          "title": "Navigation Screen"
+        }
+      ]
+    },
+    {
+      "id": "M-14",
+      "title": "Download Content for Offline Use",
+      "description": "The screen pops up when the user has selected the ''Download Content for Offline Use'' option from the settings. It gives  the option to download content from different categories.",
+      "filename": "6.png",
+      "linkedStories": [
+        {
+          "id": "S-3",
+          "title": "Offline Mode Functionality"
+        }
+      ]
+    },
+    {
+      "id": "M-15",
+      "title": "Added Stops to Route",
+      "description": "This screen pops up when the user has selected the ''Add Stops'' button from the ''Creating Route'' screen. The user can add stops either by selecting directly from the map or by using the search bar.",
+      "filename": "3.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-11",
+          "title": "Navigation Screen"
+        }
+      ]
+    },
+    {
+      "id": "M-16",
+      "title": "Exhibit Information",
+      "description": "This screen pops up when the user has selected an exhibit.",
+      "filename": "4.png",
+      "linkedStories": [
+        {
+          "id": "S-2",
+          "title": "Exhibit Information"
+        }
+      ],
+      "nextScreens": [
+        {
+          "id": "M-12",
+          "title": "Creating route"
+        },
+        {
+          "id": "M-10",
+          "title": "Exhibit ''More Details''"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "exportDate": "2025-11-20T12:08:40.285Z",
+  "diagramType": "activity-diagrams",
+  "totalDiagrams": 4,
+  "diagrams": [
+    {
+      "id": "AD-1",
+      "title": "Exhibit Information",
+      "description": "",
+      "filename": "Exhibit Information.drawio.png",
+      "linkedStories": [
+        {
+          "id": "S-2",
+          "title": "Exhibit Information"
+        }
+      ]
+    },
+    {
+      "id": "AD-2",
+      "title": "Offline Mode Functionality",
+      "description": "",
+      "filename": "Offline Mode Functionality.drawio.png",
+      "linkedStories": [
+        {
+          "id": "S-3",
+          "title": "Offline Mode Functionality"
+        }
+      ]
+    },
+    {
+      "id": "AD-3",
+      "title": "Profile and Exhibit Personalization",
+      "description": "",
+      "filename": "Profile and Exhibit Personalization.drawio.png",
+      "linkedStories": [
+        {
+          "id": "S-4",
+          "title": "Profile Personalization"
+        }
+      ]
+    },
+    {
+      "id": "AD-4",
+      "title": "Calculate and Display Route",
+      "description": "",
+      "filename": "Calculate-and-Display-Route.drawio.png",
+      "linkedStories": [
+        {
+          "id": "S-1",
+          "title": "Display and Calculate Route"
+        }
+      ]
+    }
+  ]
+}
