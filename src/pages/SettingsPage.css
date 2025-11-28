@@ -1,0 +1,133 @@
+
+/* Outer container for settings page */
+.settings-outer-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: 0 0 40px 0;
+}
+
+/* Profile section */
+.settings-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 24px;
+}
+.settings-avatar-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #e3ecd6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.settings-avatar-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.settings-username {
+  font-size: 20px;
+  color: #222;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Section headers */
+.settings-section {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 18px;
+}
+.settings-section-header {
+  background: #e3ecd6;
+  color: #444;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 0;
+}
+
+/* List styles */
+.settings-list {
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.settings-list-item {
+  display: flex;
+  align-items: center;
+  padding: 18px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.settings-list-item:last-child {
+  border-bottom: none;
+}
+.settings-list-item:hover {
+  background: #f7faf4;
+}
+.settings-list-icon {
+  width: 26px;
+  height: 26px;
+  margin-right: 18px;
+  flex-shrink: 0;
+}
+.settings-list-arrow {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  opacity: 0.6;
+}
+.settings-list-item span {
+  font-size: 17px;
+  color: #222;
+  font-weight: 400;
+}
+
+@media (max-width: 768px) {
+  .settings-outer-container {
+    padding: 0 0 24px 0;
+  }
+  .settings-section {
+    max-width: 100%;
+  }
+  .settings-list-item {
+    padding: 16px 10px;
+  }
+  .settings-avatar-circle {
+    width: 70px;
+    height: 70px;
+  }
+  .settings-avatar-img {
+    width: 44px;
+    height: 44px;
+  }
+  .settings-username {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-container h1 {
+    font-size: 24px;
+  }
+
+  .settings-icon {
+    font-size: 24px;
+  }
+
+  .settings-content h3 {
+    font-size: 16px;
+  }
+}
