@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { getRouteDetails, deleteRoute } from '../api/routes';
 import { getUserCoordinates, updateUserCoordinates } from '../api/users';
 import { formatDuration, formatDistance } from '../utils/formatters';
-import Header from '../components/Header';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import './NavigationPage.css';
