@@ -174,9 +174,8 @@ const ApiTestPage = () => {
       path: '/maps',
       description: 'Upload χάρτη',
       sampleData: {
-        title: 'Test Map',
-        mapData: 'base64_encoded_data',
-        floor: 1,
+        mapData: 'base64_encoded_map_data',
+        format: 'image/png',
       },
     },
     {
@@ -216,6 +215,7 @@ const ApiTestPage = () => {
       path: '/destinations',
       description: 'Upload προορισμών',
       sampleData: {
+        map_id: 1,
         destinations: [
           {
             name: 'Test Destination',
@@ -265,12 +265,12 @@ const ApiTestPage = () => {
       name: 'Send Notification',
       method: 'POST',
       path: '/notifications',
-      description: 'Αποστολή ειδοποίησης',
+      description: 'Αποστολή ειδοποίησης (Uses route_id 2 - backup route for testing)',
       sampleData: {
         user_id: 1,
-        route_id: 1,
-        type: 'route_deviation',
-        message: 'You have deviated from the route',
+        route_id: 2,
+        currentLat: 40.7610,
+        currentLng: -73.9780,
       },
     },
     {
@@ -280,16 +280,14 @@ const ApiTestPage = () => {
       method: 'POST',
       path: '/sync',
       description: 'Συγχρονισμός offline δεδομένων',
-      sampleData: {
-        operations: [
-          {
-            type: 'rating',
-            exhibit_id: 1,
-            rating: 5,
-            timestamp: new Date().toISOString(),
-          },
-        ],
-      },
+      sampleData: [
+        {
+          type: 'rating',
+          exhibit_id: 1,
+          rating: 5,
+          timestamp: new Date().toISOString(),
+        },
+      ],
     },
   ];
 

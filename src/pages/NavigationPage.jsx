@@ -104,127 +104,132 @@ const NavigationPage = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="navigation-container">
-        <div className="navigation-header">
-          <h1>Navigating to {destination?.name}</h1>
-          <Button variant="danger" onClick={handleCancelNavigation}>
-            ✕ Cancel Navigation
-          </Button>
-        </div>
-
-        <Card className="navigation-map">
-          <div className="map-view-nav">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <p style={{ margin: 0 }}>🗺️ Navigation Map View</p>
-              <Button
-                variant={locationTracking ? 'danger' : 'success'}
-                onClick={() => setLocationTracking(!locationTracking)}
-                style={{ padding: '8px 16px', fontSize: '0.9rem' }}
-              >
-                {locationTracking ? '⏸ Stop Tracking' : '▶ Start Tracking'}
-              </Button>
-            </div>
-            
-            {userLocation && (
-              <div style={{ 
-                background: '#f5f5f5', 
-                padding: 12, 
-                borderRadius: 8, 
-                marginBottom: 16,
-                fontSize: '0.9rem',
-              }}>
-                <div style={{ fontWeight: 600, marginBottom: 4, color: locationTracking ? '#4CAF50' : '#666' }}>
-                  📍 {locationTracking ? 'Live Location (updating every 5s)' : 'Current Location'}
+    <div style={{ background: '#2C3343', minHeight: '100vh', width: '100%' }}>
+      <div className="container personalized-route-container">
+        <Card>
+          <h1 style={{ color: '#BBD689', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', marginBottom: 32 }}>
+            <span style={{ fontWeight: 700, fontSize: '2.1rem', letterSpacing: 0.5 }}>
+              {destination?.name ? `Navigating to ${destination.name}` : (routeDetails?.monumentName ? `Navigating to ${routeDetails.monumentName}` : 'Navigation')}
+            </span>
+          </h1>
+          <div className="route-overview">
+            {routeDetails && (
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, justifyContent: 'center', width: '100%' }}>
+                <div className="overview-item" style={{ background: '#f7faf4', padding: '10px 12px', borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 4, boxShadow: '0 1px 4px rgba(0,0,0,0.03)', minWidth: 110, maxWidth: 140, alignItems: 'flex-start' }}>
+                  <span className="label" style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: 0.1 }}>Distance:</span>
+                  <span className="value" style={{ color: '#222', fontSize: '1.2rem', fontWeight: 700 }}>{formatDistance(routeDetails.distance)}</span>
                 </div>
-                <div style={{ color: '#666' }}>
-                  Lat: {userLocation.lat?.toFixed(6)}, Lng: {userLocation.lng?.toFixed(6)}
+                <div className="overview-item" style={{ background: '#f7faf4', padding: '10px 12px', borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 4, boxShadow: '0 1px 4px rgba(0,0,0,0.03)', minWidth: 110, maxWidth: 140, alignItems: 'flex-start' }}>
+                  <span className="label" style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: 0.1 }}>ETA:</span>
+                  <span className="value" style={{ color: '#222', fontSize: '1.2rem', fontWeight: 700 }}>{formatDuration(routeDetails.estimatedTime)}</span>
+                </div>
+                <div className="overview-item" style={{ background: '#f7faf4', padding: '10px 12px', borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 4, boxShadow: '0 1px 4px rgba(0,0,0,0.03)', minWidth: 110, maxWidth: 140, alignItems: 'flex-start' }}>
+                  <span className="label" style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: 0.1 }}>Arrival:</span>
+                  <span className="value" style={{ color: '#222', fontSize: '1.2rem', fontWeight: 700 }}>{routeDetails.arrivalTime || 'N/A'}</span>
                 </div>
               </div>
             )}
+          </div>
 
-            <div className="navigation-info">
-              {routeDetails && (
-                <>
-                  <div className="nav-info-item">
-                    <span className="label">Distance:</span>
-                    <span className="value">{formatDistance(routeDetails.distance)}</span>
+          <div className="navigation-map" style={{ margin: '32px 0 0 0', background: '#f8fafb', borderRadius: 16, boxShadow: '0 2px 12px rgba(44,51,67,0.07)' }}>
+            <div className="map-view-nav" style={{ padding: '32px 24px 0 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0, marginTop: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <img src={process.env.PUBLIC_URL + '/assets/icons/compass.png'} alt="Map" style={{ width: 22, height: 22, verticalAlign: 'middle' }} />
+                  <h2 style={{ color: '#2C3343', fontWeight: 700, fontSize: 22, margin: 0, textAlign: 'center' }}>Map Navigation</h2>
+                </div>
+                <Button
+                  variant="secondary"
+                  onClick={() => setLocationTracking(!locationTracking)}
+                  style={{ fontWeight: 700 }}
+                >
+                  {locationTracking ? 'Stop Tracking' : 'Start Tracking'}
+                </Button>
+              </div>
+              {userLocation && (
+                <div className="muse-location-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 200 }}>
+                  <div className="muse-location-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <img src={process.env.PUBLIC_URL + '/assets/icons/pin.png'} alt="Location" style={{ width: 18, height: 18, verticalAlign: 'middle' }} />
+                    <span style={{ fontWeight: 600, color: '#2C3343' }}>{locationTracking ? 'Live Location (updating every 5s)' : 'Current Location'}</span>
                   </div>
-                  <div className="nav-info-item">
-                    <span className="label">ETA:</span>
-                    <span className="value">{formatDuration(routeDetails.estimatedTime)}</span>
+                  <div className="muse-location-coords" style={{ textAlign: 'center' }}>
+                    Lat: {userLocation.lat?.toFixed(6)}, Lng: {userLocation.lng?.toFixed(6)}
                   </div>
-                  <div className="nav-info-item">
-                    <span className="label">Arrival:</span>
-                    <span className="value">{routeDetails.arrivalTime || 'N/A'}</span>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
-        </Card>
 
-        <Card className="directions-card">
-          <h2>Directions</h2>
-          
-          {routeDetails?.instructions && routeDetails.instructions.length > 0 ? (
-            <>
-              <div className="current-instruction">
-                <div className="step-number">
-                  Step {currentStep + 1} of {routeDetails.instructions.length}
+          <div className="directions-card" style={{ margin: '32px 0 0 0', background: '#f8fafb', borderRadius: 16, boxShadow: '0 2px 12px rgba(44,51,67,0.07)' }}>
+            <h2>Directions</h2>
+            {routeDetails?.instructions && routeDetails.instructions.length > 0 ? (
+              <>
+                <div className="current-instruction">
+                  <div className="step-number">
+                    Step {currentStep + 1} of {routeDetails.instructions.length}
+                  </div>
+                  <p className="instruction-text">
+                    {routeDetails.instructions[currentStep]}
+                  </p>
                 </div>
-                <p className="instruction-text">
-                  {routeDetails.instructions[currentStep]}
-                </p>
-              </div>
-
-              <div className="step-controls">
-                <Button 
-                  variant="secondary" 
-                  onClick={handlePrevStep}
-                  disabled={currentStep === 0}
-                >
-                  ← Previous
-                </Button>
-                <Button 
-                  variant="primary" 
-                  onClick={handleNextStep}
-                  disabled={currentStep === routeDetails.instructions.length - 1}
-                >
-                  Next →
-                </Button>
-              </div>
-
-              <div className="all-steps">
-                <h3>All Steps</h3>
-                <ol className="steps-list">
-                  {routeDetails.instructions.map((instruction, index) => (
-                    <li 
-                      key={index} 
-                      className={currentStep === index ? 'active' : ''}
-                      onClick={() => setCurrentStep(index)}
-                    >
-                      {instruction}
-                    </li>
+                <div className="step-controls">
+                  <button 
+                    className="muse-step-btn"
+                    onClick={handlePrevStep}
+                    disabled={currentStep === 0}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    <img src={process.env.PUBLIC_URL + '/assets/icons/back.png'} alt="Previous" style={{ width: 16, height: 16, marginRight: 6 }} />
+                    Previous
+                  </button>
+                  <button 
+                    className="muse-step-btn"
+                    onClick={handleNextStep}
+                    disabled={currentStep === routeDetails.instructions.length - 1}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    Next
+                    <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Next" style={{ width: 16, height: 16, marginLeft: 6 }} />
+                  </button>
+                </div>
+                <div className="all-steps">
+                  <h3>All Steps</h3>
+                  <ol className="steps-list">
+                    {routeDetails.instructions.map((instruction, index) => (
+                      <li 
+                        key={index} 
+                        className={currentStep === index ? 'active' : ''}
+                        onClick={() => setCurrentStep(index)}
+                      >
+                        {instruction}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </>
+            ) : (
+              <p>Calculating directions...</p>
+            )}
+            {stops.length > 0 && (
+              <div className="route-stops">
+                <h3>Stops on this route</h3>
+                <ul>
+                  {stops.map((stop, index) => (
+                    <li key={index}>{stop.title}</li>
                   ))}
-                </ol>
+                </ul>
               </div>
-            </>
-          ) : (
-            <p>Calculating directions...</p>
-          )}
+            )}
+          </div>
 
-          {stops.length > 0 && (
-            <div className="route-stops">
-              <h3>Stops on this route</h3>
-              <ul>
-                {stops.map((stop, index) => (
-                  <li key={index}>{stop.title}</li>
-                ))}
-              </ul>
+          <div className="route-actions" style={{ marginTop: 32, display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <Button variant="danger" onClick={handleCancelNavigation} style={{ display: 'flex', alignItems: 'center', fontWeight: 700 }}>
+                <img src={process.env.PUBLIC_URL + '/assets/icons/cancel_white.png'} alt="Cancel" style={{ width: 18, height: 18, marginRight: 8, verticalAlign: 'middle' }} />
+                Cancel Navigation
+              </Button>
             </div>
-          )}
+          </div>
         </Card>
       </div>
     </div>
