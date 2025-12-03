@@ -70,7 +70,56 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('You have not added any favourite yet.').should('be.visible');
   });
 
-  it('Unhappy Path 2: Register, Answer Questionnaire, Cant Save Preferences', () => {
+  it('Happy Path 2: Login, Navigate to Exhibit, Play Audio Guide, Navigate to Exhibit', () => {
+
+    // 0. Verify welcome page
+    cy.contains('Welcome!').should('be.visible');
+    
+    // 1. Login flow
+    cy.get('.btn-primary').contains('Login').click();
+    
+    // Verify login page
+    cy.url().should('include', '/login');
+    cy.contains('Login to your MusePath account').should('be.visible');
+    
+    // Fill login form
+    cy.get('input[type="email"]').type('user@example.com');
+    cy.get('input[type="password"]').type('password123');
+    cy.get('button[type="submit"]').contains('Login').click(); 
+    
+    // Verify login was successful
+    cy.url().should('include', '/map');
+    cy.get('.map-marker-monument').should('have.length.greaterThan', 0);
+
+    // 2. Interaction on map - click monument
+    cy.get('.map-marker-monument').first().click({ force: true });
+
+    cy.get('.exhibit-bottomsheet-description').should('be.visible');
+    cy.get('.exhibit-bottomsheet-features').should('be.visible');
+
+    // Open audio guide
+    cy.contains('button', 'Audio Guide Available').should('be.visible').click();
+    cy.contains('button', 'More Details').should('be.visible');
+    cy.contains('button', 'Navigate').should('be.visible').click();
+
+    cy.url().should('include', '/navigatio');
+    cy.contains('h2', 'Map Navigation').should('be.visible');
+
+    cy.get('.muse-location-box').should('be.visible');
+    cy.get('.muse-location-box').should('contain', 'Current Location');
+
+    cy.contains('button', 'Start Tracking').should('be.visible').click();
+    cy.contains('span', 'Live Location (updating every 5s)').should('be.visible');
+    cy.get('.muse-location-coords').should('contain', 'Lat:').and('contain', 'Lng:');
+
+    cy.contains('button', 'Stop Tracking').should('be.visible').click();
+    cy.get('.muse-location-box').should('contain', 'Current Location');
+    cy.get('.btn-danger').click();
+
+    cy.url().should('include', '/map');
+  });
+
+  it('Unhappy Path 3: Register, Answer Questionnaire, Cant Save Preferences', () => {
     
     // Verify welcome page loaded
     cy.url().should('eq', Cypress.config().baseUrl + '/');
