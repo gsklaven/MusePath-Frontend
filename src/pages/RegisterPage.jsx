@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { validateEmail, validatePassword } from '../utils/validators';
 import Button from '../components/Button';
+import FormInput from '../components/FormInput';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -53,40 +54,32 @@ const RegisterPage = () => {
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && <div className="error-message">{errors.general}</div>}
 
-          <div className="input-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {errors.email && <div className="error-message">{errors.email}</div>}
-          </div>
+          <FormInput
+            label="Email"
+            type="email"
+            placeholder="Enter your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+          />
 
-          <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {errors.password && <div className="error-message">{errors.password}</div>}
-          </div>
+          <FormInput
+            label="Password"
+            type="password"
+            placeholder="Create a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
 
-          <div className="input-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              placeholder="Re-enter your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            {errors.confirmPassword && (
-              <div className="error-message">{errors.confirmPassword}</div>
-            )}
-          </div>
+          <FormInput
+            label="Confirm Password"
+            type="password"
+            placeholder="Re-enter your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={errors.confirmPassword}
+          />
 
           <Button type="submit" variant="primary" className="auth-button">
             Register
