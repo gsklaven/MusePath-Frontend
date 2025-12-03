@@ -1,0 +1,29 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  cypress-test-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cypress Run
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          wait-on: '${{ env.CYPRESS_BASE_URL }}'
+          browser: chrome
+        env:
+          PORT: 3001
+          CYPRESS_BASE_URL: '${{ env.CYPRESS_BASE_URL }}'
+          REACT_APP_API_BASE_URL: 'https://musepath-backend.onrender.com/v1'
+
+
+      - name: Deploy to Render
+        if: success()
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
