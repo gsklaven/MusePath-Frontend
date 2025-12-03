@@ -295,7 +295,7 @@ describe('MusePath E2E User Flows', () => {
     cy.url().should('include', '/questionnaire');
   });
 
-  it('Unhappy Path 6: Logout and Verify Redirect', () => {
+  it('Unhappy Path 6: Logout and Failed Login', () => {
     
     // Login
     cy.contains('Welcome!').should('be.visible');
@@ -312,9 +312,14 @@ describe('MusePath E2E User Flows', () => {
     // Click Logout
     cy.get('.settings-list-item').contains('Logout').click();
     
-    // Verify redirected to login
+    // Verify redirected to login and failed login
     cy.url().should('include', '/login');
     cy.contains('Login to your MusePath account').should('be.visible');
+    cy.get('.btn-primary').contains('Login').click();
+    cy.get('input[type="email"]').type('user@example');
+    cy.get('input[type="password"]').type('password123');
+    cy.get('button[type="submit"]').contains('Login').click();
+    cy.contains('Please enter a valid email').should('be.visible');
   });
     
 });
