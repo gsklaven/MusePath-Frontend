@@ -102,7 +102,7 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details').should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible').click();
 
-    cy.url().should('include', '/navigatio');
+    cy.url().should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -114,7 +114,7 @@ describe('MusePath E2E User Flows', () => {
 
     cy.contains('button', 'Stop Tracking').should('be.visible').click();
     cy.get('.muse-location-box').should('contain', 'Current Location');
-    cy.get('.btn-danger').click();
+    cy.contains('button', 'Cancel Navigation').should('be.visible').click();
 
     cy.url().should('include', '/map');
   });
@@ -178,5 +178,143 @@ describe('MusePath E2E User Flows', () => {
     cy.wait(1000);
     cy.url().should('include', '/questionnaire');
   });
+
+  it('Happy Path 4: Generate Personalized Route', () => {
     
+    // Login
+    cy.contains('Welcome!').should('be.visible');
+    cy.get('.btn-primary').contains('Login').click();
+    cy.get('input[type="email"]').type('user@example.com');
+    cy.get('input[type="password"]').type('password123');
+    cy.get('button[type="submit"]').contains('Login').click();
+    
+    // Verify on map
+    cy.url().should('include', '/map');
+    
+    // Click Generate Personalized Route button
+    cy.get('.generate-route-btn').should('be.visible').click();
+    
+    // Verify redirect to personalized route page
+    cy.url().should('include', '/personalized-route');
+    
+    // Wait for page to load
+    cy.wait(1500);
+    
+    // Check the state of the page
+    cy.get('body').then(($body) => {
+      if ($body.text().includes('Loading your personalized route')) {
+        // Still loading
+        cy.contains('Loading your personalized route').should('be.visible');
+        cy.wait(2000);
+      }
+
+        cy.contains('Your Personalized Route').should('be.visible');
+        cy.get('img[alt="Route"]').should('be.visible');
+        
+        // Verify route overview section
+        cy.contains('.label', 'Estimated Duration:').should('be.visible');
+        cy.contains('.label', 'Number of Exhibits:').should('be.visible');
+        cy.get('.overview-item .value').should('have.length.greaterThan', 0);
+        
+        // Verify exhibits section
+        cy.contains('h2', 'Exhibits on This Route').should('be.visible');
+        cy.get('img[alt="Exhibits"]').should('be.visible');
+        cy.get('.exhibits-list').should('be.visible');
+        cy.get('.exhibit-item').should('have.length.greaterThan', 0);
+        
+        // Verify first exhibit item structure
+        cy.get('.exhibit-item').first().within(() => {
+          cy.get('.exhibit-number').should('be.visible').and('contain', '1');
+          cy.get('.exhibit-name').should('be.visible');
+          cy.get('.view-details-btn').should('be.visible').and('contain', 'View Details');
+          cy.get('img[alt="Details"]').should('be.visible');
+        });
+        
+        // Verify route actions buttons
+        cy.get('.route-actions').should('be.visible');
+        cy.contains('button', 'Back to Map').should('be.visible');
+        cy.get('img[alt="Back"]').should('be.visible');
+        cy.contains('button', 'Start Navigation').should('be.visible');
+        cy.get('img[alt="Start Navigation"]').should('be.visible');
+        
+        // Test View Details button
+        cy.get('.view-details-btn').first().click();
+        cy.url().should('include', '/map');
+        
+        // Go back to personalized route
+        cy.go('back');
+        cy.url().should('include', '/personalized-route');
+        
+        // Test Start Navigation button
+        cy.contains('button', 'Start Navigation').click();
+        cy.url().should('include', '/navigation');
+        cy.contains('Personalized Tour').should('be.visible');
+    });
   });
+
+  it('Happy Path 5: Check Settings Options', () => {
+    
+    // Login
+    cy.contains('Welcome!').should('be.visible');
+    cy.get('.btn-primary').contains('Login').click();
+    cy.get('input[type="email"]').type('user@example.com');
+    cy.get('input[type="password"]').type('password123');
+    cy.get('button[type="submit"]').contains('Login').click();
+    
+    // Navigate to settings
+    cy.url().should('include', '/map');
+    cy.get('img[alt="Settings"]').should('be.visible').click();
+    
+    // Verify settings page loaded
+    cy.url().should('include', '/settings');
+    
+    // Verify all settings sections
+    cy.contains('Content').should('be.visible');
+    cy.contains('My Favourites').should('be.visible');
+    cy.contains('My Ratings').should('be.visible');
+    
+    cy.contains('Preferences').should('be.visible');
+    cy.contains('Language').should('be.visible');
+    cy.contains('Change my Preferences').should('be.visible');
+    cy.contains('Download for Offline Use').should('be.visible');
+    cy.contains('Manage Offline Content').should('be.visible');
+    
+    cy.contains('Account').should('be.visible');
+    cy.contains('Logout').should('be.visible');
+    
+    // Click on My Ratings
+    cy.get('.settings-list-item').contains('My Ratings').click();
+    cy.url().should('include', '/ratings');
+    
+    // Go back to settings
+    cy.go('back');
+    cy.url().should('include', '/settings');
+    
+    // Click on Change Preferences
+    cy.get('.settings-list-item').contains('Change my Preferences').click();
+    cy.url().should('include', '/questionnaire');
+  });
+
+  it('Unhappy Path 6: Logout and Verify Redirect', () => {
+    
+    // Login
+    cy.contains('Welcome!').should('be.visible');
+    cy.get('.btn-primary').contains('Login').click();
+    cy.get('input[type="email"]').type('user@example.com');
+    cy.get('input[type="password"]').type('password123');
+    cy.get('button[type="submit"]').contains('Login').click();
+    
+    // Navigate to settings
+    cy.url().should('include', '/map');
+    cy.get('img[alt="Settings"]').should('be.visible').click();
+    cy.url().should('include', '/settings');
+    
+    // Click Logout
+    cy.get('.settings-list-item').contains('Logout').click();
+    
+    // Verify redirected to login
+    cy.url().should('include', '/login');
+    cy.contains('Login to your MusePath account').should('be.visible');
+  });
+    
+});
