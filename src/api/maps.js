@@ -5,7 +5,7 @@ import apiClient from './client';
 const isValidId = (id) => {
   if (id === undefined || id === null) return false;
   const n = Number(id);
-  return Number.isInteger(n) && n > 0;
+  return !isNaN(n) && Number.isFinite(n) && Number.isInteger(n) && n > 0;
 };
 
 export const getMapById = async (mapId, zoom = null, rotation = null, mode = 'online') => {

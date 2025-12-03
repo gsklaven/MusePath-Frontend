@@ -311,14 +311,27 @@ const ApiTestPage = () => {
     const startTime = Date.now();
     
     // validate endpoint inputs
-    if (!endpoint || typeof endpoint.path !== 'string') {
+    if (!endpoint || typeof endpoint !== 'object') {
+      console.error('Invalid endpoint object', endpoint);
+      setLoading((prev) => ({ ...prev, [endpoint?.id]: false }));
+      return;
+    }
+    
+    if (typeof endpoint.path !== 'string' || endpoint.path.length === 0) {
       console.error('Invalid endpoint path', endpoint);
+      setLoading((prev) => ({ ...prev, [endpoint.id]: false }));
+      return;
+    }
+    
+    // Sanitize path - prevent path traversal
+    if (endpoint.path.includes('..') || !endpoint.path.startsWith('/')) {
+      console.error('Invalid endpoint path format', endpoint.path);
       setLoading((prev) => ({ ...prev, [endpoint.id]: false }));
       return;
     }
 
     const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
-    if (!allowedMethods.includes(endpoint.method)) {
+    if (!endpoint.method || !allowedMethods.includes(endpoint.method)) {
       console.error('Invalid endpoint method', endpoint.method);
       setLoading((prev) => ({ ...prev, [endpoint.id]: false }));
       return;
@@ -329,14 +342,24 @@ const ApiTestPage = () => {
     try {
       let response;
       const config = {};
+      
+      // Validate and sanitize sampleData if present
+      let sanitizedData = {};
+      if (endpoint.sampleData) {
+        if (typeof endpoint.sampleData === 'object' && endpoint.sampleData !== null) {
+          sanitizedData = safeSerialize(endpoint.sampleData);
+        } else {
+          console.warn('Invalid sampleData type, using empty object');
+        }
+      }
 
       // Configure request based on method
       if (endpoint.method === 'GET') {
         response = await apiClient.get(endpoint.path, config);
       } else if (endpoint.method === 'POST') {
-        response = await apiClient.post(endpoint.path, endpoint.sampleData || {}, config);
+        response = await apiClient.post(endpoint.path, sanitizedData, config);
       } else if (endpoint.method === 'PUT') {
-        response = await apiClient.put(endpoint.path, endpoint.sampleData || {}, config);
+        response = await apiClient.put(endpoint.path, sanitizedData, config);
       } else if (endpoint.method === 'DELETE') {
         response = await apiClient.delete(endpoint.path, config);
       }

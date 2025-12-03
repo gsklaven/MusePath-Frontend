@@ -5,7 +5,7 @@ const isValidId = (id) => {
   if (id === undefined || id === null) return false;
   // allow numeric strings or numbers
   const n = Number(id);
-  return Number.isInteger(n) && n > 0;
+  return !isNaN(n) && Number.isFinite(n) && Number.isInteger(n) && n > 0;
 };
 
 const sanitizeSearchTerm = (term) => {
