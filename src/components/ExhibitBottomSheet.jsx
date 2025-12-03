@@ -96,7 +96,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       } else {
         // Load and play audio
         setAudioError(null);
-        console.log(`🎵 API Call: GET /exhibits/${exhibitId}/audio`);
+        console.log('🎵 API Call: GET /exhibits/%s/audio', String(exhibitId));
         
         const audioBlob = await getExhibitAudio(exhibitId, 'online');
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -111,7 +111,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
         
         await audioRef.current.play();
         setIsPlayingAudio(true);
-        console.log(`✅ Audio playing for exhibit ${exhibitId}`);
+        console.log('✅ Audio playing for exhibit %s', String(exhibitId));
       }
     } catch (err) {
       console.error('❌ Error playing audio:', err);
@@ -153,7 +153,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
 
       // Step 1: Get user's current location
-      console.log(`📍 Getting user location for route creation (userId: ${userId})...`);
+      console.log('📍 Getting user location for route creation (userId: %s)...', String(userId));
       const userCoords = await getUserCoordinates(userId);
 
       if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
@@ -164,10 +164,10 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const lat = userCoords.latitude || userCoords.lat;
       const lng = userCoords.longitude || userCoords.lng;
       
-      console.log(`✅ User location: ${lat}, ${lng}`);
+      console.log('✅ User location: %s, %s', String(lat), String(lng));
 
       // Step 2: Create route from user location to exhibit
-      console.log(`🗺️ Creating route to exhibit ${exhibitId}...`);
+      console.log('🗺️ Creating route to exhibit %s...', String(exhibitId));
       const routeData = {
         user_id: userId,
         destination_id: exhibitId,

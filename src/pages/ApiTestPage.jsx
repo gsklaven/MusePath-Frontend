@@ -324,7 +324,7 @@ const ApiTestPage = () => {
       return;
     }
 
-    console.log(`🧪 Testing: ${endpoint.method} ${endpoint.path}`);
+    console.log('🧪 Testing: %s %s', String(endpoint.method), String(endpoint.path));
     
     try {
       let response;
@@ -344,7 +344,7 @@ const ApiTestPage = () => {
   const duration = Date.now() - startTime;
 
       const safeData = safeSerialize(response.data);
-      console.log(`✅ Success: ${endpoint.method} ${endpoint.path}`, {
+      console.log('✅ Success: %s %s', String(endpoint.method), String(endpoint.path), {
         status: response.status,
         duration: `${duration}ms`,
         data: safeData,
@@ -365,7 +365,7 @@ const ApiTestPage = () => {
       const status = error.response?.status || 'ERROR';
       const errorData = safeSerialize(error.response?.data || null);
       
-      console.error(`❌ Failed: ${endpoint.method} ${endpoint.path}`, {
+      console.error('❌ Failed: %s %s', String(endpoint.method), String(endpoint.path), {
         status: status,
         duration: `${duration}ms`,
         error: String(error.message),

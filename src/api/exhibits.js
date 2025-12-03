@@ -21,18 +21,18 @@ export const getExhibitById = async (exhibitId, mode = 'online') => {
     throw new TypeError('Invalid exhibitId');
   }
 
-  console.log(`🔍 API Call: GET /exhibits/${exhibitId}?mode=${mode}`);
+  console.log('🔍 API Call: GET /exhibits/%s?mode=%s', String(exhibitId), String(mode));
   const response = await apiClient.get(`/exhibits/${exhibitId}`, {
     params: { mode },
   });
-  console.log(`✅ Response: GET /exhibits/${exhibitId}`, response.data);
+  console.log('✅ Response: GET /exhibits/%s', String(exhibitId), response.data);
   return response.data;
 };
 
 // Search exhibits
 export const searchExhibits = async (searchTerm, category = null, mode = 'online') => {
   const term = sanitizeSearchTerm(searchTerm);
-  console.log(`🔍 API Call: GET /exhibits/search?exhibit_term=${term}&mode=${mode}`);
+  console.log('🔍 API Call: GET /exhibits/search?exhibit_term=%s&mode=%s', String(term), String(mode));
   const response = await apiClient.get('/exhibits/search', {
     params: {
       exhibit_term: term,
@@ -40,7 +40,7 @@ export const searchExhibits = async (searchTerm, category = null, mode = 'online
       mode,
     },
   });
-  console.log(`✅ Response: GET /exhibits/search`, response.data);
+  console.log('✅ Response: GET /exhibits/search', response.data);
   return response.data;
 };
 
@@ -50,12 +50,12 @@ export const getExhibitAudio = async (exhibitId, mode = 'online') => {
     throw new TypeError('Invalid exhibitId');
   }
 
-  console.log(`🎵 API Call: GET /exhibits/${exhibitId}/audio (mode: ${mode})`);
+  console.log('🎵 API Call: GET /exhibits/%s/audio (mode: %s)', String(exhibitId), String(mode));
   const response = await apiClient.get(`/exhibits/${exhibitId}/audio`, {
     params: { mode },
     responseType: 'blob',
   });
-  console.log(`✅ Response: GET /exhibits/${exhibitId}/audio - Audio blob received`);
+  console.log('✅ Response: GET /exhibits/%s/audio - Audio blob received', String(exhibitId));
   return response.data;
 };
 
