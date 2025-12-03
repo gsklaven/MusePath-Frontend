@@ -4,6 +4,7 @@ import { getExhibitById, searchExhibits } from '../api/exhibits';
 import { useNavigate } from 'react-router-dom';
 import './MapPage.css';
 import ExhibitBottomSheet from '../components/ExhibitBottomSheet';
+import MapFabButton from '../components/MapFabButton';
 
 // Hardcoded mock data for 4 monuments
 const mockExhibits = [
@@ -183,49 +184,20 @@ const MapPage = () => {
           justifyContent: 'center',
         }}
       >
-        <button
-          className="map-fab-btn"
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            margin: 0,
-            width: 40,
-            height: 36,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            borderRadius: 12,
-            outline: 'none',
-          }}
-          aria-label="Settings"
+        <MapFabButton
+          icon="/assets/icons/gear.png"
+          alt="Settings"
+          ariaLabel="Settings"
           onClick={() => navigate('/settings')}
-        >
-          <img src={process.env.PUBLIC_URL + '/assets/icons/gear.png'} alt="Settings" style={{ width: 28, height: 28 }} />
-        </button>
+        />
         {/* Green divider */}
         <div style={{ width: '100%', height: 2, background: '#BBD689', borderRadius: 1, margin: '2px 0' }} />
-        <button
-          className="map-fab-btn"
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            margin: 0,
-            width: 40,
-            height: 36,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            borderRadius: 12,
-            outline: 'none',
-          }}
-          aria-label="Map Layers"
-        >
-          <img src={process.env.PUBLIC_URL + '/assets/icons/layers-map.png'} alt="Map Layers" style={{ width: 28, height: 28 }} />
-        </button>
+        <MapFabButton
+          icon="/assets/icons/layers-map.png"
+          alt="Map Layers"
+          ariaLabel="Map Layers"
+          onClick={() => {}}
+        />
       </div>
 
       {/* Generate Personalized Route Button */}

@@ -7,6 +7,19 @@ const ApiTestPage = () => {
   const [loading, setLoading] = useState({});
   const [connectionStatus, setConnectionStatus] = useState(null);
 
+  // Helper: safely serialize response/error payloads to avoid storing functions or circular refs
+  const safeSerialize = (obj) => {
+    try {
+      return JSON.parse(JSON.stringify(obj));
+    } catch (e) {
+      try {
+        return String(obj);
+      } catch (e2) {
+        return null;
+      }
+    }
+  };
+
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/v1';
 
   // Όλα τα endpoints του API
@@ -297,6 +310,20 @@ const ApiTestPage = () => {
     
     const startTime = Date.now();
     
+    // validate endpoint inputs
+    if (!endpoint || typeof endpoint.path !== 'string') {
+      console.error('Invalid endpoint path', endpoint);
+      setLoading((prev) => ({ ...prev, [endpoint.id]: false }));
+      return;
+    }
+
+    const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+    if (!allowedMethods.includes(endpoint.method)) {
+      console.error('Invalid endpoint method', endpoint.method);
+      setLoading((prev) => ({ ...prev, [endpoint.id]: false }));
+      return;
+    }
+
     console.log(`🧪 Testing: ${endpoint.method} ${endpoint.path}`);
     
     try {
@@ -314,20 +341,21 @@ const ApiTestPage = () => {
         response = await apiClient.delete(endpoint.path, config);
       }
 
-      const duration = Date.now() - startTime;
+  const duration = Date.now() - startTime;
 
+      const safeData = safeSerialize(response.data);
       console.log(`✅ Success: ${endpoint.method} ${endpoint.path}`, {
         status: response.status,
         duration: `${duration}ms`,
-        data: response.data
+        data: safeData,
       });
 
       setResults((prev) => ({
         ...prev,
         [endpoint.id]: {
           success: true,
-          status: response.status,
-          data: response.data,
+          status: typeof response.status === 'number' ? response.status : 200,
+          data: safeData,
           duration: duration,
           error: null,
         },
@@ -335,15 +363,15 @@ const ApiTestPage = () => {
     } catch (error) {
       const duration = Date.now() - startTime;
       const status = error.response?.status || 'ERROR';
-      const errorData = error.response?.data || null;
+      const errorData = safeSerialize(error.response?.data || null);
       
       console.error(`❌ Failed: ${endpoint.method} ${endpoint.path}`, {
         status: status,
         duration: `${duration}ms`,
-        error: error.message,
-        response: errorData
+        error: String(error.message),
+        response: errorData,
       });
-      
+
       setResults((prev) => ({
         ...prev,
         [endpoint.id]: {
@@ -351,7 +379,7 @@ const ApiTestPage = () => {
           status: status,
           data: errorData,
           duration: duration,
-          error: error.message,
+          error: String(error.message),
         },
       }));
     } finally {
