@@ -1,3 +1,7 @@
+/**
+ * Page displaying available offline content (maps and exhibits).
+ * Loads cached content from localStorage for offline viewing.
+ */
 import React, { useState, useEffect } from 'react';
 import { getExhibitById } from '../api/exhibits';
 import { getMapById } from '../api/maps';

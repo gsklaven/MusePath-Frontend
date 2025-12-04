@@ -6,6 +6,10 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import './PersonalizedRoutePage.css';
 
+/**
+ * Displays personalized route based on user preferences.
+ * Shows route overview, exhibit list, and navigation options.
+ */
 const PersonalizedRoutePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,6 +19,7 @@ const PersonalizedRoutePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Load route if not passed via navigation state
     if (!route) {
       loadPersonalizedRoute();
     }

@@ -1,3 +1,7 @@
+/**
+ * Bottom sheet displaying exhibit details with pagination (Info, Route, About).
+ * Features: Favorites toggle, audio playback, navigation, accessibility icons.
+ */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';

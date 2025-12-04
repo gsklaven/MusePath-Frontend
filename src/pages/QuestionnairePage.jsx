@@ -7,6 +7,11 @@ import Card from '../components/Card';
 // ...existing code...
 import './QuestionnairePage.css';
 
+/**
+ * Multi-step questionnaire for collecting user preferences.
+ * Steps: Historical period → Artists/Civilizations → Custom interests.
+ * Results saved to backend and used for personalized routes.
+ */
 
 const initialPreferences = {
   historicalPeriod: '',
@@ -29,14 +34,15 @@ const QuestionnairePage = () => {
   }, []);
 
 
-  // For radio (single select)
+  // Radio selection for single-choice questions
   const handleRadioSelection = (category, value) => {
     setPreferences(prev => ({
       ...prev,
       [category]: value
     }));
   };
-  // For multi-select (other steps)
+  
+  // Toggle selection for multi-choice questions
   const handleToggleSelection = (category, value) => {
     setPreferences(prev => ({
       ...prev,

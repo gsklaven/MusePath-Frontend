@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { rateExhibit } from '../api/exhibits';
 import './RatingsPage.css';
 
+/**
+ * User's exhibit ratings list with edit and delete functionality.
+ * Displays star ratings with ability to update or remove.
+ */
 const RatingsPage = () => {
   // const { user } = useAuth(); // Not used currently
   const [ratings, setRatings] = useState([]);
@@ -14,7 +18,7 @@ const RatingsPage = () => {
   }, []);
 
   const loadRatings = () => {
-    // Get ratings from localStorage
+    // Load ratings from localStorage
     try {
       const storedRatings = JSON.parse(localStorage.getItem('ratings') || '[]');
       setRatings(storedRatings);
@@ -31,7 +35,7 @@ const RatingsPage = () => {
       console.log('⭐ Updating rating:', exhibitId, rating);
       await rateExhibit(exhibitId, rating);
       
-      // Update localStorage
+      // Update localStorage after API success
       const updatedRatings = ratings.map(r => 
         r.exhibit_id === exhibitId ? { ...r, rating } : r
       );

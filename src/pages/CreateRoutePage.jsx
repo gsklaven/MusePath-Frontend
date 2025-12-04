@@ -10,11 +10,16 @@ import Card from '../components/Card';
 import SearchBar from '../components/SearchBar';
 import './CreateRoutePage.css';
 
+/**
+ * Custom route creation page where users can select destination
+ * and add intermediate stops before calculating the route.
+ */
 const CreateRoutePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  // Get initial values from navigation state
   const initialDestination = location.state?.destination;
   const userLocation = location.state?.location || { lat: 0, lng: 0 };
   

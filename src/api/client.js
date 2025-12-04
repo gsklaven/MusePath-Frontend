@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+/**
+ * Axios client configured for backend API communication.
+ * Automatically handles auth tokens and 401 redirects.
+ */
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const apiClient = axios.create({
@@ -9,7 +13,7 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor for adding auth token
+// Request interceptor - adds auth token from localStorage
 apiClient.interceptors.request.use(
   (config) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -23,10 +27,11 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for handling errors
+// Response interceptor - handles unauthorized errors
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Redirect to login on 401
     if (error.response?.status === 401) {
       localStorage.removeItem('user');
       window.location.href = '/login';

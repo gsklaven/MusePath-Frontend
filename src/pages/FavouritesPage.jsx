@@ -3,6 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { removeFromFavourites } from '../api/users';
 import './FavouritesPage.css';
 
+/**
+ * User's favourite exhibits list with remove functionality.
+ * Data stored in localStorage and synced with backend.
+ */
 const FavouritesPage = () => {
   const { user } = useAuth();
   const [favourites, setFavourites] = useState([]);
@@ -13,7 +17,7 @@ const FavouritesPage = () => {
   }, []);
 
   const loadFavourites = () => {
-    // Get favourites from localStorage
+    // Load favourites from localStorage
     try {
       const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
       setFavourites(storedFavourites);
@@ -30,7 +34,7 @@ const FavouritesPage = () => {
       console.log('🗑️ Removing from favourites:', exhibitId);
       await removeFromFavourites(user?.id || 1, exhibitId);
       
-      // Update localStorage
+      // Update localStorage after successful API call
       const updatedFavourites = favourites.filter(fav => fav.exhibit_id !== exhibitId);
       localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
       setFavourites(updatedFavourites);

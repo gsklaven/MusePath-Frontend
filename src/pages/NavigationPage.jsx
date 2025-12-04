@@ -8,11 +8,16 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import './NavigationPage.css';
 
+/**
+ * Navigation page showing route steps and real-time location tracking.
+ * Displays turn-by-turn directions with live user position updates.
+ */
 const NavigationPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  // Get route data from navigation state
   const routeData = location.state?.route;
   const destination = location.state?.destination;
   const stops = location.state?.stops || [];
@@ -23,6 +28,7 @@ const NavigationPage = () => {
   const [locationTracking, setLocationTracking] = useState(false);
 
   useEffect(() => {
+    // Load route details if available
     if (routeData?.route_id) {
       loadRouteDetails();
     }

@@ -1,3 +1,7 @@
+/**
+ * Login page with email/password authentication and validation.
+ * Validates inputs using validators.js and redirects to map on success.
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';

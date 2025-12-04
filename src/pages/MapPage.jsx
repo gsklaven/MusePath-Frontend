@@ -1,4 +1,7 @@
-
+/**
+ * Main map page displaying museum layout with interactive exhibits.
+ * Features: Search, favorites, exhibit selection, navigation, audio guides, personalized routes.
+ */
 import React, { useState } from 'react';
 import { getExhibitById, searchExhibits } from '../api/exhibits';
 import { useNavigate } from 'react-router-dom';

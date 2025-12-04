@@ -1,3 +1,7 @@
+/**
+ * Offline content management page for downloading/deleting maps and exhibits.
+ * Displays storage usage and allows downloading maps/exhibits for offline use.
+ */
 import React, { useState, useEffect } from 'react';
 import { downloadExhibit } from '../api/exhibits';
 import { downloadMap } from '../api/maps';

@@ -1,4 +1,7 @@
-// This file is now unused. The onboarding flow is handled by QuestionnaireIntroPage.
+/**
+ * DEPRECATED: Profile setup functionality moved to QuestionnaireIntroPage.
+ * This component is kept for backward compatibility but is no longer used.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
