@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Shared FAB button styles for consistency
 const fabStyle = {
   background: 'none',
   border: 'none',
@@ -17,6 +18,10 @@ const fabStyle = {
 
 const imgStyle = { width: 28, height: 28 };
 
+/**
+ * Floating Action Button for map interface.
+ * Eliminates duplication between Settings and Map Layers buttons.
+ */
 export default function MapFabButton({ icon, alt, ariaLabel, onClick }) {
   return (
     <button

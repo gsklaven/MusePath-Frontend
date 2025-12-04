@@ -1,6 +1,10 @@
 import React from 'react';
 import './FormInput.css';
 
+/**
+ * Reusable form input with label and error display.
+ * Used in Login and Register pages to reduce duplication.
+ */
 const FormInput = ({ 
   label, 
   type = 'text', 
