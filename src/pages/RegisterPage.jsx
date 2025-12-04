@@ -6,6 +6,10 @@ import Button from '../components/Button';
 import FormInput from '../components/FormInput';
 import './RegisterPage.css';
 
+/**
+ * User registration page with email, password, and password confirmation.
+ * Validates inputs and redirects to questionnaire intro on success.
+ */
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,14 +23,17 @@ const RegisterPage = () => {
 
     const newErrors = {};
 
+    // Validate email format
     if (!validateEmail(email)) {
       newErrors.email = 'Please enter a valid email';
     }
 
+    // Validate password length
     if (!validatePassword(password)) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
+    // Check password match
     if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }

@@ -4,6 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import './Header.css';
 
+/**
+ * Application header with logo, offline indicator, and user actions.
+ * Shows settings link and logout button when user is authenticated.
+ */
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -22,10 +26,12 @@ const Header = () => {
         </Link>
         
         <div className="header-right">
+          {/* Show offline indicator when no internet */}
           {!isOnline && (
             <span className="offline-indicator">📴 Offline Mode</span>
           )}
           
+          {/* Show user actions when authenticated */}
           {user && (
             <>
               <Link to="/settings" className="header-link">
