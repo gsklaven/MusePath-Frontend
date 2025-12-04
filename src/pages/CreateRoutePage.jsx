@@ -1,3 +1,43 @@
+/**
+ * CreateRoutePage Component
+ * 
+ * Custom route builder allowing users to create personalized museum paths.
+ * Enables selection of final destination and intermediate exhibit stops with
+ * route calculation and navigation integration.
+ * 
+ * User Flow:
+ * 1. Select final destination from available museum destinations list
+ * 2. Optionally add intermediate exhibit stops via search functionality
+ * 3. Review selected stops with ability to remove unwanted ones
+ * 4. Calculate optimized route considering all waypoints
+ * 5. Navigate to NavigationPage with calculated route data
+ * 
+ * Features:
+ * - Destination Selection: Browse and select from available museum destinations
+ * - Search Integration: Search for exhibits to add as intermediate stops
+ * - Stop Management: Add, remove, and reorder stops in the route
+ * - Route Calculation: Calculates optimal path using backend route API
+ * - Current Location: Automatically uses user's GPS location as starting point
+ * - Navigation State: Passes route data to NavigationPage via React Router state
+ * 
+ * State Management:
+ * - destination: Selected final destination object
+ * - destinations: List of available destinations from backend
+ * - stops: Array of intermediate exhibit stops
+ * - searchResults: Exhibits matching user's search query
+ * - showDestinations/showAddStops: Toggle visibility of selection panels
+ * - startPoint: Display text for starting location (default: "Current Location")
+ * 
+ * Props via Router State:
+ * - location.state.destination: Pre-selected destination (optional)
+ * - location.state.location: User's current GPS coordinates
+ * 
+ * API Integrations:
+ * - getDestinations(): Fetches list of available destinations
+ * - getDestinationById(): Gets detailed destination information
+ * - searchExhibits(): Searches exhibits for adding as stops
+ * - calculateRoute(): Computes optimal route with all waypoints
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -10,10 +50,6 @@ import Card from '../components/Card';
 import SearchBar from '../components/SearchBar';
 import './CreateRoutePage.css';
 
-/**
- * Custom route creation page where users can select destination
- * and add intermediate stops before calculating the route.
- */
 const CreateRoutePage = () => {
   const location = useLocation();
   const navigate = useNavigate();

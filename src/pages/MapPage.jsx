@@ -1,6 +1,53 @@
 /**
- * Main map page displaying museum layout with interactive exhibits.
- * Features: Search, favorites, exhibit selection, navigation, audio guides, personalized routes.
+ * MapPage Component
+ * 
+ * Primary interactive museum map interface displaying exhibits as clickable markers.
+ * Central hub for navigation, exhibit discovery, and route planning within the museum.
+ * 
+ * Core Functionality:
+ * - Interactive Map: Displays museum floor plan with positioned exhibit markers
+ * - Exhibit Selection: Click markers to view detailed information in bottom sheet
+ * - Search Integration: Real-time search for exhibits with autocomplete results
+ * - Navigation: Quick access to route planning and current location features
+ * - Favorites Access: Direct link to user's saved favorite exhibits
+ * - Personalized Routes: Integration with AI-powered route recommendations
+ * 
+ * Map Features:
+ * - 4 Mock Exhibits: Statue A, Statue B, Vase C, Mosaic D with historical periods
+ * - Positioned Markers: Each exhibit placed at specific coordinates on map image
+ * - Visual Icons: Custom icon for each exhibit type (statues, vases, mosaics)
+ * - Audio Indicators: Shows which exhibits have audio guide availability
+ * 
+ * User Interactions:
+ * - Click exhibit markers to open detailed bottom sheet with multi-page layout
+ * - Search bar at top for finding specific exhibits by name/period/artist
+ * - FAB buttons for quick actions: favorites, personalized routes, current location
+ * - Search results display as overlay with clickable list items
+ * 
+ * Bottom Sheet Integration:
+ * - Displays selected exhibit with Info, Route, and About pages
+ * - Enables favoriting, audio playback, and navigation from exhibit details
+ * - Closes on backdrop click or close button
+ * 
+ * State Management:
+ * - selectedExhibit: Currently selected exhibit object with full details
+ * - searchTerm: Current search query string
+ * - searchResults: Array of matching exhibits from search API
+ * - showSearchResults: Boolean toggle for search results overlay visibility
+ * 
+ * API Integration:
+ * - getExhibitById(): Fetches full exhibit details when marker clicked
+ * - searchExhibits(): Returns matching exhibits based on search term
+ * - Falls back to mock data if API calls fail for graceful degradation
+ * 
+ * Navigation Actions:
+ * - Favorites button: Navigates to /favourites page
+ * - Personalized Routes: Navigates to /personalized-route with location data
+ * - Map markers: Opens bottom sheet for exhibit details and navigation
+ * 
+ * Mock Data Structure:
+ * Each exhibit includes: exhibitId, name, subtitle, description, mapPosition, icon, audioGuideUrl
+ * Map positions use percentage-based left/top coordinates for responsive layout
  */
 import React, { useState } from 'react';
 import { getExhibitById, searchExhibits } from '../api/exhibits';
@@ -9,7 +56,7 @@ import './MapPage.css';
 import ExhibitBottomSheet from '../components/ExhibitBottomSheet';
 import MapFabButton from '../components/MapFabButton';
 
-// Hardcoded mock data for 4 monuments
+// Hardcoded mock data for 4 monuments representing museum exhibits with historical context
 const mockExhibits = [
   {
     exhibitId: 1,

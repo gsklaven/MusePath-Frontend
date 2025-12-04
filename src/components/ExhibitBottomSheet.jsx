@@ -1,6 +1,29 @@
 /**
- * Bottom sheet displaying exhibit details with pagination (Info, Route, About).
- * Features: Favorites toggle, audio playback, navigation, accessibility icons.
+ * ExhibitBottomSheet Component
+ * 
+ * A multi-page bottom sheet modal that displays comprehensive exhibit information.
+ * Implements a three-page layout: Info (basic details), Route (navigation options), 
+ * and About (detailed description and features).
+ * 
+ * Key Features:
+ * - Page Navigation: Swipeable pages with dot indicators for Info/Route/About sections
+ * - Favorites Management: Toggle favorite status with heart icon, syncs with backend and localStorage
+ * - Audio Guide: Plays exhibit audio guides with play/pause controls and error handling
+ * - Route Creation: Generates navigation routes from user's current location to the exhibit
+ * - Accessibility: Displays wheelchair, braille, and audio guide availability icons
+ * - Status Indicators: Visual indicators for open/closed/maintenance status with color coding
+ * 
+ * State Management:
+ * - Tracks current page, favorite status, audio playback state, and route creation
+ * - Uses localStorage for favorites persistence and API for backend synchronization
+ * - Audio managed via useRef for direct DOM manipulation
+ * 
+ * Props:
+ * @param {boolean} open - Controls visibility of the bottom sheet
+ * @param {function} onClose - Callback fired when sheet should close
+ * @param {object} exhibit - Exhibit data object containing all display information
+ * 
+ * Dependencies: useAuth for user context, APIs for favorites/audio/routes, useNavigate for routing
  */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +33,7 @@ import { getExhibitAudio } from '../api/exhibits';
 import { createRoute } from '../api/routes';
 import './ExhibitBottomSheet.css';
 
+// Icon mappings for accessibility features displayed on the Info page
 const featureIcons = {
   'Wheelchair Accessible': '/assets/icons/wheelchair.png',
   'Braille Support': '/assets/icons/braille.png',

@@ -1,6 +1,53 @@
 /**
- * Page displaying available offline content (maps and exhibits).
- * Loads cached content from localStorage for offline viewing.
+ * OfflineContentPage Component
+ * 
+ * Displays and provides access to museum content downloaded for offline use.
+ * Enables viewing of cached maps and exhibits when internet connectivity is unavailable.
+ * 
+ * Purpose:
+ * - View all previously downloaded maps and exhibits from local storage
+ * - Access content in airplane mode or areas with poor connectivity
+ * - Browse offline content without consuming mobile data
+ * - Quick access to saved museum information during visits
+ * 
+ * Content Display:
+ * - Maps Section: Lists all downloaded museum floor plans with view buttons
+ * - Exhibits Section: Lists all downloaded exhibit details with view buttons
+ * - Download Counts: Shows number of items in each category
+ * - Empty States: Instructional messages when no content is downloaded
+ * 
+ * Features:
+ * - View Offline Maps: Click to display cached map data without API calls
+ * - View Offline Exhibits: Click to display cached exhibit information
+ * - Persistent Storage: All content loaded from localStorage
+ * - No Internet Required: Functions completely offline after initial download
+ * - Organized Layout: Clean sections for maps and exhibits with icons
+ * 
+ * Data Structure:
+ * - offlineMaps: Array of {map_id, downloaded_at} objects from localStorage
+ * - offlineExhibits: Array of {exhibit_id, title, downloaded_at} objects
+ * - Downloaded content managed via ManageOfflinePage
+ * 
+ * User Actions:
+ * - Click "View" button to display offline map using getMapById in offline mode
+ * - Click "View" button to display offline exhibit using getExhibitById in offline mode
+ * - Navigate to ManageOfflinePage to download more content
+ * 
+ * Offline Mode API:
+ * - getExhibitById(id, 'offline'): Fetches exhibit from cache
+ * - getMapById(id, null, null, 'offline'): Fetches map from cache
+ * - Both APIs check localStorage before attempting network requests
+ * 
+ * Integration:
+ * - Works with ManageOfflinePage for content downloads
+ * - Syncs with offline storage managed by downloadMap/downloadExhibit APIs
+ * - Accessible from main navigation when in offline mode
+ * 
+ * Visual Design:
+ * - Icon-based sections with download and map icons
+ * - Clean white background with subtle shadows
+ * - Montserrat font for consistency with app design
+ * - Helpful messaging to guide users to download more content
  */
 import React, { useState, useEffect } from 'react';
 import { getExhibitById } from '../api/exhibits';

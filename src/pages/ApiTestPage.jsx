@@ -1,3 +1,37 @@
+/**
+ * ApiTestPage Component
+ * 
+ * Development and testing interface for all backend API endpoints.
+ * Provides a comprehensive UI for testing REST API calls with real-time results display.
+ * 
+ * Purpose:
+ * - Manual testing of all API endpoints during development
+ * - Debugging API responses and error handling
+ * - Verifying request/response formats and data structures
+ * - Testing authentication flows and data validation
+ * 
+ * Features:
+ * - Organized endpoint categories: Health, Exhibits, Maps, Routes, Users, Downloads
+ * - Test execution with loading states and error handling
+ * - Connection status indicator with base URL display
+ * - Request/response visualization with formatted JSON output
+ * - Support for GET, POST, PUT, DELETE methods
+ * - Sample data injection for POST/PUT requests
+ * - Path validation to prevent directory traversal attacks
+ * - Collapsible result sections with success/error color coding
+ * 
+ * Security:
+ * - Validates API paths (no "..", must start with "/")
+ * - Sanitizes sample data to prevent injection attacks
+ * - Safe serialization of response objects to avoid circular references
+ * 
+ * State Management:
+ * - results: Stores API responses keyed by endpoint ID
+ * - loading: Tracks loading state per endpoint
+ * - connectionStatus: Overall API connectivity status
+ * 
+ * Note: This page should only be accessible in development environments.
+ */
 import React, { useState } from 'react';
 import apiClient from '../api/client';
 import './ApiTestPage.css';
@@ -7,7 +41,8 @@ const ApiTestPage = () => {
   const [loading, setLoading] = useState({});
   const [connectionStatus, setConnectionStatus] = useState(null);
 
-  // Helper: safely serialize response/error payloads to avoid storing functions or circular refs
+  // Helper: Safely serialize response/error payloads to avoid storing functions or circular refs.
+  // Prevents crashes when storing complex objects with circular dependencies in state.
   const safeSerialize = (obj) => {
     try {
       return JSON.parse(JSON.stringify(obj));

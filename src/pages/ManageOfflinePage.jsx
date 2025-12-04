@@ -1,6 +1,45 @@
 /**
- * Offline content management page for downloading/deleting maps and exhibits.
- * Displays storage usage and allows downloading maps/exhibits for offline use.
+ * ManageOfflinePage Component
+ * 
+ * Offline content management interface for downloading and managing maps and exhibits.
+ * Enables users to download museum content for offline access when internet is unavailable.
+ * 
+ * Purpose:
+ * - Prepare content for offline museum visits where WiFi/cellular may be unavailable
+ * - Manage device storage by viewing and deleting downloaded content
+ * - Track approximate storage usage of offline content
+ * 
+ * Features:
+ * - Content Categories: Separate sections for offline maps and exhibits
+ * - Download Functionality: Download individual maps (ID 1-3) and exhibits (ID 1-10)
+ * - Storage Tracking: Displays approximate total storage used (20MB/map, 5MB/exhibit)
+ * - Expandable Sections: Collapsible panels for maps and exhibits lists
+ * - Delete Operations: Remove individual items to free up storage space
+ * - Download Status: Visual feedback during download operations
+ * - Persistence: Stores download metadata in localStorage with timestamps
+ * 
+ * Content Management:
+ * - Maps Section: Downloads full museum floor plans and layouts
+ * - Exhibits Section: Downloads exhibit details, images, and audio guides
+ * - Each item shows download timestamp and size estimate
+ * - Delete confirmations prevent accidental removals
+ * 
+ * State Management:
+ * - offlineMaps: Array of downloaded map objects with IDs and timestamps
+ * - offlineExhibits: Array of downloaded exhibit objects with metadata
+ * - totalStorage: Calculated storage usage in MB
+ * - expandMaps/expandExhibits: Toggle visibility of content lists
+ * - downloading: Tracks currently downloading item (null when idle)
+ * 
+ * API Integration:
+ * - downloadMap(id): Fetches and caches map data for offline use
+ * - downloadExhibit(id): Fetches and caches exhibit data including audio
+ * - localStorage: Persists download metadata and content availability
+ * 
+ * Storage Estimates:
+ * - Maps: ~20MB each (includes floor plans, markers, navigation data)
+ * - Exhibits: ~5MB each (includes images, descriptions, audio guides)
+ * - Total displayed as sum of all downloaded content
  */
 import React, { useState, useEffect } from 'react';
 import { downloadExhibit } from '../api/exhibits';
