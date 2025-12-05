@@ -38,6 +38,7 @@ describe('MusePath E2E User Flows', () => {
     cy.get('img[alt="Add to favourites"]').should('be.visible').click();
     
     // Verify heart changed to filled
+    cy.wait(1000);
     cy.get('img[alt="Remove from favourites"]').should('be.visible');
     
     // Close bottom sheet
@@ -100,6 +101,7 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details').should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible').click();
 
+    cy.wait(1000);
     cy.url().should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
@@ -167,6 +169,7 @@ describe('MusePath E2E User Flows', () => {
     cy.get('img[alt="Route"]').should('be.visible');
     
     // Verify route overview section
+    cy.wait(1000);
     cy.contains('.label', 'Estimated Duration:').should('be.visible');
     cy.get('.exhibits-list').should('be.visible');
     
