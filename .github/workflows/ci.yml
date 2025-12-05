@@ -25,6 +25,7 @@ jobs:
           wait-on: 'http://localhost:3000'
         env:
           REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+          CYPRESS_BASE_URL: http://localhost:3000
 
   cd:
     runs-on: ubuntu-latest
