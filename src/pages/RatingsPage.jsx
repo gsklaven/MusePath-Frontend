@@ -1,3 +1,84 @@
+/**
+ * RatingsPage Component
+ * 
+ * Displays and manages user's exhibit ratings with edit and delete capabilities.
+ * Provides centralized view of all exhibits the user has rated during museum visits.
+ * 
+ * Purpose:
+ * - View all previously rated exhibits in one organized list
+ * - Edit existing ratings to reflect changed opinions
+ * - Remove ratings for exhibits user no longer wants to track
+ * - Maintain rating history for future museum visits and recommendations
+ * 
+ * Features:
+ * - Rating Display: Shows all rated exhibits with star visualization (1-5 stars)
+ * - Edit Mode: Click edit button to modify existing rating with star selector
+ * - Delete Functionality: Remove rating with confirmation to prevent accidents
+ * - Star Rating UI: Interactive star icons that fill on hover/selection
+ * - Persistent Storage: Ratings stored in localStorage and synced with backend
+ * - Empty State: Helpful message when no ratings exist with instruction to add more
+ * - Loading State: Shows loading indicator while fetching rating data
+ * 
+ * Rating Display:
+ * - Each rating shows: exhibit ID/name, current star rating, edit/delete buttons
+ * - Star visualization uses filled/empty star icons for visual clarity
+ * - Exhibit metadata includes title if available, otherwise shows ID
+ * - Organized as vertical list with card-style layout
+ * 
+ * Edit Workflow:
+ * 1. User clicks edit button on rating item
+ * 2. Star selector appears with current rating pre-selected
+ * 3. User clicks different star to change rating (1-5)
+ * 4. Click update button to save new rating
+ * 5. API call updates backend, localStorage updated on success
+ * 6. Edit mode closes and new rating displays
+ * 
+ * Delete Workflow:
+ * 1. User clicks delete/remove button on rating item
+ * 2. Rating removed from localStorage immediately
+ * 3. UI updates to reflect deletion
+ * 4. Rating no longer appears in list
+ * 
+ * State Management:
+ * - ratings: Array of rating objects from localStorage {exhibit_id, rating, title}
+ * - loading: Boolean flag during initial data fetch
+ * - editingId: ID of currently editing rating (null when not editing)
+ * - newRating: Temporary value for rating being edited (1-5)
+ * 
+ * Data Structure:
+ * rating = {
+ *   exhibit_id: number (unique exhibit identifier),
+ *   rating: number (1-5 star value),
+ *   title: string (exhibit name/title for display),
+ *   created_at: ISO timestamp (when rating was first added)
+ * }
+ * 
+ * API Integration:
+ * - rateExhibit(exhibitId, rating): Updates rating on backend server
+ * - Ratings added from ExhibitBottomSheet's rating interface
+ * - Backend stores ratings in user profile for analytics
+ * - localStorage provides offline access and faster loading
+ * 
+ * User Actions:
+ * - View all ratings: Scroll through complete rating history
+ * - Edit rating: Change star value for any exhibit
+ * - Delete rating: Remove rating from list and backend
+ * - Learn how to rate: Empty state shows instruction message
+ * 
+ * Integration Points:
+ * - Ratings created in ExhibitBottomSheet component
+ * - Data synced with backend via exhibits API
+ * - Stored in localStorage for offline access
+ * - Used by recommendation algorithm for personalized routes
+ * 
+ * Visual Design:
+ * - Clean list layout with ample spacing
+ * - Star icons for intuitive rating visualization
+ * - Edit mode with inline star selector
+ * - Delete confirmation prevents accidental removal
+ * - Consistent with app's Montserrat font and color scheme
+ * - Mobile-friendly tap targets for all interactive elements
+ */
 import React, { useState, useEffect } from 'react';
 import { rateExhibit } from '../api/exhibits';
 import './RatingsPage.css';
@@ -14,7 +95,7 @@ const RatingsPage = () => {
   }, []);
 
   const loadRatings = () => {
-    // Get ratings from localStorage
+    // Load ratings from localStorage
     try {
       const storedRatings = JSON.parse(localStorage.getItem('ratings') || '[]');
       setRatings(storedRatings);
@@ -31,7 +112,7 @@ const RatingsPage = () => {
       console.log('⭐ Updating rating:', exhibitId, rating);
       await rateExhibit(exhibitId, rating);
       
-      // Update localStorage
+      // Update localStorage after API success
       const updatedRatings = ratings.map(r => 
         r.exhibit_id === exhibitId ? { ...r, rating } : r
       );

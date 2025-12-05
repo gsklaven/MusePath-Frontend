@@ -1,3 +1,30 @@
+/**
+ * ExhibitBottomSheet Component
+ * 
+ * A multi-page bottom sheet modal that displays comprehensive exhibit information.
+ * Implements a three-page layout: Info (basic details), Route (navigation options), 
+ * and About (detailed description and features).
+ * 
+ * Key Features:
+ * - Page Navigation: Swipeable pages with dot indicators for Info/Route/About sections
+ * - Favorites Management: Toggle favorite status with heart icon, syncs with backend and localStorage
+ * - Audio Guide: Plays exhibit audio guides with play/pause controls and error handling
+ * - Route Creation: Generates navigation routes from user's current location to the exhibit
+ * - Accessibility: Displays wheelchair, braille, and audio guide availability icons
+ * - Status Indicators: Visual indicators for open/closed/maintenance status with color coding
+ * 
+ * State Management:
+ * - Tracks current page, favorite status, audio playback state, and route creation
+ * - Uses localStorage for favorites persistence and API for backend synchronization
+ * - Audio managed via useRef for direct DOM manipulation
+ * 
+ * Props:
+ * @param {boolean} open - Controls visibility of the bottom sheet
+ * @param {function} onClose - Callback fired when sheet should close
+ * @param {object} exhibit - Exhibit data object containing all display information
+ * 
+ * Dependencies: useAuth for user context, APIs for favorites/audio/routes, useNavigate for routing
+ */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +33,7 @@ import { getExhibitAudio } from '../api/exhibits';
 import { createRoute } from '../api/routes';
 import './ExhibitBottomSheet.css';
 
+// Icon mappings for accessibility features displayed on the Info page
 const featureIcons = {
   'Wheelchair Accessible': '/assets/icons/wheelchair.png',
   'Braille Support': '/assets/icons/braille.png',
@@ -96,7 +124,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       } else {
         // Load and play audio
         setAudioError(null);
-        console.log(`🎵 API Call: GET /exhibits/${exhibitId}/audio`);
+        console.log('🎵 API Call: GET /exhibits/%s/audio', String(exhibitId));
         
         const audioBlob = await getExhibitAudio(exhibitId, 'online');
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -111,7 +139,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
         
         await audioRef.current.play();
         setIsPlayingAudio(true);
-        console.log(`✅ Audio playing for exhibit ${exhibitId}`);
+        console.log('✅ Audio playing for exhibit %s', String(exhibitId));
       }
     } catch (err) {
       console.error('❌ Error playing audio:', err);
@@ -153,7 +181,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
 
       // Step 1: Get user's current location
-      console.log(`📍 Getting user location for route creation (userId: ${userId})...`);
+      console.log('📍 Getting user location for route creation (userId: %s)...', String(userId));
       const userCoords = await getUserCoordinates(userId);
 
       if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
@@ -164,10 +192,10 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const lat = userCoords.latitude || userCoords.lat;
       const lng = userCoords.longitude || userCoords.lng;
       
-      console.log(`✅ User location: ${lat}, ${lng}`);
+      console.log('✅ User location: %s, %s', String(lat), String(lng));
 
       // Step 2: Create route from user location to exhibit
-      console.log(`🗺️ Creating route to exhibit ${exhibitId}...`);
+      console.log('🗺️ Creating route to exhibit %s...', String(exhibitId));
       const routeData = {
         user_id: userId,
         destination_id: exhibitId,

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import './SearchBar.css';
 
+/**
+ * Search bar component with submit handler.
+ * Calls onSearch callback with search term on form submit.
+ */
 const SearchBar = ({ onSearch, placeholder = 'Search...', className = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
 

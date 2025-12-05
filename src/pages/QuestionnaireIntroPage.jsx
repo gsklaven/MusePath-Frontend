@@ -2,6 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './QuestionnaireIntroPage.css';
 
+/**
+ * Questionnaire introduction page shown after registration.
+ * Users can choose to complete preferences or skip to map.
+ */
 const QuestionnaireIntroPage = () => {
   const navigate = useNavigate();
 

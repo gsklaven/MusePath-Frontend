@@ -1,6 +1,10 @@
 import React from 'react';
 import './Button.css';
 
+/**
+ * Reusable button component with variant styles.
+ * Variants: primary, secondary, outline.
+ */
 const Button = ({ 
   children, 
   onClick, 

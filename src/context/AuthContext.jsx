@@ -1,3 +1,7 @@
+/**
+ * Authentication context providing user state and auth operations.
+ * Persists user data to localStorage and provides login/logout/register functions.
+ */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext(null);

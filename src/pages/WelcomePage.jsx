@@ -2,6 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./WelcomePage.css";
 
+/**
+ * Landing page with login and register options.
+ * First page shown to unauthenticated users.
+ */
 const WelcomePage = () => {
   const navigate = useNavigate();
 

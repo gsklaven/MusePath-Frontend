@@ -1,3 +1,8 @@
+/**
+ * Validation utility functions for user inputs.
+ * Includes validators for email, password, ratings, and coordinates.
+ */
+
 // Validation functions
 export const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
