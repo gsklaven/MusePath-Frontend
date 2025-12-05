@@ -8,6 +8,9 @@ require('dotenv').config();
 module.exports = defineConfig({
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL, 
+
+    defaultCommandTimeout: 20000,
+    pageLoadTimeout: 30000,
     
   },
 });
