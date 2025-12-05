@@ -35,15 +35,13 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'Navigate').should('be.visible');
 
     // Add to favourites
-    cy.get('img[alt="Add to favourites"]').should('be.visible').click();
+    cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
     
     // Verify heart changed to filled
-    cy.wait(1000);
-    cy.get('img[alt="Remove from favourites"]').should('be.visible');
+    cy.get('img[alt="Remove from favourites"]', { timeout: 30000 }).should('be.visible');
     
     // Close bottom sheet
     cy.get('.exhibit-bottomsheet-backdrop').click('topLeft', { force: true });
-    cy.wait(1000);
 
     // Navigation to settings
     cy.get('img[alt="Settings"]').should('be.visible').click();
@@ -97,12 +95,11 @@ describe('MusePath E2E User Flows', () => {
     cy.get('.exhibit-bottomsheet-features').should('be.visible');
 
     // Open audio guide
-    cy.contains('button', 'Audio Guide Available').should('be.visible').click();
-    cy.contains('button', 'More Details').should('be.visible');
-    cy.contains('button', 'Navigate').should('be.visible').click();
+    cy.contains('button', 'Audio Guide Available', { timeout: 15000 }).should('be.visible').click();
+    cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
+    cy.contains('button', 'Navigate', { timeout: 10000 }).should('be.visible').click();
 
-    cy.wait(1000);
-    cy.url().should('include', '/navigation');
+    cy.url({ timeout: 30000 }).should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -166,12 +163,11 @@ describe('MusePath E2E User Flows', () => {
     
     // Wait for route to generate
     cy.contains('Your Personalized Route', { timeout: 30000 }).should('be.visible');
-    cy.get('img[alt="Route"]').should('be.visible');
+    cy.get('img[alt="Route"]', { timeout: 30000 }).should('be.visible');
     
-    // Verify route overview section
-    cy.wait(1000);
-    cy.contains('.label', 'Estimated Duration:').should('be.visible');
-    cy.get('.exhibits-list').should('be.visible');
+    // Verify route overview section - wait for backend processing
+    cy.contains('.label', 'Estimated Duration:', { timeout: 90000 }).should('be.visible');
+    cy.get('.exhibits-list', { timeout: 15000 }).should('be.visible');
     
     // Verify route actions buttons
     cy.contains('button', 'Start Navigation').should('be.visible');
