@@ -18,11 +18,23 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Wake up Render backend
+        run: |
+          echo "Waking up backend at https://musepath-backend.onrender.com..."
+          for i in {1..10}; do
+            curl -f https://musepath-backend.onrender.com/v1/health && break || echo "Attempt $i failed, retrying in 10s..." && sleep 10
+          done
+          echo "Backend is ready!"
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           start: npm start
           wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: chrome
+          headed: true
+          config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
         env:
           REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
           CYPRESS_BASE_URL: http://localhost:3000
