@@ -32,8 +32,7 @@ jobs:
           start: npm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
-          browser: chrome
-          headed: true
+          headed: false
           config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
         env:
           REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
