@@ -34,11 +34,17 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible');
 
+    // Setup intercept BEFORE clicking
+    cy.intercept('POST', '**/users/*/favourites').as('addFavourite');
+
     // Add to favourites
     cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
     
+    // Wait for API call to complete
+    cy.wait('@addFavourite', { timeout: 120000 });
+    
     // Verify heart changed to filled
-    cy.get('img[alt="Remove from favourites"]', { timeout: 30000 }).should('be.visible');
+    cy.get('img[alt="Remove from favourites"]', { timeout: 10000 }).should('be.visible');
     
     // Close bottom sheet
     cy.get('.exhibit-bottomsheet-backdrop').click('topLeft', { force: true });
@@ -99,7 +105,9 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate', { timeout: 10000 }).should('be.visible').click();
 
-    cy.url({ timeout: 30000 }).should('include', '/navigation');
+    // Give time for navigation to process
+    cy.wait(3000);
+    cy.url({ timeout: 60000 }).should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -155,18 +163,24 @@ describe('MusePath E2E User Flows', () => {
     // Verify on map
     cy.url().should('include', '/map');
     
+    // Setup intercept BEFORE clicking
+    cy.intercept('POST', '**/routes').as('generateRoute');
+    
     // Click Generate Personalized Route button
-    cy.get('.generate-route-btn').should('be.visible').click();
+    cy.get('.generate-route-btn', { timeout: 10000 }).should('be.visible').click();
     
     // Verify redirect to personalized route page
-    cy.url().should('include', '/personalized-route');
+    cy.url({ timeout: 10000 }).should('include', '/personalized-route');
+    
+    // Wait for route generation (this might timeout if button doesn't trigger API)
+    cy.wait('@generateRoute', { timeout: 180000 });
     
     // Wait for route to generate
-    cy.contains('Your Personalized Route', { timeout: 30000 }).should('be.visible');
-    cy.get('img[alt="Route"]', { timeout: 30000 }).should('be.visible');
+    cy.contains('Your Personalized Route', { timeout: 10000 }).should('be.visible');
+    cy.get('img[alt="Route"]', { timeout: 10000 }).should('be.visible');
     
-    // Verify route overview section - wait for backend processing
-    cy.contains('.label', 'Estimated Duration:', { timeout: 90000 }).should('be.visible');
+    // Verify route overview section
+    cy.contains('.label', 'Estimated Duration:', { timeout: 10000 }).should('be.visible');
     cy.get('.exhibits-list', { timeout: 15000 }).should('be.visible');
     
     // Verify route actions buttons
