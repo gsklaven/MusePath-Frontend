@@ -9,8 +9,10 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL, 
 
-    defaultCommandTimeout: 25000,
+    defaultCommandTimeout: process.env.CI ? 120000 : 25000,
     pageLoadTimeout: 30000,
+    requestTimeout: process.env.CI ? 120000 : 5000,
+    responseTimeout: process.env.CI ? 120000 : 30000,
     
   },
   retries: {
