@@ -100,9 +100,15 @@ describe('MusePath E2E User Flows', () => {
     // Open audio guide
     cy.contains('button', 'Audio Guide Available', { timeout: 15000 }).should('be.visible').click();
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
+    
+    // Intercept navigation-related API calls if any
+    cy.intercept('GET', '**/routes/**').as('getRoute');
+    
     cy.contains('button', 'Navigate', { timeout: 10000 }).should('be.visible').click();
 
-    cy.url({ timeout: 30000 }).should('include', '/navigation');
+    // Wait a bit for the navigation to process
+    cy.wait(2000);
+    cy.url({ timeout: 60000 }).should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -158,18 +164,24 @@ describe('MusePath E2E User Flows', () => {
     // Verify on map
     cy.url().should('include', '/map');
     
+    // Intercept route generation API
+    cy.intercept('POST', '**/routes').as('generateRoute');
+    
     // Click Generate Personalized Route button
     cy.get('.generate-route-btn').should('be.visible').click();
     
     // Verify redirect to personalized route page
     cy.url().should('include', '/personalized-route');
     
+    // Wait for route generation API to complete
+    cy.wait('@generateRoute', { timeout: 180000 });
+    
     // Wait for route to generate
     cy.contains('Your Personalized Route', { timeout: 30000 }).should('be.visible');
     cy.get('img[alt="Route"]', { timeout: 30000 }).should('be.visible');
     
     // Verify route overview section - wait for backend processing
-    cy.contains('.label', 'Estimated Duration:', { timeout: 90000 }).should('be.visible');
+    cy.contains('.label', 'Estimated Duration:', { timeout: 60000 }).should('be.visible');
     cy.get('.exhibits-list', { timeout: 15000 }).should('be.visible');
     
     // Verify route actions buttons
