@@ -34,11 +34,15 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible');
 
-    // Add to favourites
-    cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
-    
-    // Verify heart changed to filled
-    cy.get('img[alt="Remove from favourites"]', { timeout: 30000 }).should('be.visible');
+    cy.intercept('POST', '**/favourites').as('addToFavouritesReq');
+
+    cy.get('img[alt="Add to favourites"]').should('be.visible').click();
+
+    cy.wait('@addToFavouritesReq', { timeout: 60000 }).then((interception) => {
+        expect(interception.response.statusCode).to.be.oneOf([200, 201, 204]);
+    });
+
+    cy.get('img[alt="Remove from favourites"]').should('be.visible');
     
     // Close bottom sheet
     cy.get('.exhibit-bottomsheet-backdrop').click('topLeft', { force: true });
