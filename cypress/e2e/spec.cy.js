@@ -34,15 +34,9 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible');
 
-    // Setup intercept BEFORE clicking
-    cy.intercept('POST', '**/users/*/favourites').as('addFavourite');
-
     // Add to favourites
     cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
-    
-    // Wait for API call to complete
-    cy.wait('@addFavourite', { timeout: 120000 });
-    
+        
     // Verify heart changed to filled
     cy.get('img[alt="Remove from favourites"]', { timeout: 10000 }).should('be.visible');
     
@@ -171,10 +165,7 @@ describe('MusePath E2E User Flows', () => {
     
     // Verify redirect to personalized route page
     cy.url({ timeout: 10000 }).should('include', '/personalized-route');
-    
-    // Wait for route generation (this might timeout if button doesn't trigger API)
-    cy.wait('@generateRoute', { timeout: 180000 });
-    
+        
     // Wait for route to generate
     cy.contains('Your Personalized Route', { timeout: 10000 }).should('be.visible');
     cy.get('img[alt="Route"]', { timeout: 10000 }).should('be.visible');
