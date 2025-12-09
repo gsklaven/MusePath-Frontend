@@ -28,22 +28,18 @@ describe('MusePath E2E User Flows', () => {
     cy.get('.map-marker-monument', { timeout: 10000 }).should('have.length.greaterThan', 0);
 
     // Interaction on map - click monument
-    cy.get('img[alt="Statue B"]').click({ force: true });
+    cy.get('.map-marker-monument').first().click({ force: true });
     
     // Verify bottom sheet opened
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate').should('be.visible');
 
-    // Intercept the favourites API call
-    cy.intercept('POST', '**/favourites').as('addToFavouritesReq');
-
-    // Click add to favourites
-    cy.get('img[alt="Add to favourites"]').should('be.visible').click();
-
-    // // Verify heart changed to filled
-    cy.wait(120000);
+    // Add to favourites
+    cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
+    
+    // Verify heart changed to filled
     cy.get('img[alt="Remove from favourites"]', { timeout: 30000 }).should('be.visible');
-
+    
     // Close bottom sheet
     cy.get('.exhibit-bottomsheet-backdrop').click('topLeft', { force: true });
 
@@ -98,16 +94,12 @@ describe('MusePath E2E User Flows', () => {
     cy.get('.exhibit-bottomsheet-description', { timeout: 10000 }).should('be.visible');
     cy.get('.exhibit-bottomsheet-features').should('be.visible');
 
-    // Intercept BEFORE clicking Navigate
-    cy.intercept('GET', '**/routes/**').as('getRoute');
-
     // Open audio guide
     cy.contains('button', 'Audio Guide Available', { timeout: 15000 }).should('be.visible').click();
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate', { timeout: 10000 }).should('be.visible').click();
 
-    // Wait for navigation to complete
-    cy.url({ timeout: 60000 }).should('include', '/navigation');
+    cy.url({ timeout: 30000 }).should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -163,25 +155,19 @@ describe('MusePath E2E User Flows', () => {
     // Verify on map
     cy.url().should('include', '/map');
     
-    // Intercept BEFORE clicking the button
-    cy.intercept('POST', '**/routes').as('generateRoute');
-    
     // Click Generate Personalized Route button
     cy.get('.generate-route-btn').should('be.visible').click();
     
     // Verify redirect to personalized route page
     cy.url().should('include', '/personalized-route');
     
-    // Wait for route generation API to complete
-    cy.wait('@generateRoute', { timeout: 180000 }).then(() => {
-        // Wait for route to generate
-        cy.contains('Your Personalized Route', { timeout: 10000 }).should('be.visible');
-        cy.get('img[alt="Route"]', { timeout: 10000 }).should('be.visible');
-        
-        // Verify route overview section
-        cy.contains('.label', 'Estimated Duration:', { timeout: 10000 }).should('be.visible');
-        cy.get('.exhibits-list', { timeout: 10000 }).should('be.visible');
-    });
+    // Wait for route to generate
+    cy.contains('Your Personalized Route', { timeout: 30000 }).should('be.visible');
+    cy.get('img[alt="Route"]', { timeout: 30000 }).should('be.visible');
+    
+    // Verify route overview section - wait for backend processing
+    cy.contains('.label', 'Estimated Duration:', { timeout: 90000 }).should('be.visible');
+    cy.get('.exhibits-list', { timeout: 15000 }).should('be.visible');
     
     // Verify route actions buttons
     cy.contains('button', 'Start Navigation').should('be.visible');

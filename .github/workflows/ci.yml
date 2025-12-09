@@ -9,6 +9,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+      CYPRESS_BASE_URL: http://localhost:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +40,7 @@ jobs:
         env:
           REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
           CYPRESS_BASE_URL: http://localhost:3000
+          CI: true
 
   cd:
     runs-on: ubuntu-latest
