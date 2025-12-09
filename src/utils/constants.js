@@ -1,13 +1,16 @@
 /**
  * Application Constants
- * 
+ *
  * Centralized configuration values used throughout the MusePath application.
- * Organized by functional domain for better maintainability.
- * 
+ * Organized by functional domain for better maintainability and discoverability.
+ *
  * Usage Guidelines:
  * - Import only needed constants: import { DEFAULT_ZOOM, EXHIBIT_STATUS } from './constants'
  * - Never modify constants at runtime - treat as immutable
  * - Add new constants to appropriate section with JSDoc comments
+ *
+ * @module utils/constants
+ * @description Provides immutable configuration and enumeration values for the MusePath frontend.
  */
 
 // ==========================================

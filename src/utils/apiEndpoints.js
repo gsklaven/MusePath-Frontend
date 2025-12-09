@@ -1,9 +1,9 @@
 /**
  * API Endpoints Configuration
- * 
+ *
  * Centralized definition of all backend API endpoints for testing.
- * Each endpoint includes metadata for automated testing and documentation.
- * 
+ * Organized into domain-specific groups for improved maintainability.
+ *
  * Endpoint Structure:
  * - id: Unique identifier for the endpoint
  * - category: Logical grouping (Health, Exhibits, Maps, Routes, Users, etc.)
@@ -12,10 +12,99 @@
  * - path: API path relative to base URL
  * - description: Brief explanation of endpoint purpose
  * - sampleData: Example request body for POST/PUT methods (null for GET/DELETE)
+ *
+ * @module utils/apiEndpoints
  */
 
+// ============================================================================
+// Endpoint Factory Helpers
+// ============================================================================
+
 /**
- * Health check endpoints
+ * Creates a GET endpoint definition.
+ * @param {string} id - Unique identifier
+ * @param {string} category - Logical grouping
+ * @param {string} name - Human-readable name
+ * @param {string} path - API path
+ * @param {string} description - Endpoint purpose
+ * @returns {Object} Endpoint definition
+ */
+const createGetEndpoint = (id, category, name, path, description) => ({
+  id,
+  category,
+  name,
+  method: 'GET',
+  path,
+  description,
+  sampleData: null,
+});
+
+/**
+ * Creates a POST endpoint definition.
+ * @param {string} id - Unique identifier
+ * @param {string} category - Logical grouping
+ * @param {string} name - Human-readable name
+ * @param {string} path - API path
+ * @param {string} description - Endpoint purpose
+ * @param {Object|null} sampleData - Example request body
+ * @returns {Object} Endpoint definition
+ */
+const createPostEndpoint = (id, category, name, path, description, sampleData) => ({
+  id,
+  category,
+  name,
+  method: 'POST',
+  path,
+  description,
+  sampleData,
+});
+
+/**
+ * Creates a PUT endpoint definition.
+ * @param {string} id - Unique identifier
+ * @param {string} category - Logical grouping
+ * @param {string} name - Human-readable name
+ * @param {string} path - API path
+ * @param {string} description - Endpoint purpose
+ * @param {Object|null} sampleData - Example request body
+ * @returns {Object} Endpoint definition
+ */
+const createPutEndpoint = (id, category, name, path, description, sampleData) => ({
+  id,
+  category,
+  name,
+  method: 'PUT',
+  path,
+  description,
+  sampleData,
+});
+
+/**
+ * Creates a DELETE endpoint definition.
+ * @param {string} id - Unique identifier
+ * @param {string} category - Logical grouping
+ * @param {string} name - Human-readable name
+ * @param {string} path - API path
+ * @param {string} description - Endpoint purpose
+ * @returns {Object} Endpoint definition
+ */
+const createDeleteEndpoint = (id, category, name, path, description) => ({
+  id,
+  category,
+  name,
+  method: 'DELETE',
+  path,
+  description,
+  sampleData: null,
+});
+
+// ============================================================================
+// Health Endpoints
+// ============================================================================
+
+/**
+ * Health check endpoints for monitoring API status.
+ * @type {Object[]}
  */
 export const HEALTH_ENDPOINTS = [
   {
@@ -29,8 +118,13 @@ export const HEALTH_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Exhibit Endpoints
+// ============================================================================
+
 /**
- * Exhibit-related endpoints
+ * Exhibit-related endpoints for search, details, audio, ratings, and downloads.
+ * @type {Object[]}
  */
 export const EXHIBIT_ENDPOINTS = [
   {
@@ -80,8 +174,14 @@ export const EXHIBIT_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Route Endpoints
+// ============================================================================
+
 /**
- * Route calculation and management endpoints
+ * Route calculation and management endpoints.
+ * Includes create, read, update, recalculate, and delete operations.
+ * @type {Object[]}
  */
 export const ROUTE_ENDPOINTS = [
   {
@@ -139,8 +239,13 @@ export const ROUTE_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// User Endpoints
+// ============================================================================
+
 /**
- * User preferences and favorites endpoints
+ * User preferences and favorites management endpoints.
+ * @type {Object[]}
  */
 export const USER_ENDPOINTS = [
   {
@@ -185,8 +290,13 @@ export const USER_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Map Endpoints
+// ============================================================================
+
 /**
- * Map management endpoints
+ * Map management endpoints including upload, retrieval, and download.
+ * @type {Object[]}
  */
 export const MAP_ENDPOINTS = [
   {
@@ -221,8 +331,13 @@ export const MAP_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Destination Endpoints
+// ============================================================================
+
 /**
- * Destination management endpoints
+ * Destination management endpoints for listing, uploading, and details.
+ * @type {Object[]}
  */
 export const DESTINATION_ENDPOINTS = [
   {
@@ -263,8 +378,13 @@ export const DESTINATION_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Coordinate Endpoints
+// ============================================================================
+
 /**
- * Coordinate tracking endpoints
+ * Coordinate tracking endpoints for user location management.
+ * @type {Object[]}
  */
 export const COORDINATE_ENDPOINTS = [
   {
@@ -290,8 +410,13 @@ export const COORDINATE_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// System Endpoints
+// ============================================================================
+
 /**
- * Notification and sync endpoints
+ * Notification and sync endpoints for background operations.
+ * @type {Object[]}
  */
 export const SYSTEM_ENDPOINTS = [
   {
@@ -326,8 +451,14 @@ export const SYSTEM_ENDPOINTS = [
   },
 ];
 
+// ============================================================================
+// Aggregated Endpoint Collection
+// ============================================================================
+
 /**
- * All endpoints combined for testing
+ * All endpoints combined for comprehensive API testing.
+ * Use domain-specific arrays (e.g., EXHIBIT_ENDPOINTS) for targeted tests.
+ * @type {Object[]}
  */
 export const ALL_ENDPOINTS = [
   ...HEALTH_ENDPOINTS,
@@ -339,3 +470,23 @@ export const ALL_ENDPOINTS = [
   ...COORDINATE_ENDPOINTS,
   ...SYSTEM_ENDPOINTS,
 ];
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Retrieves endpoints filtered by category.
+ * @param {string} category - Category name to filter by
+ * @returns {Object[]} Matching endpoints
+ */
+export const getEndpointsByCategory = (category) =>
+  ALL_ENDPOINTS.filter((ep) => ep.category === category);
+
+/**
+ * Retrieves endpoints filtered by HTTP method.
+ * @param {string} method - HTTP method (GET, POST, PUT, DELETE)
+ * @returns {Object[]} Matching endpoints
+ */
+export const getEndpointsByMethod = (method) =>
+  ALL_ENDPOINTS.filter((ep) => ep.method === method.toUpperCase());
