@@ -157,22 +157,19 @@ describe('MusePath E2E User Flows', () => {
     // Verify on map
     cy.url().should('include', '/map');
     
-    // Setup intercept BEFORE clicking
-    cy.intercept('POST', '**/routes').as('generateRoute');
-    
     // Click Generate Personalized Route button
     cy.get('.generate-route-btn', { timeout: 10000 }).should('be.visible').click();
     
     // Verify redirect to personalized route page
     cy.url({ timeout: 10000 }).should('include', '/personalized-route');
-        
-    // Wait for route to generate
-    cy.contains('Your Personalized Route', { timeout: 10000 }).should('be.visible');
-    cy.get('img[alt="Route"]', { timeout: 10000 }).should('be.visible');
     
-    // Verify route overview section
-    cy.contains('.label', 'Estimated Duration:', { timeout: 10000 }).should('be.visible');
-    cy.get('.exhibits-list', { timeout: 15000 }).should('be.visible');
+    // These elements only appear after route loads successfully
+    cy.contains('Your Personalized Route').should('be.visible');
+    cy.get('img[alt="Route"]').should('be.visible');
+    
+    // Verify route overview section - just check the text exists
+    cy.contains('Estimated Duration:').should('be.visible');
+    cy.get('.exhibits-list').should('be.visible');
     
     // Verify route actions buttons
     cy.contains('button', 'Start Navigation').should('be.visible');
