@@ -28,7 +28,7 @@ describe('MusePath E2E User Flows', () => {
     cy.get('.map-marker-monument', { timeout: 10000 }).should('have.length.greaterThan', 0);
 
     // Interaction on map - click monument
-    cy.get('.map-marker-monument').first().click({ force: true });
+    cy.get('img[alt="Statue B"]').click({ force: true });
     
     // Verify bottom sheet opened
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
