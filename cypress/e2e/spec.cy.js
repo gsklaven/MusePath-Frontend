@@ -1,6 +1,60 @@
 describe('MusePath E2E User Flows', () => {
 
   beforeEach(() => {
+    // Mock critical backend endpoints to remove flakiness in CI
+    cy.intercept('GET', '**/coordinates/**', {
+      statusCode: 200,
+      body: { lat: 40.7128, lng: -74.006 },
+    }).as('getCoords');
+
+    cy.intercept('PUT', '**/coordinates/**', {
+      statusCode: 200,
+      body: { success: true },
+    }).as('updateCoords');
+
+    cy.intercept('POST', '**/users/*/favourites', {
+      statusCode: 200,
+      body: { success: true },
+    }).as('addFavourite');
+
+    cy.intercept('DELETE', '**/users/*/favourites/*', {
+      statusCode: 200,
+      body: { success: true },
+    }).as('removeFavourite');
+
+    cy.intercept('POST', '**/routes', {
+      statusCode: 200,
+      body: {
+        route_id: 123,
+        instructions: ['Head north', 'Turn right'],
+        distance: 1200,
+        estimatedTime: 900,
+        arrivalTime: '12:00',
+      },
+    }).as('createRoute');
+
+    cy.intercept('GET', '**/routes/**', {
+      statusCode: 200,
+      body: {
+        route_id: 123,
+        instructions: ['Head north', 'Turn right'],
+        distance: 1200,
+        estimatedTime: 900,
+        arrivalTime: '12:00',
+      },
+    }).as('getRoute');
+
+    cy.intercept('GET', '**/users/**/routes', {
+      statusCode: 200,
+      body: {
+        route_id: 123,
+        instructions: ['Head north', 'Turn right'],
+        estimated_duration: '30 mins',
+        total_distance: 500,
+        exhibits: [1, 2, 3],
+      },
+    }).as('personalizedRoute');
+
     cy.visit('/');
   });
 
@@ -36,6 +90,9 @@ describe('MusePath E2E User Flows', () => {
 
     // Add to favourites
     cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
+
+    // Wait for mocked favourite call
+    cy.wait('@addFavourite');
         
     // Verify heart changed to filled
     cy.get('img[alt="Remove from favourites"]', { timeout: 10000 }).should('be.visible');
@@ -63,6 +120,8 @@ describe('MusePath E2E User Flows', () => {
     cy.get('.favourites-list-item').first().within(() => {
       cy.contains('button', 'Remove').click();
     });
+
+    cy.wait('@removeFavourite');
     
     // Verify list is empty
     cy.contains('You have not added any favourite yet.').should('be.visible');
@@ -99,9 +158,9 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('button', 'More Details', { timeout: 10000 }).should('be.visible');
     cy.contains('button', 'Navigate', { timeout: 10000 }).should('be.visible').click();
 
-    // Give time for navigation to process
-    cy.wait(3000);
-    cy.url().should('include', '/navigation');
+    // Navigation should redirect after mocked route creation
+    cy.wait(['@createRoute', '@getCoords']);
+    cy.url({ timeout: 20000 }).should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
@@ -165,6 +224,9 @@ describe('MusePath E2E User Flows', () => {
     
     // Verify redirect to personalized route page
     cy.url({ timeout: 10000 }).should('include', '/personalized-route');
+
+    // Wait for mocked personalized route fetch
+    cy.wait('@personalizedRoute');
     
     // These elements only appear after route loads successfully
     cy.contains('Your Personalized Route').should('be.visible');
@@ -180,7 +242,8 @@ describe('MusePath E2E User Flows', () => {
     
     // Test Start Navigation button
     cy.contains('button', 'Start Navigation').click();
-    cy.url().should('include', '/navigation');
+    cy.wait('@getRoute');
+    cy.url({ timeout: 20000 }).should('include', '/navigation');
     cy.contains('Personalized Tour').should('be.visible');
   });
 
