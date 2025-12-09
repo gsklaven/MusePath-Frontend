@@ -1,6 +1,7 @@
 describe('MusePath E2E User Flows', () => {
 
   beforeEach(() => {
+    cy.clearLocalStorage();
     cy.visit('/');
   });
 

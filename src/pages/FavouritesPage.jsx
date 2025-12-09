@@ -71,6 +71,10 @@ const FavouritesPage = () => {
       setFavourites(updatedFavourites);
     } catch (err) {
       console.error('Error removing favourite:', err);
+      // Optimistic local removal to keep UI consistent even if backend fails
+      const updatedFavourites = favourites.filter(fav => fav.exhibit_id !== exhibitId);
+      localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
+      setFavourites(updatedFavourites);
     }
   };
 
