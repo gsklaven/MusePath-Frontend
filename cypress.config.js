@@ -14,9 +14,5 @@ module.exports = defineConfig({
     requestTimeout: process.env.CI ? 120000 : 5000,
     responseTimeout: process.env.CI ? 120000 : 30000,
     
-  },
-  retries: {
-    runMode: 2,
-    openMode: 0
-  },
+  }
 });

@@ -38,7 +38,7 @@ describe('MusePath E2E User Flows', () => {
     cy.get('img[alt="Add to favourites"]', { timeout: 10000 }).should('be.visible').click();
         
     // Verify heart changed to filled
-    //cy.get('img[alt="Remove from favourites"]', { timeout: 10000 }).should('be.visible');
+    cy.get('img[alt="Remove from favourites"]', { timeout: 10000 }).should('be.visible');
     
     // Close bottom sheet
     cy.get('.exhibit-bottomsheet-backdrop').click('topLeft', { force: true });
@@ -101,7 +101,7 @@ describe('MusePath E2E User Flows', () => {
 
     // Give time for navigation to process
     cy.wait(3000);
-    //cy.url().should('include', '/navigation');
+    cy.url().should('include', '/navigation');
     cy.contains('h2', 'Map Navigation').should('be.visible');
 
     cy.get('.muse-location-box').should('be.visible');
