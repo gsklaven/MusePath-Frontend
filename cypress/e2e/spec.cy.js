@@ -3,27 +3,14 @@ describe('MusePath E2E User Flows', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.visit('/');
+    // Verify welcome page loads
+    cy.contains('Welcome!').should('be.visible');
   });
 
-  it('Happy Path 1: Login, Add to Favourites, View in Profile, Remove', () => {
+  it('Happy Path 1: Register, Add to Favourites, View in Profile, Remove', () => {
     
-    // Verify welcome page
-    cy.contains('Welcome!').should('be.visible');
-    
-    // Login flow
-    cy.get('.btn-primary').contains('Login').click();
-    
-    // Verify login page
-    cy.url().should('include', '/login');
-    cy.contains('Login to your MusePath account').should('be.visible');
-    
-    // Fill login form
-    cy.get('input[type="email"]').type('user@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.get('button[type="submit"]').contains('Login').click(); 
-    
-    // Verify login was successful
-    cy.url().should('include', '/map');
+    // Register new user
+    cy.registerNewUser('hp1');
     
     // Wait for markers to load
     cy.get('.map-marker-monument', { timeout: 10000 }).should('have.length.greaterThan', 0);
@@ -69,21 +56,10 @@ describe('MusePath E2E User Flows', () => {
     cy.contains('You have not added any favourite yet.').should('be.visible');
   });
 
-  it('Happy Path 2: Login, Navigate to Exhibit, Play Audio Guide, Navigate to Exhibit', () => {
+  it('Happy Path 2: Register, Navigate to Exhibit, Play Audio Guide, Navigate to Exhibit', () => {
 
-    // Verify welcome page
-    cy.contains('Welcome!').should('be.visible');
-    
-    // Login flow
-    cy.get('.btn-primary').contains('Login').click();
-    
-    // Fill login form
-    cy.get('input[type="email"]').type('user@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.get('button[type="submit"]').contains('Login').click(); 
-    
-    // Verify login was successful
-    cy.url().should('include', '/map');
+    // Register new user
+    cy.registerNewUser('hp2');
     
     // Wait for markers to load
     cy.get('.map-marker-monument', { timeout: 10000 }).should('have.length.greaterThan', 0);
@@ -114,16 +90,10 @@ describe('MusePath E2E User Flows', () => {
 
   it('Unhappy Path 3: Register, Answer Questionnaire, Cant Save Preferences', () => {
     
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
-    cy.get('.btn-primary').contains('Register').should('be.visible').click();
+    // Register new user but DO NOT skip questionnaire
+    cy.registerNewUser('up3', false);
     
-    cy.get('input[type="email"]').type('newuser@example.com');
-    cy.get('input[type="password"]').first().type('password123');
-    cy.get('input[type="password"]').last().type('password123');
-    cy.get('button[type="submit"]').contains('Register').click();
-    
-    cy.get('.intro-btn-primary').contains('Yes, i would love to!').should('be.visible').click();
-    
+    // Now in questionnaire
     cy.get('.questionnaire-radio-option').first().click();
     cy.get('.questionnaire-next-btn').contains('Next').click();
     
@@ -143,12 +113,8 @@ describe('MusePath E2E User Flows', () => {
 
   it('Happy Path 4: Generate Personalized Route', () => {
     
-    // Login
-    cy.contains('Welcome!').should('be.visible');
-    cy.get('.btn-primary').contains('Login').click();
-    cy.get('input[type="email"]').type('user@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.get('button[type="submit"]').contains('Login').click();
+    // Register new user
+    cy.registerNewUser('hp4');
     
     // Verify on map
     cy.url().should('include', '/map');
@@ -179,11 +145,8 @@ describe('MusePath E2E User Flows', () => {
 
   it('Happy Path 5: Check Settings Options', () => {
     
-    cy.contains('Welcome!').should('be.visible');
-    cy.get('.btn-primary').contains('Login').click();
-    cy.get('input[type="email"]').type('user@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.get('button[type="submit"]').contains('Login').click();
+    // Register new user
+    cy.registerNewUser('hp5');
     
     cy.get('img[alt="Settings"]').should('be.visible').click();
     cy.url().should('include', '/settings');
@@ -192,22 +155,23 @@ describe('MusePath E2E User Flows', () => {
     cy.url().should('include', '/questionnaire');
   });
 
-  it('Unhappy Path 6: Logout and Failed Login', () => {
+  it('Unhappy Path 6: Register, Logout and Failed Login', () => {
     
-    cy.contains('Welcome!').should('be.visible');
-    cy.get('.btn-primary').contains('Login').click();
-    cy.get('input[type="email"]').type('user@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.get('button[type="submit"]').contains('Login').click();
+    // Register new user
+    cy.registerNewUser('up6');
     
     cy.get('img[alt="Settings"]').should('be.visible').click();
     cy.get('.settings-list-item').contains('Logout').click();
     
     cy.url().should('include', '/login');
-    cy.get('.btn-primary').contains('Login').click();
-    cy.get('input[type="email"]').type('user@example');
-    cy.get('input[type="password"]').type('password123');
+    
+    // Try to login with invalid email format
+    cy.get('input[placeholder="Enter your username"').type('invalidusername');
+    cy.get('input[placeholder="Enter your password"').type('Password123!');
     cy.get('button[type="submit"]').contains('Login').click();
+    
+    // Should show error or stay on login page
+    cy.url().should('include', '/login');
   });
     
 });
