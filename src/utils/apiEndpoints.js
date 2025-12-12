@@ -26,6 +26,50 @@ export const HEALTH_ENDPOINTS = [
     path: '/health',
     description: 'Έλεγχος λειτουργίας API',
     sampleData: null,
+    requiresAuth: null,
+  },
+];
+
+/**
+ * Authentication endpoints
+ */
+export const AUTH_ENDPOINTS = [
+  {
+    id: 'auth-register',
+    category: 'Authentication',
+    name: 'Register User',
+    method: 'POST',
+    path: '/auth/register',
+    description: 'Δημιουργία νέου λογαριασμού',
+    sampleData: () => ({
+      username: 'test_user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      email: 'test_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5) + '@example.com',
+      password: 'Test123!@#',
+    }),
+    requiresAuth: null,
+  },
+  {
+    id: 'auth-login',
+    category: 'Authentication',
+    name: 'Login',
+    method: 'POST',
+    path: '/auth/login',
+    description: 'Σύνδεση χρήστη',
+    sampleData: {
+      username: 'john_smith',
+      password: 'Password123!',
+    },
+    requiresAuth: null,
+  },
+  {
+    id: 'auth-logout',
+    category: 'Authentication',
+    name: 'Logout',
+    method: 'POST',
+    path: '/auth/logout',
+    description: 'Αποσύνδεση χρήστη',
+    sampleData: null,
+    requiresAuth: 'user',
   },
 ];
 
@@ -41,6 +85,7 @@ export const EXHIBIT_ENDPOINTS = [
     path: '/exhibits/search?exhibit_term=starry&mode=online',
     description: 'Αναζήτηση εκθεμάτων',
     sampleData: null,
+    requiresAuth: null,
   },
   {
     id: 'exhibits-get',
@@ -50,6 +95,7 @@ export const EXHIBIT_ENDPOINTS = [
     path: '/exhibits/1',
     description: 'Λεπτομέρειες συγκεκριμένου εκθέματος',
     sampleData: null,
+    requiresAuth: null,
   },
   {
     id: 'exhibits-audio',
@@ -59,6 +105,7 @@ export const EXHIBIT_ENDPOINTS = [
     path: '/exhibits/1/audio',
     description: 'Audio guide εκθέματος',
     sampleData: null,
+    requiresAuth: null,
   },
   {
     id: 'exhibits-rate',
@@ -68,6 +115,7 @@ export const EXHIBIT_ENDPOINTS = [
     path: '/exhibits/1/ratings',
     description: 'Αξιολόγηση εκθέματος',
     sampleData: { rating: 5 },
+    requiresAuth: 'user',
   },
   {
     id: 'exhibits-download',
@@ -77,6 +125,40 @@ export const EXHIBIT_ENDPOINTS = [
     path: '/downloads/exhibits/1',
     description: 'Download για offline χρήση',
     sampleData: null,
+    requiresAuth: null,
+  },
+  {
+    id: 'exhibits-create',
+    category: 'Exhibits',
+    name: 'Create Exhibit (Admin)',
+    method: 'POST',
+    path: '/exhibits',
+    description: 'Δημιουργία νέου εκθέματος (admin only)',
+    sampleData: {
+      title: 'Test Exhibit',
+      name: 'Test Museum Piece',
+      artist: 'Test Artist',
+      year: 2024,
+      category: ['paintings', 'modern art'],
+      description: 'A test exhibit for API testing',
+      historicalInfo: 'Created for testing purposes',
+      location: 'Test Gallery',
+      features: ['wheelchair_accessible', 'audio_guide'],
+      status: 'open',
+      crowdLevel: 'low',
+    },
+    requiresAuth: 'admin',
+  },
+  {
+    id: 'exhibits-delete',
+    category: 'Exhibits',
+    name: 'Delete Exhibit (Admin)',
+    method: 'DELETE',
+    path: '/exhibits/999',
+    description: 'Διαγραφή εκθέματος (admin only)',
+    sampleData: null,
+    requiresAuth: 'admin',
+    createFirst: 'exhibits-create',
   },
 ];
 
@@ -97,6 +179,7 @@ export const ROUTE_ENDPOINTS = [
       startLat: 40.7610,
       startLng: -73.9780,
     },
+    requiresAuth: 'user',
   },
   {
     id: 'routes-get',
@@ -106,6 +189,8 @@ export const ROUTE_ENDPOINTS = [
     path: '/routes/1',
     description: 'Λεπτομέρειες διαδρομής',
     sampleData: null,
+    requiresAuth: 'user',
+    createFirst: 'routes-create',
   },
   {
     id: 'routes-update',
@@ -118,6 +203,8 @@ export const ROUTE_ENDPOINTS = [
       addStops: [3, 4],
       removeStops: [],
     },
+    requiresAuth: 'user',
+    createFirst: 'routes-create',
   },
   {
     id: 'routes-recalculate',
@@ -127,6 +214,8 @@ export const ROUTE_ENDPOINTS = [
     path: '/routes/1',
     description: 'Επαναυπολογισμός διαδρομής',
     sampleData: null,
+    requiresAuth: 'user',
+    createFirst: 'routes-create',
   },
   {
     id: 'routes-delete',
@@ -136,6 +225,8 @@ export const ROUTE_ENDPOINTS = [
     path: '/routes/1',
     description: 'Διαγραφή διαδρομής',
     sampleData: null,
+    requiresAuth: 'user',
+    createFirst: 'routes-create',
   },
 ];
 
@@ -153,6 +244,7 @@ export const USER_ENDPOINTS = [
     sampleData: {
       interests: ['modern art', 'sculpture', 'impressionism'],
     },
+    requiresAuth: 'user',
   },
   {
     id: 'users-favourites-add',
@@ -164,6 +256,7 @@ export const USER_ENDPOINTS = [
     sampleData: {
       exhibit_id: 2,
     },
+    requiresAuth: 'user',
   },
   {
     id: 'users-favourites-remove',
@@ -173,6 +266,7 @@ export const USER_ENDPOINTS = [
     path: '/users/1/favourites/2',
     description: 'Αφαίρεση από αγαπημένα',
     sampleData: null,
+    requiresAuth: 'user',
   },
   {
     id: 'users-personalized-route',
@@ -182,6 +276,7 @@ export const USER_ENDPOINTS = [
     path: '/users/1/routes',
     description: 'Εξατομικευμένη διαδρομή',
     sampleData: null,
+    requiresAuth: 'user',
   },
 ];
 
@@ -200,6 +295,7 @@ export const MAP_ENDPOINTS = [
       mapData: 'base64_encoded_map_data',
       format: 'image/png',
     },
+    requiresAuth: 'admin',
   },
   {
     id: 'maps-get',
@@ -209,6 +305,7 @@ export const MAP_ENDPOINTS = [
     path: '/maps/1',
     description: 'Λήψη χάρτη',
     sampleData: null,
+    requiresAuth: null,
   },
   {
     id: 'maps-download',
@@ -218,6 +315,18 @@ export const MAP_ENDPOINTS = [
     path: '/downloads/maps/1',
     description: 'Download χάρτη',
     sampleData: null,
+    requiresAuth: null,
+  },
+  {
+    id: 'maps-delete',
+    category: 'Maps',
+    name: 'Delete Map (Admin)',
+    method: 'DELETE',
+    path: '/maps/999',
+    description: 'Διαγραφή χάρτη (admin only)',
+    sampleData: null,
+    requiresAuth: 'admin',
+    createFirst: 'maps-upload',
   },
 ];
 
@@ -233,6 +342,7 @@ export const DESTINATION_ENDPOINTS = [
     path: '/destinations',
     description: 'Λίστα όλων των προορισμών',
     sampleData: null,
+    requiresAuth: null,
   },
   {
     id: 'destinations-upload',
@@ -251,6 +361,7 @@ export const DESTINATION_ENDPOINTS = [
         },
       ],
     },
+    requiresAuth: 'admin',
   },
   {
     id: 'destinations-get',
@@ -260,6 +371,18 @@ export const DESTINATION_ENDPOINTS = [
     path: '/destinations/1',
     description: 'Πληροφορίες προορισμού',
     sampleData: null,
+    requiresAuth: null,
+  },
+  {
+    id: 'destinations-delete',
+    category: 'Destinations',
+    name: 'Delete Destination (Admin)',
+    method: 'DELETE',
+    path: '/destinations/999',
+    description: 'Διαγραφή προορισμού (admin only)',
+    sampleData: null,
+    requiresAuth: 'admin',
+    createFirst: 'destinations-upload',
   },
 ];
 
@@ -275,6 +398,7 @@ export const COORDINATE_ENDPOINTS = [
     path: '/coordinates/1',
     description: 'Τοποθεσία χρήστη',
     sampleData: null,
+    requiresAuth: 'user',
   },
   {
     id: 'coordinates-update',
@@ -287,6 +411,7 @@ export const COORDINATE_ENDPOINTS = [
       lat: 40.7612,
       lng: -73.9778,
     },
+    requiresAuth: 'user',
   },
 ];
 
@@ -307,6 +432,7 @@ export const SYSTEM_ENDPOINTS = [
       currentLat: 40.7610,
       currentLng: -73.9780,
     },
+    requiresAuth: 'user',
   },
   {
     id: 'sync-data',
@@ -323,6 +449,7 @@ export const SYSTEM_ENDPOINTS = [
         timestamp: new Date().toISOString(),
       },
     ],
+    requiresAuth: 'user',
   },
 ];
 
@@ -331,6 +458,7 @@ export const SYSTEM_ENDPOINTS = [
  */
 export const ALL_ENDPOINTS = [
   ...HEALTH_ENDPOINTS,
+  ...AUTH_ENDPOINTS,
   ...EXHIBIT_ENDPOINTS,
   ...ROUTE_ENDPOINTS,
   ...USER_ENDPOINTS,
