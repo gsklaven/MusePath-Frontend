@@ -97,7 +97,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { register, loading } = useAuth();
+  const { register, login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -133,6 +133,8 @@ const RegisterPage = () => {
 
     try {
       await register(username, email, password);
+      // Automatically login after successful registration
+      await login(username, password);
       navigate('/questionnaire-intro');
     } catch (error) {
       setErrors({ general: error.message || 'Registration failed. Please try again.' });
