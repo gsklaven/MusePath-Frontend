@@ -26,7 +26,12 @@
 import React, { useState } from 'react';
 import apiClient from '../api/client';
 import { ALL_ENDPOINTS } from '../utils/apiEndpoints';
+import * as authApi from '../api/auth';
 import './ApiTestPage.css';
+
+// Test user credentials (matching mock data)
+const ADMIN_USER = { username: 'john_smith', password: 'Password123!' };
+const NORMAL_USER = { username: 'john_smith', password: 'Password123!' };
 
 /**
  * Safely serializes objects to JSON, handling circular references
@@ -90,11 +95,22 @@ const validateEndpoint = (endpoint) => {
 
 /**
  * Sanitizes sample data for API request
- * @param {*} sampleData - Data to sanitize
+ * @param {*} sampleData - Data to sanitize (can be object or function)
  * @returns {object} Sanitized data object
  */
 const sanitizeSampleData = (sampleData) => {
   if (!sampleData) return {};
+  
+  // If sampleData is a function, call it to get fresh data
+  if (typeof sampleData === 'function') {
+    try {
+      const result = sampleData();
+      return safeSerialize(result);
+    } catch (error) {
+      console.warn('Error calling sampleData function:', error);
+      return {};
+    }
+  }
   
   if (typeof sampleData === 'object' && sampleData !== null) {
     return safeSerialize(sampleData);
@@ -176,8 +192,39 @@ const ApiTestPage = () => {
   const [results, setResults] = useState({});
   const [loading, setLoading] = useState({});
   const [connectionStatus, setConnectionStatus] = useState(null);
+  const [authStatus, setAuthStatus] = useState({ loggedIn: false, as: null });
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/v1';
+
+  /**
+   * Login helper
+   * @param {object} user - User credentials {username, password}
+   * @param {string} role - 'user' or 'admin'
+   */
+  const login = async (user, role) => {
+    try {
+      await authApi.login(user.username, user.password);
+      setAuthStatus({ loggedIn: true, as: role });
+      console.log(`🔐 Logged in as ${role}: ${user.username}`);
+    } catch (error) {
+      console.error(`❌ Login failed for ${role}:`, error.message);
+      throw error;
+    }
+  };
+
+  /**
+   * Logout helper
+   */
+  const logout = async () => {
+    try {
+      await authApi.logout();
+      setAuthStatus({ loggedIn: false, as: null });
+      console.log('🔓 Logged out');
+    } catch (error) {
+      console.warn('Logout error (continuing anyway):', error.message);
+      setAuthStatus({ loggedIn: false, as: null });
+    }
+  };
 
   /**
    * Tests a single API endpoint
@@ -197,23 +244,82 @@ const ApiTestPage = () => {
       return;
     }
 
-    console.log('🧪 Testing: %s %s', String(endpoint.method), String(endpoint.path));
+    // Handle create-first pattern for delete endpoints
+    let dynamicPath = endpoint.path;
+    if (endpoint.createFirst) {
+      const createEndpoint = ALL_ENDPOINTS.find(e => e.id === endpoint.createFirst);
+      if (createEndpoint) {
+        console.log('📝 Creating resource first for deletion test...');
+        try {
+          // Ensure proper auth for creation
+          if (createEndpoint.requiresAuth === 'admin' && authStatus.as !== 'admin') {
+            await login(ADMIN_USER, 'admin');
+          }
+          
+          const sanitizedData = sanitizeSampleData(createEndpoint.sampleData);
+          const createResponse = await executeRequest(
+            createEndpoint.method,
+            createEndpoint.path,
+            sanitizedData
+          );
+          
+          // Extract the ID from the response
+          let createdId = null;
+          if (createResponse.data?.data?.exhibitId) {
+            createdId = createResponse.data.data.exhibitId;
+          } else if (createResponse.data?.data?.mapId || createResponse.data?.data?.map_id) {
+            createdId = createResponse.data.data.mapId || createResponse.data.data.map_id;
+          } else if (createResponse.data?.data?.destinationIds?.[0]) {
+            createdId = createResponse.data.data.destinationIds[0];
+          } else if (createResponse.data?.data?.routeId || createResponse.data?.data?.route_id) {
+            createdId = createResponse.data.data.routeId || createResponse.data.data.route_id;
+          }
+          
+          if (createdId) {
+            // Replace the hardcoded ID in the path
+            dynamicPath = endpoint.path.replace(/\/\d+$/, `/${createdId}`);
+            console.log(`✅ Created resource with ID ${createdId}, will delete: ${dynamicPath}`);
+          } else {
+            console.warn('⚠️ Could not extract ID from create response, using original path');
+          }
+        } catch (error) {
+          console.error('❌ Failed to create resource for deletion test:', error.message);
+          // Continue with original path anyway
+        }
+      }
+    }
+
+    console.log('🧪 Testing: %s %s', String(endpoint.method), String(dynamicPath));
     
     try {
+      // Handle authentication if required
+      if (endpoint.requiresAuth === 'admin') {
+        if (authStatus.as !== 'admin') {
+          await login(ADMIN_USER, 'admin');
+        }
+      } else if (endpoint.requiresAuth === 'user') {
+        if (!authStatus.loggedIn || authStatus.as === null) {
+          await login(NORMAL_USER, 'user');
+        }
+      } else if (endpoint.requiresAuth === null && authStatus.loggedIn) {
+        // Public endpoint, ensure logged out
+        await logout();
+      }
+
       // Sanitize request data
       const sanitizedData = sanitizeSampleData(endpoint.sampleData);
       
-      // Execute request
+      // Execute request (use dynamicPath if it was modified)
       const response = await executeRequest(
         endpoint.method, 
-        endpoint.path, 
+        dynamicPath, 
         sanitizedData
       );
       
       const duration = Date.now() - startTime;
       
       // Log success
-      logTestResult(true, endpoint.method, endpoint.path, {
+      logTestResult(true, endpoint.method, dynamicPath, {
         status: response.status,
         duration: `${duration}ms`,
         data: safeSerialize(response.data),
@@ -228,7 +334,7 @@ const ApiTestPage = () => {
       const duration = Date.now() - startTime;
       
       // Log error
-      logTestResult(false, endpoint.method, endpoint.path, {
+      logTestResult(false, endpoint.method, dynamicPath, {
         status: error.response?.status || 'ERROR',
         duration: `${duration}ms`,
         error: String(error.message),
@@ -321,6 +427,18 @@ const ApiTestPage = () => {
             )}
           </div>
 
+          <div className="auth-status">
+            {authStatus.loggedIn ? (
+              <div className="status-badge connected">
+                🔐 Logged in as {authStatus.as}
+              </div>
+            ) : (
+              <div className="status-badge disconnected">
+                🔓 Not logged in
+              </div>
+            )}
+          </div>
+
           <button onClick={testAllEndpoints} className="btn btn-primary">
             ▶️ Test All Endpoints
           </button>
@@ -368,6 +486,11 @@ const ApiTestPage = () => {
                         {endpoint.method}
                       </span>
                       <h3>{endpoint.name}</h3>
+                      {endpoint.requiresAuth && (
+                        <span className="auth-badge">
+                          {endpoint.requiresAuth === 'admin' ? '🔒 Admin' : '🔐 User'}
+                        </span>
+                      )}
                     </div>
                     <button
                       onClick={() => testEndpoint(endpoint)}
@@ -386,7 +509,13 @@ const ApiTestPage = () => {
                   {endpoint.sampleData && (
                     <details className="sample-data">
                       <summary>📝 Sample Request Body</summary>
-                      <pre>{JSON.stringify(endpoint.sampleData, null, 2)}</pre>
+                      <pre>{JSON.stringify(
+                        typeof endpoint.sampleData === 'function' 
+                          ? endpoint.sampleData() 
+                          : endpoint.sampleData, 
+                        null, 
+                        2
+                      )}</pre>
                     </details>
                   )}
 
