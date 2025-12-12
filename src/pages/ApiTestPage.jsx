@@ -271,8 +271,8 @@ const ApiTestPage = () => {
             createdId = createResponse.data.data.mapId || createResponse.data.data.map_id;
           } else if (createResponse.data?.data?.destinationIds?.[0]) {
             createdId = createResponse.data.data.destinationIds[0];
-          } else if (createResponse.data?.data?.routeId) {
-            createdId = createResponse.data.data.routeId;
+          } else if (createResponse.data?.data?.routeId || createResponse.data?.data?.route_id) {
+            createdId = createResponse.data.data.routeId || createResponse.data.data.route_id;
           }
           
           if (createdId) {
