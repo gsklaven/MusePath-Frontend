@@ -258,7 +258,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     if (!exhibit) return '';
     let parts = [];
     if (exhibit.category && exhibit.category.length > 0) parts.push(exhibit.category.join(', '));
-    if (exhibit.historicalInfo) parts.push(exhibit.historicalInfo);
+    // Removed historicalInfo from subtitle - it's now in the pages instead
     return parts.join(' | ');
   }, [exhibit]);
 
@@ -277,6 +277,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     if (!exhibit) return [];
     let arr = [];
     if (exhibit.description) arr = arr.concat(splitTextIntoPages(exhibit.description));
+    if (exhibit.historicalInfo) arr = arr.concat(splitTextIntoPages(exhibit.historicalInfo));
     if (exhibit.extraDescription) arr = arr.concat(splitTextIntoPages(exhibit.extraDescription));
     return arr;
   }, [exhibit]);
@@ -444,21 +445,32 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
                 padding: '12px 32px',
                 fontWeight: 700,
                 fontSize: '1.08rem',
-                cursor: 'pointer',
+                cursor: pages.length > 1 ? 'pointer' : 'not-allowed',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: 0.2,
                 minWidth: 120,
                 pointerEvents: 'auto',
-                opacity: 1,
+                opacity: pages.length > 1 ? 1 : 0.5,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 10,
               }}
-              // TODO: Add onClick handler for More Details
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('More Details clicked - Current page:', page, 'Total pages:', pages.length);
+                if (pages.length > 1) {
+                  const nextPage = (page + 1) % pages.length;
+                  console.log('Changing to page:', nextPage);
+                  setPage(nextPage);
+                } else {
+                  console.log('Only 1 page available, button disabled');
+                }
+              }}
             >
-              More Details
+              More Details {pages.length > 1 ? `(${page + 1}/${pages.length})` : ''}
             </button>
           </div>
         </div>
@@ -516,7 +528,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
           </div>
         )}
         {/* Description - moved lower */}
-        <div className="exhibit-bottomsheet-description" style={{marginTop: 32, textAlign: 'justify', fontSize: '1.05rem', color: '#222'}}>{pages[page]}</div>
+        <div className="exhibit-bottomsheet-description" style={{marginTop: 32, marginBottom: 80, textAlign: 'justify', fontSize: '1.05rem', color: '#222'}}>{pages[page]}</div>
         {pages.length > 1 && (
           <div className="exhibit-bottomsheet-indicator" style={{marginTop: 12, textAlign: 'center'}}>
             {pages.map((_, idx) => (

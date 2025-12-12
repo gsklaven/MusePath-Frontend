@@ -5,24 +5,30 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { validateEmail, validatePassword } from '../utils/validators';
+import { validateUsername, validatePassword } from '../utils/validators';
 import Button from '../components/Button';
 import FormInput from '../components/FormInput';
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
-    if (!validateEmail(email)) newErrors.email = 'Please enter a valid email';
-    if (!validatePassword(password)) newErrors.password = 'Password must be at least 6 characters';
+    if (!validateUsername(username)) {
+      newErrors.username = 'Username must be 3-30 characters and contain only letters, numbers, underscores, and hyphens';
+    }
+    
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.message;
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -30,10 +36,10 @@ const LoginPage = () => {
     }
 
     try {
-      login(email, password);
+      await login(username, password);
       navigate('/map');
-    } catch {
-      setErrors({ general: 'Login failed. Please try again.' });
+    } catch (error) {
+      setErrors({ general: error.message || 'Login failed. Please try again.' });
     }
   };
 
@@ -55,12 +61,12 @@ const LoginPage = () => {
           {errors.general && <div className="error-message">{errors.general}</div>}
 
           <FormInput
-            label="Email"
-            type="email"
-            placeholder="Enter your email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
+            label="Username"
+            type="text"
+            placeholder="Enter your username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            error={errors.username}
           />
 
           <FormInput
@@ -72,8 +78,8 @@ const LoginPage = () => {
             error={errors.password}
           />
 
-          <Button type="submit" variant="primary" className="auth-button">
-            Login
+          <Button type="submit" variant="primary" className="auth-button" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
 

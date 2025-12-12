@@ -44,7 +44,7 @@ import { useAuth } from '../context/AuthContext';
 import { calculateRoute } from '../api/routes';
 import { searchExhibits } from '../api/exhibits';
 import { getDestinations, getDestinationById } from '../api/maps';
-import Header from '../components/Header';
+import Header from '../components/Header/Header';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import SearchBar from '../components/SearchBar';

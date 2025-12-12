@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { useAuth } from '../../context/AuthContext';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import './Header.css';
 
 /**
@@ -13,9 +13,15 @@ const Header = () => {
   const navigate = useNavigate();
   const isOnline = useOnlineStatus();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still navigate to login even if logout fails
+      navigate('/login');
+    }
   };
 
   return (

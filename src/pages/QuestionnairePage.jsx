@@ -142,13 +142,19 @@ const QuestionnairePage = () => {
   const handleSubmit = async () => {
     try {
       const allInterests = [
-        ...preferences.historicalPeriods,
+        preferences.historicalPeriod,
         ...preferences.artistsCivilizations,
         ...preferences.interests,
-      ];
+      ].filter(Boolean); // Remove empty/undefined values
       
-      await updateUserPreferences(user.id, allInterests);
+      const userId = user.userId || user.id;
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      
+      await updateUserPreferences(userId, allInterests);
       updateUser({ 
+        ...user,
         hasCompletedSetup: true,
         preferences: allInterests 
       });

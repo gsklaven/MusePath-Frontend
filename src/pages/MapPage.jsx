@@ -143,13 +143,16 @@ const MapPage = () => {
     setShowSearchResults(false);
     setSearchTerm('');
     
+    // Backend returns exhibitId (camelCase), not exhibit_id
+    const exhibitId = result.exhibitId || result.exhibit_id;
+    
     // Find matching exhibit in mockExhibits or fetch from API
-    const mockExhibit = mockExhibits.find(e => e.exhibitId === result.exhibit_id);
+    const mockExhibit = mockExhibits.find(e => e.exhibitId === exhibitId);
     if (mockExhibit) {
       await handleMarkerClick(mockExhibit);
     } else {
       try {
-        const data = await getExhibitById(result.exhibit_id, 'online');
+        const data = await getExhibitById(exhibitId, 'online');
         const exhibitData = data && data.data ? data.data : data;
         setSelectedExhibit(exhibitData);
       } catch (err) {
@@ -348,7 +351,7 @@ const MapPage = () => {
             {searchResults.length > 0 ? (
               searchResults.map((result) => (
                 <div
-                  key={result.exhibit_id}
+                  key={result.exhibitId || result.exhibit_id}
                   onClick={() => handleSearchResultClick(result)}
                   style={{
                     padding: '12px 16px',

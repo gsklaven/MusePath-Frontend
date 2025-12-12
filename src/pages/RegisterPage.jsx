@@ -86,32 +86,39 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { validateEmail, validatePassword } from '../utils/validators';
+import { validateEmail, validateUsername, validatePassword } from '../utils/validators';
 import Button from '../components/Button';
 import FormInput from '../components/FormInput';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { register } = useAuth();
+  const { register, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
+
+    // Validate username
+    if (!validateUsername(username)) {
+      newErrors.username = 'Username must be 3-30 characters and contain only letters, numbers, underscores, and hyphens';
+    }
 
     // Validate email format
     if (!validateEmail(email)) {
       newErrors.email = 'Please enter a valid email';
     }
 
-    // Validate password length
-    if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 6 characters';
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.message;
     }
 
     // Check password match
@@ -125,10 +132,10 @@ const RegisterPage = () => {
     }
 
     try {
-      register(email, password);
+      await register(username, email, password);
       navigate('/questionnaire-intro');
-    } catch {
-      setErrors({ general: 'Registration failed. Please try again.' });
+    } catch (error) {
+      setErrors({ general: error.message || 'Registration failed. Please try again.' });
     }
   };
 
@@ -141,6 +148,15 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && <div className="error-message">{errors.general}</div>}
+
+          <FormInput
+            label="Username"
+            type="text"
+            placeholder="Choose a username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            error={errors.username}
+          />
 
           <FormInput
             label="Email"
@@ -169,8 +185,8 @@ const RegisterPage = () => {
             error={errors.confirmPassword}
           />
 
-          <Button type="submit" variant="primary" className="auth-button">
-            Register
+          <Button type="submit" variant="primary" className="auth-button" disabled={loading}>
+            {loading ? 'Creating account...' : 'Register'}
           </Button>
         </form>
 
