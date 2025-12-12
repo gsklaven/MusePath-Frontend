@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: wake-backend
     env:
-      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
       CYPRESS_BASE_URL: http://localhost:3000
     steps:
       - name: Checkout
@@ -44,7 +44,7 @@ jobs:
           spec: cypress/e2e/happy-paths.cy.js
           config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
         env:
-          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
           CYPRESS_BASE_URL: http://localhost:3000
           CI: true
 
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: wake-backend
     env:
-      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
       CYPRESS_BASE_URL: http://localhost:3000
     steps:
       - name: Checkout
@@ -74,7 +74,7 @@ jobs:
           spec: cypress/e2e/unhappy-paths.cy.js
           config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
         env:
-          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com
+          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
           CYPRESS_BASE_URL: http://localhost:3000
           CI: true
 
