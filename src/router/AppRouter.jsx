@@ -1,7 +1,3 @@
-import {
-  createBrowserRouter,
-  RouterProvider
-} from "react-router-dom";
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -31,9 +27,6 @@ import ManageOfflinePage from '../pages/ManageOfflinePage';
 // API Test
 import ApiTestPage from '../pages/ApiTestPage';
 
-function App() {
-
-}
 const AppRouter = () => {
   const { user } = useAuth();
 

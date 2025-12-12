@@ -92,45 +92,103 @@ import FormInput from '../components/FormInput';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
+  // Form field states
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // Validation error states
   const [errors, setErrors] = useState({});
+  // Auth context for registration
   const { register, login, loading } = useAuth();
   const navigate = useNavigate();
 
+  /**
+   * Validates username field
+   * @returns {string|null} Error message or null if valid
+   */
+  const validateUsernameField = () => {
+    if (!validateUsername(username)) {
+      return 'Username must be 3-30 characters and contain only letters, numbers, underscores, and hyphens';
+    }
+    return null;
+  };
+
+  /**
+   * Validates email field
+   * @returns {string|null} Error message or null if valid
+   */
+  const validateEmailField = () => {
+    if (!validateEmail(email)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  };
+
+  /**
+   * Validates password field
+   * @returns {string|null} Error message or null if valid
+   */
+  const validatePasswordField = () => {
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return passwordValidation.message;
+    }
+    return null;
+  };
+
+  /**
+   * Validates password confirmation matches
+   * @returns {string|null} Error message or null if valid
+   */
+  const validateConfirmPasswordField = () => {
+    if (password !== confirmPassword) {
+      return 'Passwords do not match';
+    }
+    return null;
+  };
+
+  /**
+   * Validates all form fields
+   * @returns {Object} Object containing field errors (empty if valid)
+   */
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Validate each field
+    const usernameError = validateUsernameField();
+    if (usernameError) newErrors.username = usernameError;
+    
+    const emailError = validateEmailField();
+    if (emailError) newErrors.email = emailError;
+    
+    const passwordError = validatePasswordField();
+    if (passwordError) newErrors.password = passwordError;
+    
+    const confirmError = validateConfirmPasswordField();
+    if (confirmError) newErrors.confirmPassword = confirmError;
+    
+    return newErrors;
+  };
+
+  /**
+   * Handles form submission
+   * Validates fields and attempts registration
+   * @param {Event} e - Form submit event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newErrors = {};
-
-    // Validate username
-    if (!validateUsername(username)) {
-      newErrors.username = 'Username must be 3-30 characters and contain only letters, numbers, underscores, and hyphens';
-    }
-
-    // Validate email format
-    if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    // Validate password strength
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      newErrors.password = passwordValidation.message;
-    }
-
-    // Check password match
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    // Validate all fields
+    const formErrors = validateForm();
+    
+    // Stop if validation errors exist
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
       return;
     }
 
+    // Attempt registration
     try {
       await register(username, email, password);
       // Automatically login after successful registration
