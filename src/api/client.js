@@ -2,7 +2,8 @@ import axios from 'axios';
 
 /**
  * Axios client configured for backend API communication.
- * Uses httpOnly cookies for authentication (token sent automatically).
+ * Uses Authorization header with Bearer token for authentication.
+ * Falls back to cookies for backwards compatibility.
  * Handles 401 redirects to login page.
  */
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/v1';
@@ -12,8 +13,20 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable sending cookies with requests
+  withCredentials: true, // Enable sending cookies with requests (fallback)
 });
+
+// Request interceptor - adds Authorization header if token exists
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Response interceptor - handles unauthorized errors
 apiClient.interceptors.response.use(
@@ -22,6 +35,7 @@ apiClient.interceptors.response.use(
     // Redirect to login on 401 (unauthorized)
     if (error.response?.status === 401) {
       localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
       window.location.href = '/login';
     }
     return Promise.reject(error);

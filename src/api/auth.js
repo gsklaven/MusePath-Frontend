@@ -41,9 +41,15 @@ export const login = async (username, password) => {
       password,
     });
     
-    // Backend returns: { success: true, data: user, message: '...' }
-    // Token is stored in httpOnly cookie automatically
-    return response.data.data;
+    // Backend returns: { success: true, data: { user: {...}, token: "..." }, message: '...' }
+    const { user, token } = response.data.data;
+    
+    // Store token in localStorage for Authorization header
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
+    
+    return user;
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Login failed';
     throw new Error(errorMessage);
@@ -52,13 +58,15 @@ export const login = async (username, password) => {
 
 /**
  * Logout user
- * Clears authentication token from backend cookie
+ * Clears authentication token from backend cookie and localStorage
  * @returns {Promise<void>}
  */
 export const logout = async () => {
   try {
     await apiClient.post('/auth/logout');
+    localStorage.removeItem('authToken');
   } catch (error) {
+    localStorage.removeItem('authToken');
     const errorMessage = error.response?.data?.message || error.message || 'Logout failed';
     throw new Error(errorMessage);
   }
