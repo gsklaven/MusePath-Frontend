@@ -41,8 +41,8 @@ export const login = async (username, password) => {
       password,
     });
     
-    // Backend returns: { success: true, data: { user: {...}, token: "..." }, message: '...' }
-    const { user, token } = response.data.data;
+    // Backend returns: { success: true, data: { ...user, token }, message: '...' }
+    const { token, ...user } = response.data.data;
     
     // Store token in localStorage for Authorization header
     if (token) {
