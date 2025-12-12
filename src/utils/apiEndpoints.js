@@ -14,316 +14,108 @@
  * - sampleData: Example request body for POST/PUT methods (null for GET/DELETE)
  */
 
-/**
- * Health check endpoints
- */
+const endpoint = (id, category, name, method, path, description, sampleData = null) => ({
+  id, category, name, method, path, description, sampleData
+});
+
+const get = (id, category, name, path, description) => 
+  endpoint(id, category, name, 'GET', path, description);
+
+const post = (id, category, name, path, description, sampleData) => 
+  endpoint(id, category, name, 'POST', path, description, sampleData);
+
+const put = (id, category, name, path, description, sampleData) => 
+  endpoint(id, category, name, 'PUT', path, description, sampleData);
+
+const del = (id, category, name, path, description) => 
+  endpoint(id, category, name, 'DELETE', path, description);
+
 export const HEALTH_ENDPOINTS = [
-  {
-    id: 'health',
-    category: 'Health Check',
-    name: 'Health Status',
-    method: 'GET',
-    path: '/health',
-    description: 'Έλεγχος λειτουργίας API',
-    sampleData: null,
-  },
+  get('health', 'Health Check', 'Health Status', '/health', 'Έλεγχος λειτουργίας API'),
 ];
 
-/**
- * Exhibit-related endpoints
- */
 export const EXHIBIT_ENDPOINTS = [
-  {
-    id: 'exhibits-search',
-    category: 'Exhibits',
-    name: 'Search Exhibits',
-    method: 'GET',
-    path: '/exhibits/search?exhibit_term=starry&mode=online',
-    description: 'Αναζήτηση εκθεμάτων',
-    sampleData: null,
-  },
-  {
-    id: 'exhibits-get',
-    category: 'Exhibits',
-    name: 'Get Exhibit by ID',
-    method: 'GET',
-    path: '/exhibits/1',
-    description: 'Λεπτομέρειες συγκεκριμένου εκθέματος',
-    sampleData: null,
-  },
-  {
-    id: 'exhibits-audio',
-    category: 'Exhibits',
-    name: 'Get Audio Guide',
-    method: 'GET',
-    path: '/exhibits/1/audio',
-    description: 'Audio guide εκθέματος',
-    sampleData: null,
-  },
-  {
-    id: 'exhibits-rate',
-    category: 'Exhibits',
-    name: 'Rate Exhibit',
-    method: 'POST',
-    path: '/exhibits/1/ratings',
-    description: 'Αξιολόγηση εκθέματος',
-    sampleData: { rating: 5 },
-  },
-  {
-    id: 'exhibits-download',
-    category: 'Exhibits',
-    name: 'Download Exhibit',
-    method: 'GET',
-    path: '/downloads/exhibits/1',
-    description: 'Download για offline χρήση',
-    sampleData: null,
-  },
+  get('exhibits-search', 'Exhibits', 'Search Exhibits', '/exhibits/search?exhibit_term=starry&mode=online', 'Αναζήτηση εκθεμάτων'),
+  get('exhibits-get', 'Exhibits', 'Get Exhibit by ID', '/exhibits/1', 'Λεπτομέρειες συγκεκριμένου εκθέματος'),
+  get('exhibits-audio', 'Exhibits', 'Get Audio Guide', '/exhibits/1/audio', 'Audio guide εκθέματος'),
+  post('exhibits-rate', 'Exhibits', 'Rate Exhibit', '/exhibits/1/ratings', 'Αξιολόγηση εκθέματος', { rating: 5 }),
+  get('exhibits-download', 'Exhibits', 'Download Exhibit', '/downloads/exhibits/1', 'Download για offline χρήση'),
 ];
 
-/**
- * Route calculation and management endpoints
- */
 export const ROUTE_ENDPOINTS = [
-  {
-    id: 'routes-create',
-    category: 'Routes',
-    name: 'Calculate Route',
-    method: 'POST',
-    path: '/routes',
-    description: 'Υπολογισμός διαδρομής',
-    sampleData: {
-      user_id: 1,
-      destination_id: 2,
-      startLat: 40.7610,
-      startLng: -73.9780,
-    },
-  },
-  {
-    id: 'routes-get',
-    category: 'Routes',
-    name: 'Get Route Details',
-    method: 'GET',
-    path: '/routes/1',
-    description: 'Λεπτομέρειες διαδρομής',
-    sampleData: null,
-  },
-  {
-    id: 'routes-update',
-    category: 'Routes',
-    name: 'Update Route Stops',
-    method: 'PUT',
-    path: '/routes/1',
-    description: 'Ενημέρωση στάσεων διαδρομής',
-    sampleData: {
-      addStops: [3, 4],
-      removeStops: [],
-    },
-  },
-  {
-    id: 'routes-recalculate',
-    category: 'Routes',
-    name: 'Recalculate Route',
-    method: 'POST',
-    path: '/routes/1',
-    description: 'Επαναυπολογισμός διαδρομής',
-    sampleData: null,
-  },
-  {
-    id: 'routes-delete',
-    category: 'Routes',
-    name: 'Delete Route',
-    method: 'DELETE',
-    path: '/routes/1',
-    description: 'Διαγραφή διαδρομής',
-    sampleData: null,
-  },
+  post('routes-create', 'Routes', 'Calculate Route', '/routes', 'Υπολογισμός διαδρομής', {
+    user_id: 1,
+    destination_id: 2,
+    startLat: 40.7610,
+    startLng: -73.9780,
+  }),
+  get('routes-get', 'Routes', 'Get Route Details', '/routes/1', 'Λεπτομέρειες διαδρομής'),
+  put('routes-update', 'Routes', 'Update Route Stops', '/routes/1', 'Ενημέρωση στάσεων διαδρομής', {
+    addStops: [3, 4],
+    removeStops: [],
+  }),
+  post('routes-recalculate', 'Routes', 'Recalculate Route', '/routes/1', 'Επαναυπολογισμός διαδρομής', null),
+  del('routes-delete', 'Routes', 'Delete Route', '/routes/1', 'Διαγραφή διαδρομής'),
 ];
 
-/**
- * User preferences and favorites endpoints
- */
 export const USER_ENDPOINTS = [
-  {
-    id: 'users-preferences',
-    category: 'Users',
-    name: 'Update Preferences',
-    method: 'PUT',
-    path: '/users/1/preferences',
-    description: 'Ενημέρωση προτιμήσεων χρήστη',
-    sampleData: {
-      interests: ['modern art', 'sculpture', 'impressionism'],
-    },
-  },
-  {
-    id: 'users-favourites-add',
-    category: 'Users',
-    name: 'Add to Favourites',
-    method: 'POST',
-    path: '/users/1/favourites',
-    description: 'Προσθήκη στα αγαπημένα',
-    sampleData: {
-      exhibit_id: 2,
-    },
-  },
-  {
-    id: 'users-favourites-remove',
-    category: 'Users',
-    name: 'Remove from Favourites',
-    method: 'DELETE',
-    path: '/users/1/favourites/2',
-    description: 'Αφαίρεση από αγαπημένα',
-    sampleData: null,
-  },
-  {
-    id: 'users-personalized-route',
-    category: 'Users',
-    name: 'Get Personalized Route',
-    method: 'GET',
-    path: '/users/1/routes',
-    description: 'Εξατομικευμένη διαδρομή',
-    sampleData: null,
-  },
+  put('users-preferences', 'Users', 'Update Preferences', '/users/1/preferences', 'Ενημέρωση προτιμήσεων χρήστη', {
+    interests: ['modern art', 'sculpture', 'impressionism'],
+  }),
+  post('users-favourites-add', 'Users', 'Add to Favourites', '/users/1/favourites', 'Προσθήκη στα αγαπημένα', {
+    exhibit_id: 2,
+  }),
+  del('users-favourites-remove', 'Users', 'Remove from Favourites', '/users/1/favourites/2', 'Αφαίρεση από αγαπημένα'),
+  get('users-personalized-route', 'Users', 'Get Personalized Route', '/users/1/routes', 'Εξατομικευμένη διαδρομή'),
 ];
 
-/**
- * Map management endpoints
- */
 export const MAP_ENDPOINTS = [
-  {
-    id: 'maps-upload',
-    category: 'Maps',
-    name: 'Upload Map',
-    method: 'POST',
-    path: '/maps',
-    description: 'Upload χάρτη',
-    sampleData: {
-      mapData: 'base64_encoded_map_data',
-      format: 'image/png',
-    },
-  },
-  {
-    id: 'maps-get',
-    category: 'Maps',
-    name: 'Get Map by ID',
-    method: 'GET',
-    path: '/maps/1',
-    description: 'Λήψη χάρτη',
-    sampleData: null,
-  },
-  {
-    id: 'maps-download',
-    category: 'Maps',
-    name: 'Download Map',
-    method: 'GET',
-    path: '/downloads/maps/1',
-    description: 'Download χάρτη',
-    sampleData: null,
-  },
+  post('maps-upload', 'Maps', 'Upload Map', '/maps', 'Upload χάρτη', {
+    mapData: 'base64_encoded_map_data',
+    format: 'image/png',
+  }),
+  get('maps-get', 'Maps', 'Get Map by ID', '/maps/1', 'Λήψη χάρτη'),
+  get('maps-download', 'Maps', 'Download Map', '/downloads/maps/1', 'Download χάρτη'),
 ];
 
-/**
- * Destination management endpoints
- */
 export const DESTINATION_ENDPOINTS = [
-  {
-    id: 'destinations-list',
-    category: 'Destinations',
-    name: 'List Destinations',
-    method: 'GET',
-    path: '/destinations',
-    description: 'Λίστα όλων των προορισμών',
-    sampleData: null,
-  },
-  {
-    id: 'destinations-upload',
-    category: 'Destinations',
-    name: 'Upload Destinations',
-    method: 'POST',
-    path: '/destinations',
-    description: 'Upload προορισμών',
-    sampleData: {
-      map_id: 1,
-      destinations: [
-        {
-          name: 'Test Destination',
-          type: 'exhibit',
-          coordinates: { lat: 40.7610, lng: -73.9780 },
-        },
-      ],
-    },
-  },
-  {
-    id: 'destinations-get',
-    category: 'Destinations',
-    name: 'Get Destination Info',
-    method: 'GET',
-    path: '/destinations/1',
-    description: 'Πληροφορίες προορισμού',
-    sampleData: null,
-  },
-];
-
-/**
- * Coordinate tracking endpoints
- */
-export const COORDINATE_ENDPOINTS = [
-  {
-    id: 'coordinates-get',
-    category: 'Coordinates',
-    name: 'Get User Coordinates',
-    method: 'GET',
-    path: '/coordinates/1',
-    description: 'Τοποθεσία χρήστη',
-    sampleData: null,
-  },
-  {
-    id: 'coordinates-update',
-    category: 'Coordinates',
-    name: 'Update Coordinates',
-    method: 'PUT',
-    path: '/coordinates/1',
-    description: 'Ενημέρωση τοποθεσίας',
-    sampleData: {
-      lat: 40.7612,
-      lng: -73.9778,
-    },
-  },
-];
-
-/**
- * Notification and sync endpoints
- */
-export const SYSTEM_ENDPOINTS = [
-  {
-    id: 'notifications-send',
-    category: 'Notifications',
-    name: 'Send Notification',
-    method: 'POST',
-    path: '/notifications',
-    description: 'Αποστολή ειδοποίησης (Uses route_id 2 - backup route for testing)',
-    sampleData: {
-      user_id: 1,
-      route_id: 2,
-      currentLat: 40.7610,
-      currentLng: -73.9780,
-    },
-  },
-  {
-    id: 'sync-data',
-    category: 'Sync',
-    name: 'Sync Offline Data',
-    method: 'POST',
-    path: '/sync',
-    description: 'Συγχρονισμός offline δεδομένων',
-    sampleData: [
+  get('destinations-list', 'Destinations', 'List Destinations', '/destinations', 'Λίστα όλων των προορισμών'),
+  post('destinations-upload', 'Destinations', 'Upload Destinations', '/destinations', 'Upload προορισμών', {
+    map_id: 1,
+    destinations: [
       {
-        type: 'rating',
-        exhibit_id: 1,
-        rating: 5,
-        timestamp: new Date().toISOString(),
+        name: 'Test Destination',
+        type: 'exhibit',
+        coordinates: { lat: 40.7610, lng: -73.9780 },
       },
     ],
-  },
+  }),
+  get('destinations-get', 'Destinations', 'Get Destination Info', '/destinations/1', 'Πληροφορίες προορισμού'),
+];
+
+export const COORDINATE_ENDPOINTS = [
+  get('coordinates-get', 'Coordinates', 'Get User Coordinates', '/coordinates/1', 'Τοποθεσία χρήστη'),
+  put('coordinates-update', 'Coordinates', 'Update Coordinates', '/coordinates/1', 'Ενημέρωση τοποθεσίας', {
+    lat: 40.7612,
+    lng: -73.9778,
+  }),
+];
+
+export const SYSTEM_ENDPOINTS = [
+  post('notifications-send', 'Notifications', 'Send Notification', '/notifications', 'Αποστολή ειδοποίησης (Uses route_id 2 - backup route for testing)', {
+    user_id: 1,
+    route_id: 2,
+    currentLat: 40.7610,
+    currentLng: -73.9780,
+  }),
+  post('sync-data', 'Sync', 'Sync Offline Data', '/sync', 'Συγχρονισμός offline δεδομένων', [
+    {
+      type: 'rating',
+      exhibit_id: 1,
+      rating: 5,
+      timestamp: new Date().toISOString(),
+    },
+  ]),
 ];
 
 /**

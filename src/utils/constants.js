@@ -39,22 +39,18 @@ export const DEFAULT_WALKING_SPEED = 5;
 // ==========================================
 
 /**
- * Default map identifier
- * @type {number}
+ * Default map settings
+ * @type {Object.<string, number>}
  */
-export const DEFAULT_MAP_ID = 1;
+export const MAP_DEFAULTS = {
+  ID: 1,
+  ZOOM: 1,
+  ROTATION: 0,
+};
 
-/**
- * Default map zoom level
- * @type {number}
- */
-export const DEFAULT_ZOOM = 1;
-
-/**
- * Default map rotation angle
- * @type {number} Rotation in degrees
- */
-export const DEFAULT_ROTATION = 0;
+export const DEFAULT_MAP_ID = MAP_DEFAULTS.ID;
+export const DEFAULT_ZOOM = MAP_DEFAULTS.ZOOM;
+export const DEFAULT_ROTATION = MAP_DEFAULTS.ROTATION;
 
 // ==========================================
 // Exhibit Categories
@@ -206,37 +202,32 @@ export const NOTIFICATION_TYPES = {
 // ==========================================
 
 /**
- * Minimum password length for security
- * @type {number}
+ * Validation limits
+ * @type {Object.<string, number>}
  */
-export const MIN_PASSWORD_LENGTH = 6;
+export const VALIDATION = {
+  MIN_PASSWORD_LENGTH: 6,
+  MIN_RATING: 1,
+  MAX_RATING: 5,
+};
 
-/**
- * Minimum rating value (1-5 stars)
- * @type {number}
- */
-export const MIN_RATING = 1;
-
-/**
- * Maximum rating value (1-5 stars)
- * @type {number}
- */
-export const MAX_RATING = 5;
+export const MIN_PASSWORD_LENGTH = VALIDATION.MIN_PASSWORD_LENGTH;
+export const MIN_RATING = VALIDATION.MIN_RATING;
+export const MAX_RATING = VALIDATION.MAX_RATING;
 
 // ==========================================
 // Timing Constants
 // ==========================================
 
 /**
- * Delay between sequential API requests (milliseconds)
- * Prevents overwhelming the backend
- * @type {number}
+ * Timing intervals in milliseconds
+ * @type {Object.<string, number>}
  */
-export const API_REQUEST_DELAY = 1000;
+export const TIMING = {
+  API_REQUEST_DELAY: 1000,
+  LOCATION_UPDATE_INTERVAL: 5000,
+};
 
-/**
- * Location update interval for navigation (milliseconds)
- * @type {number}
- */
-export const LOCATION_UPDATE_INTERVAL = 5000;
+export const API_REQUEST_DELAY = TIMING.API_REQUEST_DELAY;
+export const LOCATION_UPDATE_INTERVAL = TIMING.LOCATION_UPDATE_INTERVAL;
 
