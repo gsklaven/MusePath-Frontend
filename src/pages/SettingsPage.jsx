@@ -38,7 +38,7 @@ const SettingsPage = () => {
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>
           <div className="settings-list-item" onClick={() => navigate('/ratings')}>
-            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/star5.png'} alt="Ratings" style={{ width: 24, height: 24 }} /></span>
+            <span className="settings-list-icon"><img src={process.env.PUBLIC_URL + '/assets/icons/favourite.png'} alt="Ratings" style={{ width: 24, height: 24 }} /></span>
             <span>My Ratings</span>
             <img src={process.env.PUBLIC_URL + '/assets/icons/right-arrow.png'} alt="Go" className="settings-list-arrow" />
           </div>

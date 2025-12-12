@@ -29,7 +29,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { addToFavourites, removeFromFavourites, getUserCoordinates } from '../api/users';
-import { getExhibitAudio } from '../api/exhibits';
+import { getExhibitAudio, rateExhibit } from '../api/exhibits';
 import { createRoute } from '../api/routes';
 import './ExhibitBottomSheet.css';
 
@@ -58,6 +58,8 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
   const [audioError, setAudioError] = useState(null);
   const [isCreatingRoute, setIsCreatingRoute] = useState(false);
   const [routeError, setRouteError] = useState(null);
+  const [userRating, setUserRating] = useState(null);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const audioRef = useRef(null);
 
   useMemo(() => {
@@ -154,6 +156,59 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       console.error('❌ Error playing audio:', err);
       setAudioError('Failed to load audio guide');
       setIsPlayingAudio(false);
+    }
+  };
+
+  // Handle star rating click
+  const handleRateExhibit = async (rating) => {
+    console.log('⭐ Star clicked! Rating:', rating, 'User:', user, 'Exhibit:', exhibit);
+    
+    if (!user) {
+      console.log('❌ User must be logged in to rate exhibits');
+      return;
+    }
+    if (!exhibit?.exhibitId && !exhibit?.exhibit_id && !exhibit?.id) {
+      console.error('❌ No exhibit ID available. Exhibit object:', exhibit);
+      return;
+    }
+
+    const exhibitId = exhibit.exhibitId || exhibit.exhibit_id || exhibit.id;
+    
+    try {
+      setIsSubmittingRating(true);
+      console.log('⭐ Rating exhibit %s with %d stars', String(exhibitId), rating);
+      
+      await rateExhibit(exhibitId, rating);
+      setUserRating(rating);
+      console.log('✅ Successfully rated exhibit');
+      
+      // Save to localStorage for RatingsPage
+      try {
+        const storedRatings = JSON.parse(localStorage.getItem('ratings') || '[]');
+        const existingIndex = storedRatings.findIndex(r => r.exhibit_id === exhibitId);
+        
+        const ratingData = {
+          exhibit_id: exhibitId,
+          rating: rating,
+          title: exhibit.name || exhibit.title,
+          created_at: new Date().toISOString()
+        };
+        
+        if (existingIndex >= 0) {
+          storedRatings[existingIndex] = ratingData;
+        } else {
+          storedRatings.push(ratingData);
+        }
+        
+        localStorage.setItem('ratings', JSON.stringify(storedRatings));
+        console.log('✅ Rating saved to localStorage:', ratingData);
+      } catch (localErr) {
+        console.error('❌ Error saving rating to localStorage:', localErr);
+      }
+    } catch (err) {
+      console.error('❌ Error rating exhibit:', err);
+    } finally {
+      setIsSubmittingRating(false);
     }
   };
 
@@ -293,24 +348,66 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       >
         <div className="exhibit-bottomsheet-header" style={{ position: 'relative', paddingTop: 0, paddingBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 0, marginTop: 0 }}>
-            {/* Title and star rating in a column, location below title */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, minWidth: 0, overflow: 'hidden', gap: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, marginBottom: 0 }}>
-                <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.35rem', textAlign: 'left', lineHeight: 1.18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>
-                  {exhibit.name || exhibit.title}
-                </h2>
-                {typeof exhibit.rating === 'number' && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 6 }}>
+            {/* Title, rating stars, and location in a column */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, minWidth: 0, overflow: 'hidden', gap: 6 }}>
+              {/* Title */}
+              <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.35rem', textAlign: 'left', lineHeight: 1.18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
+                {exhibit.name || exhibit.title}
+              </h2>
+              
+              {/* Rating section below title */}
+              {typeof exhibit.rating === 'number' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {/* Display current rating */}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <img
                       src={process.env.PUBLIC_URL + `/assets/icons/star${Math.round(exhibit.rating)}.png`}
                       alt={`Rating: ${exhibit.rating.toFixed(1)}`}
-                      style={{ width: 48, height: 48, marginRight: 4 }}
+                      style={{ width: 40, height: 40 }}
                     />
-                    <span style={{ fontWeight: 700, fontSize: '1.32rem', marginLeft: 4 }}>{exhibit.rating.toFixed(1)}</span>
-                    <span style={{ color: '#888', fontSize: '1.12rem', marginLeft: 2 }}>/ 5</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.2rem' }}>{exhibit.rating.toFixed(1)}</span>
+                    <span style={{ color: '#888', fontSize: '1rem' }}>/ 5</span>
                   </span>
-                )}
-              </div>
+                  
+                  {/* Interactive star rating for user */}
+                  {user && (
+                    <>
+                      <span style={{ color: '#888', fontSize: '0.9rem', margin: '0 4px' }}>•</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <img
+                            key={star}
+                            src={process.env.PUBLIC_URL + `/assets/icons/favourite.png`}
+                            alt={`Rate ${star} stars`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log('Star image clicked!', star);
+                              handleRateExhibit(star);
+                            }}
+                            style={{ 
+                              width: 22, 
+                              height: 22, 
+                              cursor: isSubmittingRating ? 'wait' : 'pointer',
+                              opacity: star <= (userRating || 0) ? 1 : 0.3,
+                              transition: 'opacity 0.2s',
+                              filter: star <= (userRating || 0) ? 'none' : 'grayscale(100%)',
+                              pointerEvents: 'auto'
+                            }}
+                            title={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                          />
+                        ))}
+                        {userRating && (
+                          <span style={{ fontSize: '0.75rem', color: '#888', marginLeft: 4 }}>
+                            Your rating: {userRating}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {/* Location below ratings */}
               {exhibit.location && (
                 <div className="exhibit-bottomsheet-location" style={{fontSize: '1rem', color: '#888', marginTop: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 320}}>{exhibit.location}</div>
               )}
