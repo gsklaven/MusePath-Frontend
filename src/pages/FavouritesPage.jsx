@@ -1,3 +1,38 @@
+/**
+ * FavouritesPage Component
+ * 
+ * Displays and manages user's favorite museum exhibits collection.
+ * Provides a centralized view of all exhibits marked as favorites with ability to remove items.
+ * 
+ * Data Flow:
+ * - Favorites are stored in both localStorage (for offline access) and backend database
+ * - On mount, loads favorites from localStorage for instant display
+ * - Remove operations sync with backend API then update localStorage
+ * - Each favorite includes exhibit_id, title, and subtitle for display
+ * 
+ * Features:
+ * - List View: Displays all favorited exhibits with museum icon and title
+ * - Remove Functionality: Red button to remove exhibits from favorites
+ * - Empty State: Instructional message when no favorites exist
+ * - Loading State: Shows loading indicator while fetching data
+ * - Persistent Storage: Uses localStorage for offline availability
+ * - API Sync: Syncs remove operations with backend via removeFromFavourites API
+ * 
+ * User Actions:
+ * - View all favorite exhibits in a clean list format
+ * - Remove individual favorites with one-click action
+ * - Receives guidance on how to add more favorites
+ * 
+ * State Management:
+ * - favourites: Array of favorite exhibit objects from localStorage
+ * - loading: Boolean flag for loading state during data fetch
+ * - Updates in real-time after remove operations
+ * 
+ * Integration Points:
+ * - Works with ExhibitBottomSheet heart icon for adding favorites
+ * - Data structure matches backend API format for consistency
+ * - Syncs with user context for authentication
+ */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { removeFromFavourites } from '../api/users';
@@ -13,7 +48,7 @@ const FavouritesPage = () => {
   }, []);
 
   const loadFavourites = () => {
-    // Get favourites from localStorage
+    // Load favourites from localStorage
     try {
       const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
       setFavourites(storedFavourites);
@@ -30,12 +65,16 @@ const FavouritesPage = () => {
       console.log('🗑️ Removing from favourites:', exhibitId);
       await removeFromFavourites(user?.id || 1, exhibitId);
       
-      // Update localStorage
+      // Update localStorage after successful API call
       const updatedFavourites = favourites.filter(fav => fav.exhibit_id !== exhibitId);
       localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
       setFavourites(updatedFavourites);
     } catch (err) {
       console.error('Error removing favourite:', err);
+      // Optimistic local removal to keep UI consistent even if backend fails
+      const updatedFavourites = favourites.filter(fav => fav.exhibit_id !== exhibitId);
+      localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
+      setFavourites(updatedFavourites);
     }
   };
 

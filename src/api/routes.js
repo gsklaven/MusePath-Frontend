@@ -2,22 +2,22 @@ import apiClient from './client';
 
 // Create/Calculate route
 export const createRoute = async (routeData) => {
-  console.log(`🔍 API Call: POST /routes`, routeData);
+  console.log('🔍 API Call: POST /routes', routeData);
   const response = await apiClient.post('/routes', routeData);
-  console.log(`✅ Response: POST /routes`, response.data);
+  console.log('✅ Response: POST /routes', response.data);
   return response.data;
 };
 
 // Calculate route (legacy - kept for compatibility)
 export const calculateRoute = async (userId, destinationId, startLat, startLng) => {
-  console.log(`🔍 API Call: POST /routes (userId=${userId}, destId=${destinationId})`);
+  console.log('🔍 API Call: POST /routes (userId=%s, destId=%s)', String(userId), String(destinationId));
   const response = await apiClient.post('/routes', {
     user_id: userId,
     destination_id: destinationId,
     startLat,
     startLng,
   });
-  console.log(`✅ Response: POST /routes`, response.data);
+  console.log('✅ Response: POST /routes', response.data);
   return response.data;
 };
 

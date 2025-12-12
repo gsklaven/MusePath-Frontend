@@ -1,3 +1,86 @@
+/**
+ * QuestionnairePage Component
+ * 
+ * Multi-step questionnaire collecting user preferences for personalized museum routes.
+ * Three-step form wizard that saves preferences to backend for AI route generation.
+ * 
+ * Purpose:
+ * - Collect user interests and preferences for personalized exhibit recommendations
+ * - Enable AI algorithm to generate custom museum routes matching user tastes
+ * - Create user profile for enhanced museum experience personalization
+ * - Gather data for improving exhibit recommendations over time
+ * 
+ * Questionnaire Steps:
+ * 
+ * Step 1: Historical Periods (Single Choice)
+ * - User selects their favorite historical period from predefined options
+ * - Options include: Ancient Greece, Roman Empire, Medieval, Renaissance, etc.
+ * - Radio button selection (only one period can be chosen)
+ * - Determines primary exhibit filtering for route generation
+ * 
+ * Step 2: Artists & Civilizations (Multiple Choice)
+ * - User selects multiple artists or civilizations they're interested in
+ * - Options include: Leonardo da Vinci, Michelangelo, Egyptian, Chinese, etc.
+ * - Checkbox-style toggle selection (multiple allowed)
+ * - Refines exhibit selection beyond historical period
+ * 
+ * Step 3: Custom Interests (Free Text + List)
+ * - User can add custom interests not covered in previous steps
+ * - Text input field with "Add" button to create interest tags
+ * - Displays list of added interests with remove capability
+ * - Allows for unique preferences like "pottery", "military history", "textiles"
+ * 
+ * Features:
+ * - Step Navigation: Next/Previous buttons to move between steps
+ * - Progress Tracking: Visual step indicator (1/3, 2/3, 3/3)
+ * - Form Validation: Ensures at least one selection per step before proceeding
+ * - Interest Management: Add and remove custom interests with tag UI
+ * - Back Navigation: Can return to previous steps to modify selections
+ * - Final Submit: Saves all preferences to backend and marks onboarding complete
+ * 
+ * State Management:
+ * - step: Current questionnaire step (1, 2, or 3)
+ * - preferences: Object storing all user selections across steps
+ * - customInterest: Temporary input field value for adding new interests
+ * - Resets state on component mount for fresh start
+ * 
+ * Data Structure:
+ * preferences = {
+ *   historicalPeriod: string (single selected period),
+ *   artistsCivilizations: array (multiple selected artists/cultures),
+ *   interests: array (custom free-text interests added by user)
+ * }
+ * 
+ * API Integration:
+ * - updateUserPreferences(userId, interests[]): Saves combined interests to backend
+ * - Combines all preference categories into single interests array
+ * - Updates AuthContext with hasCompletedSetup flag
+ * - Stores preferences in user object for future reference
+ * 
+ * User Flow:
+ * 1. Land on Step 1, select historical period, click Next
+ * 2. Step 2 appears, select multiple artists/civilizations, click Next
+ * 3. Step 3 appears, optionally add custom interests, click Submit
+ * 4. Preferences saved to backend, redirected to map page
+ * 5. Personalized routes now available based on saved preferences
+ * 
+ * Constants:
+ * - HISTORICAL_PERIODS: Array of predefined period options from utils/constants.js
+ * - ARTISTS_CIVILIZATIONS: Array of predefined artist/culture options
+ * - These ensure consistent data format across app
+ * 
+ * Navigation:
+ * - Completes with redirect to /map page
+ * - Sets hasCompletedSetup flag to prevent re-showing questionnaire
+ * - Can be re-accessed from settings to update preferences
+ * 
+ * Visual Design:
+ * - Card-based layout for clean presentation
+ * - Large tap targets for mobile-friendly selection
+ * - Color-coded selections with visual feedback
+ * - Clear step indicators and progress tracking
+ * - Responsive design for all device sizes
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,7 +89,6 @@ import { HISTORICAL_PERIODS, ARTISTS_CIVILIZATIONS } from '../utils/constants';
 import Card from '../components/Card';
 // ...existing code...
 import './QuestionnairePage.css';
-
 
 const initialPreferences = {
   historicalPeriod: '',
@@ -29,14 +111,15 @@ const QuestionnairePage = () => {
   }, []);
 
 
-  // For radio (single select)
+  // Radio selection for single-choice questions
   const handleRadioSelection = (category, value) => {
     setPreferences(prev => ({
       ...prev,
       [category]: value
     }));
   };
-  // For multi-select (other steps)
+  
+  // Toggle selection for multi-choice questions
   const handleToggleSelection = (category, value) => {
     setPreferences(prev => ({
       ...prev,
@@ -59,13 +142,19 @@ const QuestionnairePage = () => {
   const handleSubmit = async () => {
     try {
       const allInterests = [
-        ...preferences.historicalPeriods,
+        preferences.historicalPeriod,
         ...preferences.artistsCivilizations,
         ...preferences.interests,
-      ];
+      ].filter(Boolean); // Remove empty/undefined values
       
-      await updateUserPreferences(user.id, allInterests);
+      const userId = user.userId || user.id;
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      
+      await updateUserPreferences(userId, allInterests);
       updateUser({ 
+        ...user,
         hasCompletedSetup: true,
         preferences: allInterests 
       });

@@ -1,10 +1,66 @@
+/**
+ * NavigationPage Component
+ * 
+ * Real-time turn-by-turn navigation interface for museum route following.
+ * Provides step-by-step directions with live user location tracking and progress monitoring.
+ * 
+ * Core Features:
+ * - Turn-by-Turn Directions: Displays route steps with instructions and distances
+ * - Live Location Tracking: Updates user position every 5 seconds when tracking enabled
+ * - Progress Monitoring: Shows current step and overall route completion status
+ * - Visual Route Map: Displays route overview with all waypoints and destinations
+ * - Route Management: Load, view, and delete routes via API integration
+ * 
+ * Navigation Display:
+ * - Current Step Highlight: Active navigation instruction with distance/duration
+ * - Step List: All route steps with sequential numbering and completion indicators
+ * - Destination Info: Shows final destination name and estimated arrival
+ * - Stop Points: Displays intermediate stops if route includes waypoints
+ * 
+ * Location Tracking:
+ * - GPS Integration: Fetches current user coordinates from backend
+ * - Auto-Update: Refreshes position every 5 seconds when tracking is active
+ * - Coordinate Updates: Sends position updates to backend for route optimization
+ * - Location Display: Shows current lat/lng coordinates in header
+ * 
+ * User Controls:
+ * - Start/Stop Tracking: Toggle real-time location updates with button
+ * - Next Step: Advance to next navigation instruction manually
+ * - End Route: Complete navigation and return to map
+ * - Delete Route: Remove saved route from backend (confirmation required)
+ * 
+ * State Management:
+ * - routeDetails: Full route object with steps, distance, duration from API
+ * - currentStep: Index of active navigation step (0-based)
+ * - userLocation: Current GPS coordinates {lat, lng}
+ * - locationTracking: Boolean toggle for auto-update interval
+ * 
+ * Route Data Structure:
+ * - Received via React Router state from CreateRoutePage or PersonalizedRoutePage
+ * - Includes: route_id, steps[], destination, stops[], distance, duration
+ * - Each step: instruction, distance, duration, coordinates
+ * 
+ * API Integration:
+ * - getRouteDetails(routeId): Fetches full route data including all steps
+ * - getUserCoordinates(userId): Gets current user location
+ * - updateUserCoordinates(userId, lat, lng): Updates user position on backend
+ * - deleteRoute(routeId): Removes route from database
+ * 
+ * Formatting Utilities:
+ * - formatDistance(): Converts meters to km/m display format
+ * - formatDuration(): Converts seconds to hours/minutes display format
+ * 
+ * Use Cases:
+ * - Museum visitors following AI-generated personalized routes
+ * - Users navigating to specific exhibits or destinations
+ * - Custom routes with multiple stops created via CreateRoutePage
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getRouteDetails, deleteRoute } from '../api/routes';
 import { getUserCoordinates, updateUserCoordinates } from '../api/users';
 import { formatDuration, formatDistance } from '../utils/formatters';
-import Header from '../components/Header';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import './NavigationPage.css';
@@ -14,6 +70,7 @@ const NavigationPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  // Get route data from navigation state
   const routeData = location.state?.route;
   const destination = location.state?.destination;
   const stops = location.state?.stops || [];
@@ -24,6 +81,7 @@ const NavigationPage = () => {
   const [locationTracking, setLocationTracking] = useState(false);
 
   useEffect(() => {
+    // Load route details if available
     if (routeData?.route_id) {
       loadRouteDetails();
     }

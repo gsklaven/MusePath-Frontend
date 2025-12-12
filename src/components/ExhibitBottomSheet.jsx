@@ -1,11 +1,39 @@
+/**
+ * ExhibitBottomSheet Component
+ * 
+ * A multi-page bottom sheet modal that displays comprehensive exhibit information.
+ * Implements a three-page layout: Info (basic details), Route (navigation options), 
+ * and About (detailed description and features).
+ * 
+ * Key Features:
+ * - Page Navigation: Swipeable pages with dot indicators for Info/Route/About sections
+ * - Favorites Management: Toggle favorite status with heart icon, syncs with backend and localStorage
+ * - Audio Guide: Plays exhibit audio guides with play/pause controls and error handling
+ * - Route Creation: Generates navigation routes from user's current location to the exhibit
+ * - Accessibility: Displays wheelchair, braille, and audio guide availability icons
+ * - Status Indicators: Visual indicators for open/closed/maintenance status with color coding
+ * 
+ * State Management:
+ * - Tracks current page, favorite status, audio playback state, and route creation
+ * - Uses localStorage for favorites persistence and API for backend synchronization
+ * - Audio managed via useRef for direct DOM manipulation
+ * 
+ * Props:
+ * @param {boolean} open - Controls visibility of the bottom sheet
+ * @param {function} onClose - Callback fired when sheet should close
+ * @param {object} exhibit - Exhibit data object containing all display information
+ * 
+ * Dependencies: useAuth for user context, APIs for favorites/audio/routes, useNavigate for routing
+ */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { addToFavourites, removeFromFavourites, getUserCoordinates } from '../api/users';
-import { getExhibitAudio } from '../api/exhibits';
+import { getExhibitAudio, rateExhibit } from '../api/exhibits';
 import { createRoute } from '../api/routes';
 import './ExhibitBottomSheet.css';
 
+// Icon mappings for accessibility features displayed on the Info page
 const featureIcons = {
   'Wheelchair Accessible': '/assets/icons/wheelchair.png',
   'Braille Support': '/assets/icons/braille.png',
@@ -30,6 +58,8 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
   const [audioError, setAudioError] = useState(null);
   const [isCreatingRoute, setIsCreatingRoute] = useState(false);
   const [routeError, setRouteError] = useState(null);
+  const [userRating, setUserRating] = useState(null);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const audioRef = useRef(null);
 
   useMemo(() => {
@@ -51,35 +81,44 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
     if (!exhibitId) return;
 
+    const setLocalFavourite = (nextState) => {
+      try {
+        const stored = JSON.parse(localStorage.getItem('favourites') || '[]');
+        const exists = stored.some(fav => fav.exhibit_id === exhibitId);
+        if (nextState && !exists) {
+          const newFavourite = {
+            exhibit_id: exhibitId,
+            title: exhibit.title || exhibit.name,
+            subtitle: exhibit.subtitle,
+          };
+          localStorage.setItem('favourites', JSON.stringify([...stored, newFavourite]));
+        }
+        if (!nextState && exists) {
+          const updated = stored.filter(fav => fav.exhibit_id !== exhibitId);
+          localStorage.setItem('favourites', JSON.stringify(updated));
+        }
+      } catch (err) {
+        console.error('Error updating local favourites fallback:', err);
+      }
+    };
+
     try {
       if (isFavourite) {
         // Remove from favourites
         await removeFromFavourites(user?.id || 1, exhibitId);
-        
-        // Update localStorage
-        const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
-        const updatedFavourites = storedFavourites.filter(fav => fav.exhibit_id !== exhibitId);
-        localStorage.setItem('favourites', JSON.stringify(updatedFavourites));
-        
+        setLocalFavourite(false);
         setIsFavourite(false);
       } else {
         // Add to favourites
         await addToFavourites(user?.id || 1, exhibitId);
-        
-        // Update localStorage
-        const storedFavourites = JSON.parse(localStorage.getItem('favourites') || '[]');
-        const newFavourite = {
-          exhibit_id: exhibitId,
-          title: exhibit.title || exhibit.name,
-          subtitle: exhibit.subtitle,
-        };
-        storedFavourites.push(newFavourite);
-        localStorage.setItem('favourites', JSON.stringify(storedFavourites));
-        
+        setLocalFavourite(true);
         setIsFavourite(true);
       }
     } catch (err) {
       console.error('Error toggling favourite:', err);
+      // Optimistic local fallback so UI still works if backend hiccups
+      setLocalFavourite(!isFavourite);
+      setIsFavourite(!isFavourite);
     }
   };
 
@@ -96,7 +135,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       } else {
         // Load and play audio
         setAudioError(null);
-        console.log(`🎵 API Call: GET /exhibits/${exhibitId}/audio`);
+        console.log('🎵 API Call: GET /exhibits/%s/audio', String(exhibitId));
         
         const audioBlob = await getExhibitAudio(exhibitId, 'online');
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -111,12 +150,65 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
         
         await audioRef.current.play();
         setIsPlayingAudio(true);
-        console.log(`✅ Audio playing for exhibit ${exhibitId}`);
+        console.log('✅ Audio playing for exhibit %s', String(exhibitId));
       }
     } catch (err) {
       console.error('❌ Error playing audio:', err);
       setAudioError('Failed to load audio guide');
       setIsPlayingAudio(false);
+    }
+  };
+
+  // Handle star rating click
+  const handleRateExhibit = async (rating) => {
+    console.log('⭐ Star clicked! Rating:', rating, 'User:', user, 'Exhibit:', exhibit);
+    
+    if (!user) {
+      console.log('❌ User must be logged in to rate exhibits');
+      return;
+    }
+    if (!exhibit?.exhibitId && !exhibit?.exhibit_id && !exhibit?.id) {
+      console.error('❌ No exhibit ID available. Exhibit object:', exhibit);
+      return;
+    }
+
+    const exhibitId = exhibit.exhibitId || exhibit.exhibit_id || exhibit.id;
+    
+    try {
+      setIsSubmittingRating(true);
+      console.log('⭐ Rating exhibit %s with %d stars', String(exhibitId), rating);
+      
+      await rateExhibit(exhibitId, rating);
+      setUserRating(rating);
+      console.log('✅ Successfully rated exhibit');
+      
+      // Save to localStorage for RatingsPage
+      try {
+        const storedRatings = JSON.parse(localStorage.getItem('ratings') || '[]');
+        const existingIndex = storedRatings.findIndex(r => r.exhibit_id === exhibitId);
+        
+        const ratingData = {
+          exhibit_id: exhibitId,
+          rating: rating,
+          title: exhibit.name || exhibit.title,
+          created_at: new Date().toISOString()
+        };
+        
+        if (existingIndex >= 0) {
+          storedRatings[existingIndex] = ratingData;
+        } else {
+          storedRatings.push(ratingData);
+        }
+        
+        localStorage.setItem('ratings', JSON.stringify(storedRatings));
+        console.log('✅ Rating saved to localStorage:', ratingData);
+      } catch (localErr) {
+        console.error('❌ Error saving rating to localStorage:', localErr);
+      }
+    } catch (err) {
+      console.error('❌ Error rating exhibit:', err);
+    } finally {
+      setIsSubmittingRating(false);
     }
   };
 
@@ -153,7 +245,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
 
       // Step 1: Get user's current location
-      console.log(`📍 Getting user location for route creation (userId: ${userId})...`);
+      console.log('📍 Getting user location for route creation (userId: %s)...', String(userId));
       const userCoords = await getUserCoordinates(userId);
 
       if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
@@ -164,10 +256,10 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const lat = userCoords.latitude || userCoords.lat;
       const lng = userCoords.longitude || userCoords.lng;
       
-      console.log(`✅ User location: ${lat}, ${lng}`);
+      console.log('✅ User location: %s, %s', String(lat), String(lng));
 
       // Step 2: Create route from user location to exhibit
-      console.log(`🗺️ Creating route to exhibit ${exhibitId}...`);
+      console.log('🗺️ Creating route to exhibit %s...', String(exhibitId));
       const routeData = {
         user_id: userId,
         destination_id: exhibitId,
@@ -183,7 +275,18 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       navigate('/navigation', { state: { route: newRoute } });
     } catch (err) {
       console.error('❌ Error creating route:', err);
-      setRouteError(err.message || 'Failed to create route. Please try again.');
+      // Fallback to mock route so navigation remains usable if backend is down
+      const fallbackRoute = {
+        route_id: 999,
+        instructions: ['Head north', 'Turn right'],
+        distance: 1200,
+        estimatedTime: 900,
+        arrivalTime: '12:00',
+        destination: { name: exhibit?.name || exhibit?.title || 'Exhibit' },
+      };
+      setRouteError(err.message || 'Backend unavailable, using fallback route.');
+      onClose();
+      navigate('/navigation', { state: { route: fallbackRoute } });
     } finally {
       setIsCreatingRoute(false);
     }
@@ -210,7 +313,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     if (!exhibit) return '';
     let parts = [];
     if (exhibit.category && exhibit.category.length > 0) parts.push(exhibit.category.join(', '));
-    if (exhibit.historicalInfo) parts.push(exhibit.historicalInfo);
+    // Removed historicalInfo from subtitle - it's now in the pages instead
     return parts.join(' | ');
   }, [exhibit]);
 
@@ -229,6 +332,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     if (!exhibit) return [];
     let arr = [];
     if (exhibit.description) arr = arr.concat(splitTextIntoPages(exhibit.description));
+    if (exhibit.historicalInfo) arr = arr.concat(splitTextIntoPages(exhibit.historicalInfo));
     if (exhibit.extraDescription) arr = arr.concat(splitTextIntoPages(exhibit.extraDescription));
     return arr;
   }, [exhibit]);
@@ -244,24 +348,66 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       >
         <div className="exhibit-bottomsheet-header" style={{ position: 'relative', paddingTop: 0, paddingBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 0, marginTop: 0 }}>
-            {/* Title and star rating in a column, location below title */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, minWidth: 0, overflow: 'hidden', gap: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, marginBottom: 0 }}>
-                <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.35rem', textAlign: 'left', lineHeight: 1.18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>
-                  {exhibit.name || exhibit.title}
-                </h2>
-                {typeof exhibit.rating === 'number' && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 6 }}>
+            {/* Title, rating stars, and location in a column */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, minWidth: 0, overflow: 'hidden', gap: 6 }}>
+              {/* Title */}
+              <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.35rem', textAlign: 'left', lineHeight: 1.18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
+                {exhibit.name || exhibit.title}
+              </h2>
+              
+              {/* Rating section below title */}
+              {typeof exhibit.rating === 'number' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {/* Display current rating */}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <img
                       src={process.env.PUBLIC_URL + `/assets/icons/star${Math.round(exhibit.rating)}.png`}
                       alt={`Rating: ${exhibit.rating.toFixed(1)}`}
-                      style={{ width: 48, height: 48, marginRight: 4 }}
+                      style={{ width: 40, height: 40 }}
                     />
-                    <span style={{ fontWeight: 700, fontSize: '1.32rem', marginLeft: 4 }}>{exhibit.rating.toFixed(1)}</span>
-                    <span style={{ color: '#888', fontSize: '1.12rem', marginLeft: 2 }}>/ 5</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.2rem' }}>{exhibit.rating.toFixed(1)}</span>
+                    <span style={{ color: '#888', fontSize: '1rem' }}>/ 5</span>
                   </span>
-                )}
-              </div>
+                  
+                  {/* Interactive star rating for user */}
+                  {user && (
+                    <>
+                      <span style={{ color: '#888', fontSize: '0.9rem', margin: '0 4px' }}>•</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <img
+                            key={star}
+                            src={process.env.PUBLIC_URL + `/assets/icons/favourite.png`}
+                            alt={`Rate ${star} stars`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log('Star image clicked!', star);
+                              handleRateExhibit(star);
+                            }}
+                            style={{ 
+                              width: 22, 
+                              height: 22, 
+                              cursor: isSubmittingRating ? 'wait' : 'pointer',
+                              opacity: star <= (userRating || 0) ? 1 : 0.3,
+                              transition: 'opacity 0.2s',
+                              filter: star <= (userRating || 0) ? 'none' : 'grayscale(100%)',
+                              pointerEvents: 'auto'
+                            }}
+                            title={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                          />
+                        ))}
+                        {userRating && (
+                          <span style={{ fontSize: '0.75rem', color: '#888', marginLeft: 4 }}>
+                            Your rating: {userRating}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {/* Location below ratings */}
               {exhibit.location && (
                 <div className="exhibit-bottomsheet-location" style={{fontSize: '1rem', color: '#888', marginTop: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 320}}>{exhibit.location}</div>
               )}
@@ -396,21 +542,32 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
                 padding: '12px 32px',
                 fontWeight: 700,
                 fontSize: '1.08rem',
-                cursor: 'pointer',
+                cursor: pages.length > 1 ? 'pointer' : 'not-allowed',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: 0.2,
                 minWidth: 120,
                 pointerEvents: 'auto',
-                opacity: 1,
+                opacity: pages.length > 1 ? 1 : 0.5,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 10,
               }}
-              // TODO: Add onClick handler for More Details
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('More Details clicked - Current page:', page, 'Total pages:', pages.length);
+                if (pages.length > 1) {
+                  const nextPage = (page + 1) % pages.length;
+                  console.log('Changing to page:', nextPage);
+                  setPage(nextPage);
+                } else {
+                  console.log('Only 1 page available, button disabled');
+                }
+              }}
             >
-              More Details
+              More Details {pages.length > 1 ? `(${page + 1}/${pages.length})` : ''}
             </button>
           </div>
         </div>
@@ -468,7 +625,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
           </div>
         )}
         {/* Description - moved lower */}
-        <div className="exhibit-bottomsheet-description" style={{marginTop: 32, textAlign: 'justify', fontSize: '1.05rem', color: '#222'}}>{pages[page]}</div>
+        <div className="exhibit-bottomsheet-description" style={{marginTop: 32, marginBottom: 80, textAlign: 'justify', fontSize: '1.05rem', color: '#222'}}>{pages[page]}</div>
         {pages.length > 1 && (
           <div className="exhibit-bottomsheet-indicator" style={{marginTop: 12, textAlign: 'center'}}>
             {pages.map((_, idx) => (

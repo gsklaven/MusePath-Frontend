@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  wake-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Render backend
+        run: |
+          echo "Waking up backend at https://musepath-backend.onrender.com..."
+          for i in {1..10}; do
+            curl -f https://musepath-backend.onrender.com/v1/health && break || echo "Attempt $i failed, retrying in 10s..." && sleep 10
+          done
+          echo "Backend is ready!"
+
+  happy-paths:
+    runs-on: ubuntu-latest
+    needs: wake-backend
+    env:
+      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
+      CYPRESS_BASE_URL: http://localhost:3000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cypress Happy Paths
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: electron
+          headed: false
+          spec: cypress/e2e/happy-paths.cy.js
+          config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
+        env:
+          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
+          CYPRESS_BASE_URL: http://localhost:3000
+          CI: true
+
+  unhappy-paths:
+    runs-on: ubuntu-latest
+    needs: wake-backend
+    env:
+      REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
+      CYPRESS_BASE_URL: http://localhost:3000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cypress Unhappy Paths
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: electron
+          headed: false
+          spec: cypress/e2e/unhappy-paths.cy.js
+          config: defaultCommandTimeout=60000,requestTimeout=60000,responseTimeout=60000
+        env:
+          REACT_APP_API_BASE_URL: https://musepath-backend.onrender.com/v1
+          CYPRESS_BASE_URL: http://localhost:3000
+          CI: true
+
+  cd:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [happy-paths, unhappy-paths]
+    steps:
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key:  ${{ secrets.RENDER_API_KEY }}

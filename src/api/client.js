@@ -1,34 +1,41 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+/**
+ * Axios client configured for backend API communication.
+ * Uses Authorization header with Bearer token for authentication.
+ * Falls back to cookies for backwards compatibility.
+ * Handles 401 redirects to login page.
+ */
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Enable sending cookies with requests (fallback)
 });
 
-// Request interceptor for adding auth token
+// Request interceptor - adds Authorization header if token exists
 apiClient.interceptors.request.use(
   (config) => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.token) {
-      config.headers.Authorization = `Basic ${user.token}`;
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor for handling errors
+// Response interceptor - handles unauthorized errors
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Redirect to login on 401 (unauthorized)
     if (error.response?.status === 401) {
       localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
       window.location.href = '/login';
     }
     return Promise.reject(error);

@@ -238,6 +238,24 @@
   color: white;
 }
 
+.auth-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  margin-left: 8px;
+  background: #805ad5;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auth-status {
+  display: flex;
+  align-items: center;
+}
+
 .endpoint-details {
   margin-bottom: 15px;
 }
