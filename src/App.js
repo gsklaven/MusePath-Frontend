@@ -10,6 +10,10 @@ import { register401ModalHandler } from './api/client';
  */
 
 
+/**
+ * Main App component - wraps application with routing and authentication context.
+ */
+
 function App() {
   const [show401, setShow401] = useState(false);
 
@@ -28,6 +32,7 @@ function App() {
       <AuthContextProvider>
         <AppRouter />
         <UnauthorizedModal isOpen={show401} onClose={handleClose401} />
+
       </AuthContextProvider>
     </BrowserRouter>
   );
