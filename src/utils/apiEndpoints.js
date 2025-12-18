@@ -5,10 +5,12 @@
  * Each endpoint includes metadata for automated testing and documentation.
  */
 
+// Helper: construct endpoint metadata objects used throughout tests
 const endpoint = (id, category, name, method, path, description, sampleData = null, requiresAuth = null, createFirst = null) => ({
   id, category, name, method, path, description, sampleData, requiresAuth, createFirst,
 });
 
+// Convenience wrappers for common HTTP methods (keeps endpoint definitions concise)
 const get = (id, cat, name, path, desc, auth = null, dep = null) => 
   endpoint(id, cat, name, 'GET', path, desc, null, auth, dep);
 
@@ -21,23 +23,29 @@ const put = (id, cat, name, path, desc, data, auth = null, dep = null) =>
 const del = (id, cat, name, path, desc, auth = null, dep = null) => 
   endpoint(id, cat, name, 'DELETE', path, desc, null, auth, dep);
 
+// --- Endpoint groups ------------------------------------------------------
+// Each exported array groups related endpoints used by the frontend and tests.
 export const HEALTH_ENDPOINTS = [
+  // Health-check endpoints for basic API liveness and readiness
   get('health', 'Health Check', 'Health Status', '/health', 'Έλεγχος λειτουργίας API'),
 ];
 
 export const AUTH_ENDPOINTS = [
+  // Authentication: register/login/logout helpers used by integration tests
   post('auth-register', 'Authentication', 'Register User', '/auth/register', 'Δημιουργία νέου λογαριασμού', 
     () => ({
       username: 'test_user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
       email: 'test_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5) + '@example.com',
       password: 'Test123!@#',
     })),
+  // Standard login payload for tests that require an existing account
   post('auth-login', 'Authentication', 'Login', '/auth/login', 'Σύνδεση χρήστη', 
     { username: 'john_smith', password: 'Password123!' }),
   post('auth-logout', 'Authentication', 'Logout', '/auth/logout', 'Αποσύνδεση χρήστη', null, 'user'),
 ];
 
 export const EXHIBIT_ENDPOINTS = [
+  // Exhibit-related endpoints (search, details, audio, ratings, admin ops)
   get('exhibits-search', 'Exhibits', 'Search Exhibits', '/exhibits/search?exhibit_term=starry&mode=online', 'Αναζήτηση εκθεμάτων'),
   get('exhibits-get', 'Exhibits', 'Get Exhibit by ID', '/exhibits/1', 'Λεπτομέρειες συγκεκριμένου εκθέματος'),
   get('exhibits-audio', 'Exhibits', 'Get Audio Guide', '/exhibits/1/audio', 'Audio guide εκθέματος'),
@@ -60,6 +68,7 @@ export const EXHIBIT_ENDPOINTS = [
 ];
 
 export const ROUTE_ENDPOINTS = [
+  // Route endpoints: create, view, update, recalculate, delete
   post('routes-create', 'Routes', 'Calculate Route', '/routes', 'Υπολογισμός διαδρομής', 
     { user_id: 1, destination_id: 2, startLat: 40.7610, startLng: -73.9780 }, 'user'),
   get('routes-get', 'Routes', 'Get Route Details', '/routes/1', 'Λεπτομέρειες διαδρομής', 'user', 'routes-create'),
@@ -70,6 +79,7 @@ export const ROUTE_ENDPOINTS = [
 ];
 
 export const USER_ENDPOINTS = [
+  // User endpoints: preferences, favourites, personalized routes
   put('users-preferences', 'Users', 'Update Preferences', '/users/1/preferences', 'Ενημέρωση προτιμήσεων χρήστη', 
     { interests: ['modern art', 'sculpture', 'impressionism'] }, 'user'),
   post('users-favourites-add', 'Users', 'Add to Favourites', '/users/1/favourites', 'Προσθήκη στα αγαπημένα', 
@@ -79,6 +89,7 @@ export const USER_ENDPOINTS = [
 ];
 
 export const MAP_ENDPOINTS = [
+  // Map management endpoints for upload, retrieval and admin deletion
   post('maps-upload', 'Maps', 'Upload Map', '/maps', 'Upload χάρτη', 
     { mapData: 'base64_encoded_map_data', format: 'image/png' }, 'admin'),
   get('maps-get', 'Maps', 'Get Map by ID', '/maps/1', 'Λήψη χάρτη'),
@@ -87,6 +98,7 @@ export const MAP_ENDPOINTS = [
 ];
 
 export const DESTINATION_ENDPOINTS = [
+  // Destination endpoints for listing, upload and admin deletion
   get('destinations-list', 'Destinations', 'List Destinations', '/destinations', 'Λίστα όλων των προορισμών'),
   post('destinations-upload', 'Destinations', 'Upload Destinations', '/destinations', 'Upload προορισμών', {
     map_id: 1,
@@ -97,12 +109,14 @@ export const DESTINATION_ENDPOINTS = [
 ];
 
 export const COORDINATE_ENDPOINTS = [
+  // Coordinates: read and update user location data
   get('coordinates-get', 'Coordinates', 'Get User Coordinates', '/coordinates/1', 'Τοποθεσία χρήστη', 'user'),
   put('coordinates-update', 'Coordinates', 'Update Coordinates', '/coordinates/1', 'Ενημέρωση τοποθεσίας', 
     { lat: 40.7612, lng: -73.9778 }, 'user'),
 ];
 
 export const SYSTEM_ENDPOINTS = [
+  // System endpoints: notifications and sync operations
   post('notifications-send', 'Notifications', 'Send Notification', '/notifications', 
     'Αποστολή ειδοποίησης (Uses route_id 2 - backup route for testing)', 
     { user_id: 1, route_id: 2, currentLat: 40.7610, currentLng: -73.9780 }, 'user'),
@@ -111,6 +125,7 @@ export const SYSTEM_ENDPOINTS = [
 ];
 
 export const ALL_ENDPOINTS = [
+  // Aggregate: flatten all endpoint groups into a single list for iteration
   ...HEALTH_ENDPOINTS,
   ...AUTH_ENDPOINTS,
   ...EXHIBIT_ENDPOINTS,
