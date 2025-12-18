@@ -1,19 +1,24 @@
 import apiClient from './client';
 
+// Basic ID validator used across user APIs
+const isValidId = (id) => {
+  if (id === undefined || id === null) return false;
+  const n = Number(id);
+  return !Number.isNaN(n) && Number.isFinite(n) && Number.isInteger(n) && n > 0;
+};
+
 // Add exhibit to favourites
 export const addToFavourites = async (userId, exhibitId) => {
   // Basic validation
-  if (!userId || !exhibitId) throw new TypeError('userId and exhibitId are required');
+  if (!isValidId(userId) || !isValidId(exhibitId)) throw new TypeError('userId and exhibitId must be positive integers');
   const uid = Number(userId);
   const eid = Number(exhibitId);
-  if (isNaN(uid) || !Number.isFinite(uid) || !Number.isInteger(uid) || uid <= 0) throw new TypeError('Invalid userId');
-  if (isNaN(eid) || !Number.isFinite(eid) || !Number.isInteger(eid) || eid <= 0) throw new TypeError('Invalid exhibitId');
 
-  console.log('🔍 API Call: POST /users/%s/favourites (exhibitId=%s)', String(uid), String(eid));
+  console.log(`🔍 API Call: POST /users/${String(uid)}/favourites (exhibitId=${String(eid)})`);
   const response = await apiClient.post(`/users/${uid}/favourites`, {
     exhibit_id: eid,
   });
-  console.log('✅ Response: POST /users/%s/favourites', String(uid), response.data);
+  console.log(`✅ Response: POST /users/${String(uid)}/favourites`, response.data);
   return response.data;
 };
 
@@ -21,8 +26,7 @@ export const addToFavourites = async (userId, exhibitId) => {
 export const removeFromFavourites = async (userId, exhibitId) => {
   const uid = Number(userId);
   const eid = Number(exhibitId);
-  if (isNaN(uid) || !Number.isFinite(uid) || !Number.isInteger(uid) || uid <= 0) throw new TypeError('Invalid userId');
-  if (isNaN(eid) || !Number.isFinite(eid) || !Number.isInteger(eid) || eid <= 0) throw new TypeError('Invalid exhibitId');
+  if (!isValidId(uid) || !isValidId(eid)) throw new TypeError('Invalid userId or exhibitId');
 
   const response = await apiClient.delete(`/users/${uid}/favourites/${eid}`);
   return response.data;
@@ -31,7 +35,7 @@ export const removeFromFavourites = async (userId, exhibitId) => {
 // Update user preferences
 export const updateUserPreferences = async (userId, interests) => {
   const uid = Number(userId);
-  if (isNaN(uid) || !Number.isFinite(uid) || !Number.isInteger(uid) || uid <= 0) throw new TypeError('Invalid userId');
+  if (!isValidId(uid)) throw new TypeError('Invalid userId');
   if (!Array.isArray(interests)) throw new TypeError('interests must be an array');
 
   // sanitize interests array to strings and limit length
@@ -46,11 +50,11 @@ export const updateUserPreferences = async (userId, interests) => {
 // Get user coordinates
 export const getUserCoordinates = async (userId) => {
   const uid = Number(userId);
-  if (isNaN(uid) || !Number.isFinite(uid) || !Number.isInteger(uid) || uid <= 0) throw new TypeError('Invalid userId');
+  if (!isValidId(uid)) throw new TypeError('Invalid userId');
 
-  console.log('📍 API Call: GET /coordinates/%s', String(uid));
+  console.log(`📍 API Call: GET /coordinates/${String(uid)}`);
   const response = await apiClient.get(`/coordinates/${uid}`);
-  console.log('✅ Response: GET /coordinates/%s', String(uid), response.data);
+  console.log(`✅ Response: GET /coordinates/${String(uid)}`, response.data);
   // Backend returns { success, data, message, error }
   // We need the actual coordinate data
   return response.data && response.data.data ? response.data.data : response.data;
@@ -59,7 +63,7 @@ export const getUserCoordinates = async (userId) => {
 // Update user coordinates
 export const updateUserCoordinates = async (userId, lat, lng) => {
   const uid = Number(userId);
-  if (isNaN(uid) || !Number.isFinite(uid) || !Number.isInteger(uid) || uid <= 0) throw new TypeError('Invalid userId');
+  if (!isValidId(uid)) throw new TypeError('Invalid userId');
 
   const latitude = Number(lat);
   const longitude = Number(lng);

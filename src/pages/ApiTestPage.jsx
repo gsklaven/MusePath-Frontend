@@ -185,7 +185,7 @@ const createErrorResult = (error, duration) => {
  */
 const logTestResult = (success, method, path, details) => {
   const icon = success ? '✅ Success' : '❌ Failed';
-  console.log('%s: %s %s', icon, String(method), String(path), details);
+  console.log(`${icon}: ${String(method)} ${String(path)}`, details);
 };
 
 const ApiTestPage = () => {
@@ -289,7 +289,7 @@ const ApiTestPage = () => {
       }
     }
 
-    console.log('🧪 Testing: %s %s', String(endpoint.method), String(dynamicPath));
+    console.log(`🧪 Testing: ${String(endpoint.method)} ${String(dynamicPath)}`);
     
     try {
       // Handle authentication if required

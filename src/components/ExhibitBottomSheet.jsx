@@ -135,7 +135,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       } else {
         // Load and play audio
         setAudioError(null);
-        console.log('🎵 API Call: GET /exhibits/%s/audio', String(exhibitId));
+        console.log(`🎵 API Call: GET /exhibits/${String(exhibitId)}/audio`);
         
         const audioBlob = await getExhibitAudio(exhibitId, 'online');
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -150,7 +150,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
         
         await audioRef.current.play();
         setIsPlayingAudio(true);
-        console.log('✅ Audio playing for exhibit %s', String(exhibitId));
+        console.log(`✅ Audio playing for exhibit ${String(exhibitId)}`);
       }
     } catch (err) {
       console.error('❌ Error playing audio:', err);
@@ -176,7 +176,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
     
     try {
       setIsSubmittingRating(true);
-      console.log('⭐ Rating exhibit %s with %d stars', String(exhibitId), rating);
+      console.log(`⭐ Rating exhibit ${String(exhibitId)} with ${rating} stars`);
       
       await rateExhibit(exhibitId, rating);
       setUserRating(rating);
@@ -245,7 +245,7 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
 
       // Step 1: Get user's current location
-      console.log('📍 Getting user location for route creation (userId: %s)...', String(userId));
+      console.log(`📍 Getting user location for route creation (userId: ${String(userId)})...`);
       const userCoords = await getUserCoordinates(userId);
 
       if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
@@ -256,10 +256,10 @@ const ExhibitBottomSheet = ({ open, onClose, exhibit }) => {
       const lat = userCoords.latitude || userCoords.lat;
       const lng = userCoords.longitude || userCoords.lng;
       
-      console.log('✅ User location: %s, %s', String(lat), String(lng));
+      console.log(`✅ User location: ${String(lat)}, ${String(lng)}`);
 
       // Step 2: Create route from user location to exhibit
-      console.log('🗺️ Creating route to exhibit %s...', String(exhibitId));
+      console.log(`🗺️ Creating route to exhibit ${String(exhibitId)}...`);
       const routeData = {
         user_id: userId,
         destination_id: exhibitId,
