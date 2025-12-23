@@ -1,5 +1,6 @@
 /**
  * User API Endpoints
+ * 
  * Definitions for endpoints related to user accounts, authentication, and personal data.
  */
 import {
@@ -12,6 +13,7 @@ import {
 
 /**
  * Authentication endpoints for user registration, login, and logout
+ * Authentication endpoints
  */
 export const AUTH_ENDPOINTS = [
   POST(
@@ -43,6 +45,7 @@ export const AUTH_ENDPOINTS = [
 
 /**
  * Route endpoints for creating and managing navigation routes
+ * Route management endpoints
  */
 export const ROUTE_ENDPOINTS = [
   POST(
@@ -101,6 +104,7 @@ export const ROUTE_ENDPOINTS = [
 
 /**
  * User endpoints for managing preferences and favorites
+ * User profile and preference endpoints
  */
 export const USER_ENDPOINTS = [
   PUT(
@@ -141,6 +145,7 @@ export const USER_ENDPOINTS = [
 
 /**
  * Coordinate endpoints for tracking user location
+ * Geolocation endpoints
  */
 export const COORDINATE_ENDPOINTS = [
   GET(

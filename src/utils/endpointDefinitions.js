@@ -11,13 +11,13 @@ export * from './contentEndpoints';
  * @type {Array<Object>}
  */
 export const ALL_ENDPOINTS = [
-  ...HEALTH_ENDPOINTS,
-  ...AUTH_ENDPOINTS,
-  ...EXHIBIT_ENDPOINTS,
-  ...ROUTE_ENDPOINTS,
-  ...USER_ENDPOINTS,
-  ...MAP_ENDPOINTS,
-  ...DESTINATION_ENDPOINTS,
-  ...COORDINATE_ENDPOINTS,
-  ...SYSTEM_ENDPOINTS,
+  ...(HEALTH_ENDPOINTS || []),
+  ...(AUTH_ENDPOINTS || []),
+  ...(EXHIBIT_ENDPOINTS || []),
+  ...(ROUTE_ENDPOINTS || []),
+  ...(USER_ENDPOINTS || []),
+  ...(MAP_ENDPOINTS || []),
+  ...(DESTINATION_ENDPOINTS || []),
+  ...(COORDINATE_ENDPOINTS || []),
+  ...(SYSTEM_ENDPOINTS || []),
 ];

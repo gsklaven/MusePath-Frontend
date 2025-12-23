@@ -3,6 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import { getUserCoordinates } from '../api/users';
 import { createRoute } from '../api/routes';
 
+// Helper to determine valid user ID
+const getValidUserId = (user) => {
+  return (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
+};
+
+// Helper to fetch and validate location
+const fetchUserLocation = async (userId) => {
+  const userCoords = await getUserCoordinates(userId);
+  
+  if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
+    throw new Error('Could not get your current location');
+  }
+
+  return {
+    lat: userCoords.latitude || userCoords.lat,
+    lng: userCoords.longitude || userCoords.lng
+  };
+};
+
+// Helper to create fallback route object
+const createFallbackRoute = (exhibit) => ({
+  route_id: 999,
+  instructions: ['Head north', 'Turn right'],
+  distance: 1200,
+  estimatedTime: 900,
+  arrivalTime: '12:00',
+  destination: { name: exhibit?.name || exhibit?.title || 'Exhibit' },
+});
+
 /**
  * Custom hook for creating navigation routes to an exhibit.
  * Handles user location retrieval and route API calls.
@@ -26,17 +55,10 @@ export const useExhibitRoute = (user, exhibit, onClose) => {
     try {
       setIsCreatingRoute(true);
       setRouteError(null);
-      const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
       
+      const userId = getValidUserId(user);
       // Step 1: Get current user location
-      const userCoords = await getUserCoordinates(userId);
-
-      if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
-        throw new Error('Could not get your current location');
-      }
-
-      const lat = userCoords.latitude || userCoords.lat;
-      const lng = userCoords.longitude || userCoords.lng;
+      const { lat, lng } = await fetchUserLocation(userId);
       
       const routeData = {
         user_id: userId,
@@ -52,14 +74,7 @@ export const useExhibitRoute = (user, exhibit, onClose) => {
     } catch (err) {
       console.error('❌ Error creating route:', err);
       // Fallback route for demo/offline purposes
-      const fallbackRoute = {
-        route_id: 999,
-        instructions: ['Head north', 'Turn right'],
-        distance: 1200,
-        estimatedTime: 900,
-        arrivalTime: '12:00',
-        destination: { name: exhibit?.name || exhibit?.title || 'Exhibit' },
-      };
+      const fallbackRoute = createFallbackRoute(exhibit);
       setRouteError(err.message || 'Backend unavailable, using fallback route.');
       onClose();
       navigate('/navigation', { state: { route: fallbackRoute } });

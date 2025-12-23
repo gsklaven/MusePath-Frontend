@@ -92,14 +92,7 @@ export const MAP_ENDPOINTS = [
     { mapData: 'base64_encoded_map_data', format: 'image/png' },
     'admin'
   ),
-McCabe Cyclomatic Complexity
-1.47
-1 file exceeds recommended value (4)
-
-Affects 0.97% of source code.
-
-
-Try to reduce the complexity of your methods. Maybe consider splitting complex methods into multiple simpler ones.  // Retrieve map metadata and image
+  // Retrieve map metadata and image
   GET(
     'maps-get',
     'Maps',
