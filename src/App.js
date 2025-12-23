@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { BrowserRouter, useNavigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
 import AppRouter from './router/AppRouter';
 import UnauthorizedModal from './components/UnauthorizedModal';

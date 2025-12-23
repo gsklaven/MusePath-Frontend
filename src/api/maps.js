@@ -15,11 +15,11 @@ export const getMapById = async (mapId, zoom = null, rotation = null, mode = 'on
   if (zoom != null && !Number.isFinite(Number(zoom))) throw new TypeError('Invalid zoom');
   if (rotation != null && !Number.isFinite(Number(rotation))) throw new TypeError('Invalid rotation');
 
-  console.log('🔍 API Call: GET /maps/%s?mode=%s', String(mapId), String(mode));
+  console.log(`🔍 API Call: GET /maps/${String(mapId)}?mode=${String(mode)}`);
   const response = await apiClient.get(`/maps/${mapId}`, {
     params: { zoom, rotation, mode },
   });
-  console.log('✅ Response: GET /maps/%s', String(mapId), response.data);
+  console.log(`✅ Response: GET /maps/${String(mapId)}`, response.data);
   return response.data;
 };
 

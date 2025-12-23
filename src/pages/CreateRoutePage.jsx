@@ -38,16 +38,11 @@
  * - searchExhibits(): Searches exhibits for adding as stops
  * - calculateRoute(): Computes optimal route with all waypoints
  */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { calculateRoute } from '../api/routes';
-import { searchExhibits } from '../api/exhibits';
-import { getDestinations, getDestinationById } from '../api/maps';
-import Header from '../components/Header/Header';
-import Button from '../components/Button';
-import Card from '../components/Card';
-import SearchBar from '../components/SearchBar';
+import { calculateRoute, searchExhibits, getDestinations, getDestinationById } from '../api';
+import { Header, Button, Card, SearchBar } from '../components';
 import './CreateRoutePage.css';
 
 const CreateRoutePage = () => {

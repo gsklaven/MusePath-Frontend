@@ -1,0 +1,25 @@
+/**
+ * Page Exports
+ * 
+ * This file serves as a central export point for all application pages (views).
+ * It allows importing multiple pages from a single path, simplifying
+ * routing configuration and imports throughout the application.
+ * 
+ * Usage:
+ * import { WelcomePage, MapPage } from '../pages';
+ */
+export { default as WelcomePage } from './WelcomePage';
+export { default as LoginPage } from './LoginPage';
+export { default as RegisterPage } from './RegisterPage';
+export { default as MapPage } from './MapPage';
+export { default as QuestionnairePage } from './QuestionnairePage';
+export { default as QuestionnaireIntroPage } from './QuestionnaireIntroPage';
+export { default as SettingsPage } from './SettingsPage';
+export { default as FavouritesPage } from './FavouritesPage';
+export { default as RatingsPage } from './RatingsPage';
+export { default as CreateRoutePage } from './CreateRoutePage';
+export { default as NavigationPage } from './NavigationPage';
+export { default as PersonalizedRoutePage } from './PersonalizedRoutePage';
+export { default as OfflineContentPage } from './OfflineContentPage';
+export { default as ManageOfflinePage } from './ManageOfflinePage';
+export { default as ApiTestPage } from './ApiTestPage';

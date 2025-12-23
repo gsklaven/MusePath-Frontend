@@ -10,7 +10,7 @@ export const createRoute = async (routeData) => {
 
 // Calculate route (legacy - kept for compatibility)
 export const calculateRoute = async (userId, destinationId, startLat, startLng) => {
-  console.log('🔍 API Call: POST /routes (userId=%s, destId=%s)', String(userId), String(destinationId));
+  console.log(`🔍 API Call: POST /routes (userId=${String(userId)}, destId=${String(destinationId)})`);
   const response = await apiClient.post('/routes', {
     user_id: userId,
     destination_id: destinationId,

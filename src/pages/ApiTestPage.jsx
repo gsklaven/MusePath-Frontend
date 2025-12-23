@@ -1,27 +1,8 @@
 /**
- * ApiTestPage Component
- * 
- * Development and testing interface for all backend API endpoints.
- * Provides a comprehensive UI for testing REST API calls with real-time results display.
- * 
- * Architecture:
- * - Modular design with separated concerns (validation, execution, UI)
- * - Endpoint configurations extracted to apiEndpoints.js for reusability
- * - Small, focused functions for better maintainability
- * 
- * Key Functions:
- * - safeSerialize(): Safely converts objects to JSON
- * - validateEndpoint(): Validates endpoint structure and parameters
- * - sanitizePath(): Prevents path traversal attacks
- * - executeRequest(): Handles HTTP request based on method
- * - testEndpoint(): Main testing orchestrator
- * - checkConnection(): Verifies backend connectivity
- * 
- * Security Features:
- * - Path validation (no "..", must start with "/")
- * - Method whitelist (GET, POST, PUT, DELETE only)
- * - Safe serialization to prevent circular references
- * - Input sanitization for sample data
+ * @file ApiTestPage.jsx
+ * @description A development and testing interface for all backend API endpoints.
+ * This page provides a UI to trigger and inspect API calls, view their results,
+ * and test different authentication scenarios. It's a crucial tool for backend and frontend integration testing.
  */
 import React, { useState } from 'react';
 import apiClient from '../api/client';
@@ -34,9 +15,9 @@ const ADMIN_USER = { username: 'john_smith', password: 'Password123!' };
 const NORMAL_USER = { username: 'john_smith', password: 'Password123!' };
 
 /**
- * Safely serializes objects to JSON, handling circular references
- * @param {*} obj - Object to serialize
- * @returns {*} Serialized object or string representation
+ * Safely serializes an object to JSON, handling circular references and other errors.
+ * @param {*} obj - The object to serialize.
+ * @returns {string|null} The serialized JSON string, a string representation, or null if serialization fails.
  */
 const safeSerialize = (obj) => {
   try {
@@ -51,9 +32,9 @@ const safeSerialize = (obj) => {
 };
 
 /**
- * Validates endpoint path for security
- * @param {string} path - Endpoint path to validate
- * @returns {boolean} True if path is valid
+ * Validates an endpoint path for security, ensuring it's a valid string and not a traversal attempt.
+ * @param {string} path - The endpoint path to validate.
+ * @returns {boolean} True if the path is valid.
  */
 const isValidPath = (path) => {
   return typeof path === 'string' 
@@ -63,9 +44,9 @@ const isValidPath = (path) => {
 };
 
 /**
- * Validates HTTP method
- * @param {string} method - HTTP method to validate
- * @returns {boolean} True if method is allowed
+ * Validates that the HTTP method is one of the allowed methods.
+ * @param {string} method - The HTTP method to validate.
+ * @returns {boolean} True if the method is allowed.
  */
 const isValidMethod = (method) => {
   const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
@@ -73,9 +54,9 @@ const isValidMethod = (method) => {
 };
 
 /**
- * Validates endpoint object structure
- * @param {object} endpoint - Endpoint configuration
- * @returns {object} { isValid: boolean, error: string|null }
+ * Validates the structure of an endpoint configuration object.
+ * @param {object} endpoint - The endpoint configuration object.
+ * @returns {{isValid: boolean, error: string|null}} An object indicating if the endpoint is valid and an error message if not.
  */
 const validateEndpoint = (endpoint) => {
   if (!endpoint || typeof endpoint !== 'object') {
@@ -94,9 +75,9 @@ const validateEndpoint = (endpoint) => {
 };
 
 /**
- * Sanitizes sample data for API request
- * @param {*} sampleData - Data to sanitize (can be object or function)
- * @returns {object} Sanitized data object
+ * Sanitizes the sample data for an API request. If the data is a function, it's executed to get fresh data.
+ * @param {*} sampleData - The data to sanitize, which can be an object or a function.
+ * @returns {object} A sanitized data object ready for the request body.
  */
 const sanitizeSampleData = (sampleData) => {
   if (!sampleData) return {};
@@ -121,11 +102,11 @@ const sanitizeSampleData = (sampleData) => {
 };
 
 /**
- * Executes HTTP request based on method
- * @param {string} method - HTTP method
- * @param {string} path - API path
- * @param {object} data - Request body data
- * @returns {Promise} Axios response
+ * Executes an HTTP request using the API client based on the specified method.
+ * @param {string} method - The HTTP method (GET, POST, PUT, DELETE).
+ * @param {string} path - The API endpoint path.
+ * @param {object} data - The request body data for POST and PUT requests.
+ * @returns {Promise<object>} A promise that resolves with the Axios response.
  */
 const executeRequest = async (method, path, data) => {
   const config = {};
@@ -145,10 +126,10 @@ const executeRequest = async (method, path, data) => {
 };
 
 /**
- * Creates success result object
- * @param {object} response - Axios response
- * @param {number} duration - Request duration in ms
- * @returns {object} Success result
+ * Creates a standardized success result object for the UI.
+ * @param {object} response - The Axios response object.
+ * @param {number} duration - The request duration in milliseconds.
+ * @returns {object} A success result object.
  */
 const createSuccessResult = (response, duration) => {
   return {
@@ -161,10 +142,10 @@ const createSuccessResult = (response, duration) => {
 };
 
 /**
- * Creates error result object
- * @param {Error} error - Error object
- * @param {number} duration - Request duration in ms
- * @returns {object} Error result
+ * Creates a standardized error result object for the UI.
+ * @param {Error} error - The error object caught during the request.
+ * @param {number} duration - The request duration in milliseconds.
+ * @returns {object} An error result object.
  */
 const createErrorResult = (error, duration) => {
   return {
@@ -177,17 +158,21 @@ const createErrorResult = (error, duration) => {
 };
 
 /**
- * Logs test result to console
- * @param {boolean} success - Whether test succeeded
- * @param {string} method - HTTP method
- * @param {string} path - API path
- * @param {object} details - Additional details
+ * Logs the result of an API test to the console for debugging.
+ * @param {boolean} success - Whether the test was successful.
+ * @param {string} method - The HTTP method used.
+ * @param {string} path - The API endpoint path.
+ * @param {object} details - Additional details about the test result.
  */
 const logTestResult = (success, method, path, details) => {
   const icon = success ? '✅ Success' : '❌ Failed';
-  console.log('%s: %s %s', icon, String(method), String(path), details);
+  console.log(`${icon}: ${String(method)} ${String(path)}`, details);
 };
 
+/**
+ * Renders the API test page, a dashboard for manually testing all backend endpoints.
+ * @returns {JSX.Element} The ApiTestPage component.
+ */
 const ApiTestPage = () => {
   const [results, setResults] = useState({});
   const [loading, setLoading] = useState({});
@@ -197,9 +182,9 @@ const ApiTestPage = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/v1';
 
   /**
-   * Login helper
-   * @param {object} user - User credentials {username, password}
-   * @param {string} role - 'user' or 'admin'
+   * Logs in a user with the given credentials and role.
+   * @param {object} user - User credentials ({username, password}).
+   * @param {string} role - The role of the user ('user' or 'admin').
    */
   const login = async (user, role) => {
     try {
@@ -213,7 +198,7 @@ const ApiTestPage = () => {
   };
 
   /**
-   * Logout helper
+   * Logs out the current user.
    */
   const logout = async () => {
     try {
@@ -227,8 +212,8 @@ const ApiTestPage = () => {
   };
 
   /**
-   * Tests a single API endpoint
-   * @param {object} endpoint - Endpoint configuration
+   * Orchestrates the testing of a single API endpoint, handling auth, execution, and result display.
+   * @param {object} endpoint - The endpoint configuration from `apiEndpoints.js`.
    */
   const testEndpoint = async (endpoint) => {
     // Set loading state
@@ -244,7 +229,7 @@ const ApiTestPage = () => {
       return;
     }
 
-    // Handle create-first pattern for delete endpoints
+    // For DELETE tests, create a resource first to ensure something exists to be deleted.
     let dynamicPath = endpoint.path;
     if (endpoint.createFirst) {
       const createEndpoint = ALL_ENDPOINTS.find(e => e.id === endpoint.createFirst);
@@ -263,7 +248,7 @@ const ApiTestPage = () => {
             sanitizedData
           );
           
-          // Extract the ID from the response
+          // Extract the ID from the response to build the dynamic path for deletion.
           let createdId = null;
           if (createResponse.data?.data?.exhibitId) {
             createdId = createResponse.data.data.exhibitId;
@@ -276,7 +261,6 @@ const ApiTestPage = () => {
           }
           
           if (createdId) {
-            // Replace the hardcoded ID in the path
             dynamicPath = endpoint.path.replace(/\/\d+$/, `/${createdId}`);
             console.log(`✅ Created resource with ID ${createdId}, will delete: ${dynamicPath}`);
           } else {
@@ -289,7 +273,7 @@ const ApiTestPage = () => {
       }
     }
 
-    console.log('🧪 Testing: %s %s', String(endpoint.method), String(dynamicPath));
+    console.log(`🧪 Testing: ${String(endpoint.method)} ${String(dynamicPath)}`);
     
     try {
       // Handle authentication if required
@@ -352,7 +336,7 @@ const ApiTestPage = () => {
   };
 
   /**
-   * Tests all endpoints sequentially with delay
+   * Tests all defined endpoints sequentially with a delay between each test.
    */
   const testAllEndpoints = async () => {
     console.log('🚀 Starting to test all endpoints...');
@@ -367,14 +351,13 @@ const ApiTestPage = () => {
   };
 
   /**
-   * Checks backend connection via health endpoint
+   * Checks the backend connection by hitting the /health endpoint.
    */
   const checkConnection = async () => {
     console.log('🔌 Checking connection to backend...');
     
     try {
       const response = await apiClient.get('/health');
-      
       console.log('✅ Backend connection successful', response.data);
       
       setConnectionStatus({
@@ -394,8 +377,8 @@ const ApiTestPage = () => {
   };
 
   /**
-   * Groups endpoints by category for UI organization
-   * @returns {object} Endpoints grouped by category
+   * Groups endpoints by their 'category' property for organized rendering in the UI.
+   * @returns {object} An object where keys are categories and values are arrays of endpoints.
    */
   const getGroupedEndpoints = () => {
     return ALL_ENDPOINTS.reduce((acc, endpoint) => {
@@ -413,7 +396,7 @@ const ApiTestPage = () => {
     <div className="api-test-page">
       <header className="api-test-header">
         <h1>🧪 MusePath API Test Dashboard</h1>
-        <p>Δοκιμάστε όλα τα endpoints του backend με ένα κλικ</p>
+        <p>A tool to test all backend endpoints with a single click.</p>
         
         <div className="header-actions">
           <div className="connection-status">
@@ -449,6 +432,7 @@ const ApiTestPage = () => {
         </div>
       </header>
 
+      {/* Main content area with statistics and endpoint cards */}
       <div className="api-test-content">
         <div className="stats-bar">
           <div className="stat">
@@ -473,6 +457,7 @@ const ApiTestPage = () => {
           </div>
         </div>
 
+        {/* Render endpoints grouped by category */}
         {Object.entries(groupedEndpoints).map(([category, categoryEndpoints]) => (
           <div key={category} className="endpoint-category">
             <h2 className="category-title">📂 {category}</h2>
@@ -506,6 +491,7 @@ const ApiTestPage = () => {
                     <code className="endpoint-path">{endpoint.path}</code>
                   </div>
 
+                  {/* Display sample request body if available */}
                   {endpoint.sampleData && (
                     <details className="sample-data">
                       <summary>📝 Sample Request Body</summary>
@@ -519,6 +505,7 @@ const ApiTestPage = () => {
                     </details>
                   )}
 
+                  {/* Display the result of the API test */}
                   {results[endpoint.id] && (
                     <div className={`result-box ${results[endpoint.id].success ? 'success' : 'error'}`}>
                       <div className="result-header">
@@ -552,11 +539,11 @@ const ApiTestPage = () => {
 
       <footer className="api-test-footer">
         <p>
-          💡 <strong>Tip:</strong> Βεβαιωθείτε ότι το Backend τρέχει στο{' '}
+          💡 <strong>Tip:</strong> Make sure the backend is running at{' '}
           <code>{API_BASE_URL}</code>
         </p>
         <p>
-          📚 Για περισσότερες πληροφορίες, δείτε το <code>README.md</code>
+          📚 For more information, see the <code>README.md</code>
         </p>
       </footer>
     </div>
