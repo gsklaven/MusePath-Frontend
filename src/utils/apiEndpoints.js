@@ -8,6 +8,8 @@
  * @module apiEndpoints
  */
 
+import crypto from 'crypto';
+
 // ============================================================================
 // Core Endpoint Builder
 // ============================================================================
@@ -116,7 +118,7 @@ const DELETE = (id, category, name, path, description, requiresAuth = null, crea
  */
 const generateTestUser = () => {
   const timestamp = Date.now();
-  const randomId = Math.random().toString(36).substr(2, 5);
+  const randomId = crypto.randomBytes(4).toString('hex').slice(0, 5);
   
   return {
     username: `test_user_${timestamp}_${randomId}`,
