@@ -166,7 +166,7 @@ const createErrorResult = (error, duration) => {
  */
 const logTestResult = (success, method, path, details) => {
   const icon = success ? '✅ Success' : '❌ Failed';
-  console.log(`${icon}: ${String(method)} ${String(path)}`, details);
+  console.log('%s: %s %s', icon, String(method), String(path), details);
 };
 
 /**
@@ -190,9 +190,9 @@ const ApiTestPage = () => {
     try {
       await authApi.login(user.username, user.password);
       setAuthStatus({ loggedIn: true, as: role });
-      console.log(`🔐 Logged in as ${role}: ${user.username}`);
+      console.log('🔐 Logged in as %s: %s', role, user.username);
     } catch (error) {
-      console.error(`❌ Login failed for ${role}:`, error.message);
+      console.error('❌ Login failed for %s:', role, error.message);
       throw error;
     }
   };
@@ -262,7 +262,7 @@ const ApiTestPage = () => {
           
           if (createdId) {
             dynamicPath = endpoint.path.replace(/\/\d+$/, `/${createdId}`);
-            console.log(`✅ Created resource with ID ${createdId}, will delete: ${dynamicPath}`);
+            console.log('✅ Created resource with ID %s, will delete: %s', createdId, dynamicPath);
           } else {
             console.warn('⚠️ Could not extract ID from create response, using original path');
           }
@@ -273,7 +273,7 @@ const ApiTestPage = () => {
       }
     }
 
-    console.log(`🧪 Testing: ${String(endpoint.method)} ${String(dynamicPath)}`);
+    console.log('🧪 Testing: %s %s', String(endpoint.method), String(dynamicPath));
     
     try {
       // Handle authentication if required
