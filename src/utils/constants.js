@@ -40,17 +40,32 @@ export const DEFAULT_WALKING_SPEED = 5;
 
 /**
  * Default map settings
+ * Default map ID
+ * @type {number}
+ */
+export const DEFAULT_MAP_ID = 1;
+
+/**
+ * Default map zoom level
+ * @type {number}
+ */
+export const DEFAULT_ZOOM = 1;
+
+/**
+ * Default map rotation in degrees
+ * @type {number}
+ */
+export const DEFAULT_ROTATION = 0;
+
+/**
+ * Default map settings object
  * @type {Object.<string, number>}
  */
-export const MAP_DEFAULTS = {
-  ID: 1,
-  ZOOM: 1,
-  ROTATION: 0,
-};
-
-export const DEFAULT_MAP_ID = MAP_DEFAULTS.ID;
-export const DEFAULT_ZOOM = MAP_DEFAULTS.ZOOM;
-export const DEFAULT_ROTATION = MAP_DEFAULTS.ROTATION;
+export const MAP_DEFAULTS = Object.freeze({
+  ID: DEFAULT_MAP_ID,
+  ZOOM: DEFAULT_ZOOM,
+  ROTATION: DEFAULT_ROTATION,
+});
 
 // ==========================================
 // Exhibit Categories
@@ -60,7 +75,7 @@ export const DEFAULT_ROTATION = MAP_DEFAULTS.ROTATION;
  * Available exhibit categories for filtering and classification
  * @type {string[]}
  */
-export const EXHIBIT_CATEGORIES = [
+export const EXHIBIT_CATEGORIES = Object.freeze([
   'Art',
   'History',
   'Science',
@@ -69,7 +84,7 @@ export const EXHIBIT_CATEGORIES = [
   'Ancient Greece',
   'Sculpture',
   'Painting',
-];
+]);
 
 // ==========================================
 // User Preference Options
@@ -80,27 +95,27 @@ export const EXHIBIT_CATEGORIES = [
  * Used for personalizing exhibit recommendations
  * @type {string[]}
  */
-export const HISTORICAL_PERIODS = [
+export const HISTORICAL_PERIODS = Object.freeze([
   'Ancient Civilizations',
   'Medieval Period',
   'Renaissance',
   'Modern Era',
   'Contemporary',
-];
+]);
 
 /**
  * Artists and civilizations for preference selection
  * Used in multi-select questionnaire step
  * @type {string[]}
  */
-export const ARTISTS_CIVILIZATIONS = [
+export const ARTISTS_CIVILIZATIONS = Object.freeze([
   'Ancient Greece',
   'Ancient Rome',
   'Ancient Egypt',
   'Renaissance Masters',
   'Impressionists',
   'Modern Artists',
-];
+]);
 
 // ==========================================
 // Local Storage Keys
@@ -111,7 +126,7 @@ export const ARTISTS_CIVILIZATIONS = [
  * Centralized to prevent typos and enable easy refactoring
  * @type {Object.<string, string>}
  */
-export const STORAGE_KEYS = {
+export const STORAGE_KEYS = Object.freeze({
   /** User authentication and profile data */
   USER: 'user',
   /** Downloaded maps for offline use */
@@ -120,7 +135,7 @@ export const STORAGE_KEYS = {
   OFFLINE_EXHIBITS: 'offline_exhibits',
   /** Pending synchronization queue */
   PENDING_SYNC: 'pending_sync',
-};
+});
 
 // ==========================================
 // Route Status Values
@@ -130,7 +145,7 @@ export const STORAGE_KEYS = {
  * Possible states for route lifecycle
  * @type {Object.<string, string>}
  */
-export const ROUTE_STATUS = {
+export const ROUTE_STATUS = Object.freeze({
   /** Route being planned, not yet active */
   PLANNING: 'planning',
   /** Currently navigating this route */
@@ -139,7 +154,7 @@ export const ROUTE_STATUS = {
   COMPLETED: 'completed',
   /** Route cancelled by user */
   CANCELLED: 'cancelled',
-};
+});
 
 // ==========================================
 // Exhibit Status Values
@@ -150,14 +165,14 @@ export const ROUTE_STATUS = {
  * Determines if exhibit can be visited
  * @type {Object.<string, string>}
  */
-export const EXHIBIT_STATUS = {
+export const EXHIBIT_STATUS = Object.freeze({
   /** Exhibit open and available */
   OPEN: 'open',
   /** Exhibit closed to visitors */
   CLOSED: 'closed',
   /** Exhibit temporarily unavailable */
   UNDER_MAINTENANCE: 'under_maintenance',
-};
+});
 
 // ==========================================
 // Crowd Level Indicators
@@ -168,14 +183,14 @@ export const EXHIBIT_STATUS = {
  * Used for visitor flow management
  * @type {Object.<string, string>}
  */
-export const CROWD_LEVELS = {
+export const CROWD_LEVELS = Object.freeze({
   /** Few visitors, minimal wait times */
   LOW: 'low',
   /** Moderate visitors, some wait times */
   MEDIUM: 'medium',
   /** Many visitors, expect delays */
   HIGH: 'high',
-};
+});
 
 // ==========================================
 // Notification Types
@@ -186,7 +201,7 @@ export const CROWD_LEVELS = {
  * Determines styling and icon
  * @type {Object.<string, string>}
  */
-export const NOTIFICATION_TYPES = {
+export const NOTIFICATION_TYPES = Object.freeze({
   /** Informational message */
   INFO: 'info',
   /** Warning or caution */
@@ -195,7 +210,7 @@ export const NOTIFICATION_TYPES = {
   ERROR: 'error',
   /** Success confirmation */
   SUCCESS: 'success',
-};
+});
 
 // ==========================================
 // Validation Constants
@@ -203,17 +218,32 @@ export const NOTIFICATION_TYPES = {
 
 /**
  * Validation limits
+ * Minimum password length requirement
+ * @type {number}
+ */
+export const MIN_PASSWORD_LENGTH = 6;
+
+/**
+ * Minimum allowed rating value
+ * @type {number}
+ */
+export const MIN_RATING = 1;
+
+/**
+ * Maximum allowed rating value
+ * @type {number}
+ */
+export const MAX_RATING = 5;
+
+/**
+ * Validation limits object
  * @type {Object.<string, number>}
  */
-export const VALIDATION = {
-  MIN_PASSWORD_LENGTH: 6,
-  MIN_RATING: 1,
-  MAX_RATING: 5,
-};
-
-export const MIN_PASSWORD_LENGTH = VALIDATION.MIN_PASSWORD_LENGTH;
-export const MIN_RATING = VALIDATION.MIN_RATING;
-export const MAX_RATING = VALIDATION.MAX_RATING;
+export const VALIDATION = Object.freeze({
+  MIN_PASSWORD_LENGTH,
+  MIN_RATING,
+  MAX_RATING,
+});
 
 // ==========================================
 // Timing Constants
@@ -221,12 +251,22 @@ export const MAX_RATING = VALIDATION.MAX_RATING;
 
 /**
  * Timing intervals in milliseconds
+ * API request delay in milliseconds
+ * @type {number}
+ */
+export const API_REQUEST_DELAY = 1000;
+
+/**
+ * Location update interval in milliseconds
+ * @type {number}
+ */
+export const LOCATION_UPDATE_INTERVAL = 5000;
+
+/**
+ * Timing intervals object
  * @type {Object.<string, number>}
  */
-export const TIMING = {
-  API_REQUEST_DELAY: 1000,
-  LOCATION_UPDATE_INTERVAL: 5000,
-};
-
-export const API_REQUEST_DELAY = TIMING.API_REQUEST_DELAY;
-export const LOCATION_UPDATE_INTERVAL = TIMING.LOCATION_UPDATE_INTERVAL;
+export const TIMING = Object.freeze({
+  API_REQUEST_DELAY,
+  LOCATION_UPDATE_INTERVAL,
+});
