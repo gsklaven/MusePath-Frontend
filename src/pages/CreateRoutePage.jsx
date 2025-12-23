@@ -74,6 +74,7 @@ const CreateRoutePage = () => {
   const handleSearch = async (searchTerm) => {
     console.log('🔎 handleSearch called with:', searchTerm);
     
+    // Return early if search term is empty
     if (!searchTerm.trim()) {
       setSearchResults([]);
       return;
@@ -89,18 +90,21 @@ const CreateRoutePage = () => {
 
   // Add a stop to the route
   const handleAddStop = (stop) => {
+    // Append new stop to existing stops list
     setStops([...stops, stop]);
     setSearchResults([]);
   };
 
   // Remove a stop from the route
   const handleRemoveStop = (index) => {
+    // Filter out the stop at the given index
     setStops(stops.filter((_, i) => i !== index));
   };
 
   // Calculate route and navigate to navigation page
   const handleNavigate = async () => {
     try {
+      // Call API to calculate optimal route path
       const route = await calculateRoute(
         user.id,
         destination.destination_id,
@@ -108,6 +112,7 @@ const CreateRoutePage = () => {
         userLocation.lng
       );
       
+      // Pass route data to navigation page via state
       navigate('/navigation', { 
         state: { 
           route,
@@ -122,6 +127,7 @@ const CreateRoutePage = () => {
   };
 
   const handleCancel = () => {
+    // Return to map view without saving
     navigate('/map');
   };
 
@@ -145,6 +151,7 @@ const CreateRoutePage = () => {
             />
           ) : (
             <>
+              {/* Route configuration form */}
               <div className="route-details">
                 <div className="route-item">
                   <label>Starting Point</label>

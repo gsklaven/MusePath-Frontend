@@ -30,6 +30,7 @@ const QuestionnairePage = () => {
 
   // Radio selection for single-choice questions
   const handleRadioSelection = (category, value) => {
+    // Update state with selected value for category
     setPreferences(prev => ({
       ...prev,
       [category]: value
@@ -40,6 +41,7 @@ const QuestionnairePage = () => {
   const handleToggleSelection = (category, value) => {
     setPreferences(prev => ({
       ...prev,
+      // Add or remove item from array based on existence
       [category]: prev[category].includes(value)
         ? prev[category].filter(item => item !== value)
         : [...prev[category], value]
@@ -47,6 +49,7 @@ const QuestionnairePage = () => {
   };
 
   const handleAddInterest = (interest) => {
+    // Add custom interest to the list
     setPreferences(prev => ({
       ...prev,
       interests: [...prev.interests, interest]
@@ -54,6 +57,7 @@ const QuestionnairePage = () => {
   };
 
   const handleRemoveInterest = (index) => {
+    // Remove custom interest by index
     setPreferences(prev => ({
       ...prev,
       interests: prev.interests.filter((_, i) => i !== index)
@@ -62,6 +66,7 @@ const QuestionnairePage = () => {
 
   const handleSubmit = async () => {
     try {
+      // Combine all preferences into a single array
       const allInterests = [
         preferences.historicalPeriod,
         ...preferences.artistsCivilizations,
@@ -73,6 +78,7 @@ const QuestionnairePage = () => {
         throw new Error('User ID not found');
       }
       
+      // Save preferences to backend and update context
       await updateUserPreferences(userId, allInterests);
       updateUser({ 
         ...user,
@@ -100,6 +106,7 @@ const QuestionnairePage = () => {
             ></div>
           </div>
 
+          {/* Step 1: Historical Period Selection */}
           {step === 1 && (
             <QuestionnaireStep1
               selectedPeriod={preferences.historicalPeriod}
@@ -108,6 +115,7 @@ const QuestionnairePage = () => {
             />
           )}
           
+          {/* Step 2: Artists & Civilizations Selection */}
           {step === 2 && (
             <QuestionnaireStep2
               selectedItems={preferences.artistsCivilizations}
@@ -117,6 +125,7 @@ const QuestionnairePage = () => {
             />
           )}
           
+          {/* Step 3: Custom Interests Input */}
           {step === 3 && (
             <QuestionnaireStep3
               interests={preferences.interests}
