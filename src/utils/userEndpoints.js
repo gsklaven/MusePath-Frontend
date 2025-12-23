@@ -11,13 +11,19 @@ import {
   generateTestUser
 } from './endpointBuilders';
 
+// Category constants to reduce vocabulary size
+const CAT_AUTH = 'Authentication';
+const CAT_ROUTES = 'Routes';
+const CAT_USERS = 'Users';
+const CAT_COORDS = 'Coordinates';
+
 /**
- * Authentication endpoints for user registration, login, and logout
+ * Authentication endpoints
  */
 export const AUTH_ENDPOINTS = [
   POST(
     'auth-register',
-    'Authentication',
+    CAT_AUTH,
     'Register User',
     '/auth/register',
     'Δημιουργία νέου λογαριασμού',
@@ -25,7 +31,7 @@ export const AUTH_ENDPOINTS = [
   ),
   POST(
     'auth-login',
-    'Authentication',
+    CAT_AUTH,
     'Login',
     '/auth/login',
     'Σύνδεση χρήστη',
@@ -33,7 +39,7 @@ export const AUTH_ENDPOINTS = [
   ),
   POST(
     'auth-logout',
-    'Authentication',
+    CAT_AUTH,
     'Logout',
     '/auth/logout',
     'Αποσύνδεση χρήστη',
@@ -43,12 +49,12 @@ export const AUTH_ENDPOINTS = [
 ];
 
 /**
- * Route endpoints for creating and managing navigation routes
+ * Route management endpoints
  */
 export const ROUTE_ENDPOINTS = [
   POST(
     'routes-create',
-    'Routes',
+    CAT_ROUTES,
     'Calculate Route',
     '/routes',
     'Υπολογισμός διαδρομής',
@@ -62,7 +68,7 @@ export const ROUTE_ENDPOINTS = [
   ),
   GET(
     'routes-get',
-    'Routes',
+    CAT_ROUTES,
     'Get Route Details',
     '/routes/1',
     'Λεπτομέρειες διαδρομής',
@@ -71,7 +77,7 @@ export const ROUTE_ENDPOINTS = [
   ),
   PUT(
     'routes-update',
-    'Routes',
+    CAT_ROUTES,
     'Update Route Stops',
     '/routes/1',
     'Ενημέρωση στάσεων διαδρομής',
@@ -81,7 +87,7 @@ export const ROUTE_ENDPOINTS = [
   ),
   POST(
     'routes-recalculate',
-    'Routes',
+    CAT_ROUTES,
     'Recalculate Route',
     '/routes/1',
     'Επαναυπολογισμός διαδρομής',
@@ -91,7 +97,7 @@ export const ROUTE_ENDPOINTS = [
   ),
   DELETE(
     'routes-delete',
-    'Routes',
+    CAT_ROUTES,
     'Delete Route',
     '/routes/1',
     'Διαγραφή διαδρομής',
@@ -101,12 +107,12 @@ export const ROUTE_ENDPOINTS = [
 ];
 
 /**
- * User endpoints for managing preferences and favorites
+ * User profile and preference endpoints
  */
 export const USER_ENDPOINTS = [
   PUT(
     'users-preferences',
-    'Users',
+    CAT_USERS,
     'Update Preferences',
     '/users/1/preferences',
     'Ενημέρωση προτιμήσεων χρήστη',
@@ -115,7 +121,7 @@ export const USER_ENDPOINTS = [
   ),
   POST(
     'users-favourites-add',
-    'Users',
+    CAT_USERS,
     'Add to Favourites',
     '/users/1/favourites',
     'Προσθήκη στα αγαπημένα',
@@ -124,7 +130,7 @@ export const USER_ENDPOINTS = [
   ),
   DELETE(
     'users-favourites-remove',
-    'Users',
+    CAT_USERS,
     'Remove from Favourites',
     '/users/1/favourites/2',
     'Αφαίρεση από αγαπημένα',
@@ -132,7 +138,7 @@ export const USER_ENDPOINTS = [
   ),
   GET(
     'users-personalized-route',
-    'Users',
+    CAT_USERS,
     'Get Personalized Route',
     '/users/1/routes',
     'Εξατομικευμένη διαδρομή',
@@ -141,12 +147,12 @@ export const USER_ENDPOINTS = [
 ];
 
 /**
- * Coordinate endpoints for tracking user location
+ * Geolocation endpoints
  */
 export const COORDINATE_ENDPOINTS = [
   GET(
     'coordinates-get',
-    'Coordinates',
+    CAT_COORDS,
     'Get User Coordinates',
     '/coordinates/1',
     'Τοποθεσία χρήστη',
@@ -154,7 +160,7 @@ export const COORDINATE_ENDPOINTS = [
   ),
   PUT(
     'coordinates-update',
-    'Coordinates',
+    CAT_COORDS,
     'Update Coordinates',
     '/coordinates/1',
     'Ενημέρωση τοποθεσίας',
