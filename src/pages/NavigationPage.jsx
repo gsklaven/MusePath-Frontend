@@ -58,8 +58,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getRouteDetails, deleteRoute } from '../api/routes';
-import { getUserCoordinates, updateUserCoordinates } from '../api/users';
+import { getRouteDetails, deleteRoute, getUserCoordinates, updateUserCoordinates } from '../api';
 import { formatDuration, formatDistance } from '../utils/formatters';
 import { Button, Card } from '../components';
 import './NavigationPage.css';

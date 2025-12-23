@@ -41,9 +41,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { calculateRoute } from '../api/routes';
-import { searchExhibits } from '../api/exhibits';
-import { getDestinations, getDestinationById } from '../api/maps';
+import { calculateRoute, searchExhibits, getDestinations, getDestinationById } from '../api';
 import { Header, Button, Card, SearchBar } from '../components';
 import './CreateRoutePage.css';
 
