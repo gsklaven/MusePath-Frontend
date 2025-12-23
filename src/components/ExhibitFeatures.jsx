@@ -1,18 +1,28 @@
 import React from 'react';
 
+// Map feature names to their corresponding icon assets
 const featureIcons = {
   'Wheelchair Accessible': '/assets/icons/wheelchair.png',
   'Braille Support': '/assets/icons/braille.png',
   'Audio Guide': '/assets/icons/audio.png',
 };
 
+/**
+ * ExhibitFeatures Component
+ * Displays a list of features (accessibility, audio, etc.) as chips or buttons.
+ *
+ * @param {Object} props
+ * @param {string[]} props.features - List of feature strings to display.
+ * @param {boolean} props.isPlayingAudio - Whether audio guide is currently playing.
+ * @param {function} props.onPlayAudio - Handler to toggle audio playback.
+ */
 const ExhibitFeatures = ({ features, isPlayingAudio, onPlayAudio }) => {
   if (!features || features.length === 0) return null;
 
   return (
     <div className="exhibit-bottomsheet-features" style={{ display: 'flex', flexWrap: 'wrap', gap: 22, rowGap: 12, marginTop: 18, marginBottom: 18, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
       {features.map((feature, idx) => {
-        // Render audio guide button differently
+        // Special rendering for Audio Guide to act as a playback control
         if (feature === 'Audio Guide') {
           return (
             <button
@@ -46,7 +56,7 @@ const ExhibitFeatures = ({ features, isPlayingAudio, onPlayAudio }) => {
             </button>
           );
         } else if (featureIcons[feature]) {
-          // Render features with icons
+          // Standard features with associated icons (e.g., Wheelchair)
           return (
             <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '1.12rem', color: '#444', background: '#f5f7f2', borderRadius: 14, padding: '8px 22px', fontWeight: 600, whiteSpace: 'nowrap' }}>
               <img src={process.env.PUBLIC_URL + featureIcons[feature]} alt={feature} style={{ width: 24, height: 24, marginRight: 6 }} />
@@ -54,6 +64,7 @@ const ExhibitFeatures = ({ features, isPlayingAudio, onPlayAudio }) => {
             </span>
           );
         } else {
+          // Fallback for features without specific icons
           return (
             <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '1.12rem', color: '#444', background: '#f5f7f2', borderRadius: 14, padding: '8px 22px', fontWeight: 600, whiteSpace: 'nowrap' }}>
               {feature}

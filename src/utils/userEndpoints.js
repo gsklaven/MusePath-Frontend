@@ -1,3 +1,7 @@
+/**
+ * User API Endpoints
+ * Definitions for endpoints related to user accounts, authentication, and personal data.
+ */
 import {
   GET,
   POST,

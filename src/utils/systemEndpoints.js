@@ -1,3 +1,7 @@
+/**
+ * System API Endpoints
+ * Definitions for system-level endpoints like health checks and synchronization.
+ */
 import {
   GET,
   POST

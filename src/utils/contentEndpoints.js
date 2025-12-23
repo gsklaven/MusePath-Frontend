@@ -1,3 +1,7 @@
+/**
+ * Content API Endpoints
+ * Definitions for endpoints related to museum content: Exhibits, Maps, and Destinations.
+ */
 import {
   GET,
   POST,

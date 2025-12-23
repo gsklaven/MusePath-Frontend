@@ -3,12 +3,27 @@ import React from 'react';
 const heartOutline = '/assets/icons/heart_outlined.png';
 const heartFilled = '/assets/icons/heart_filled.png';
 
+// Color mapping for different exhibit status states
 const statusColors = {
   open: '#BBD689',
   closed: '#F08080',
   under_maintenance: '#FFD580',
 };
 
+/**
+ * ExhibitHeader Component
+ * Displays the main header information for an exhibit including title, rating, and status.
+ *
+ * @param {Object} props
+ * @param {Object} props.exhibit - The exhibit data object.
+ * @param {Object} props.user - Current user object (for rating permission).
+ * @param {boolean} props.isFavourite - Whether exhibit is in user's favorites.
+ * @param {function} props.onToggleFavourite - Handler to toggle favorite status.
+ * @param {number} props.userRating - User's personal rating for this exhibit.
+ * @param {function} props.onRateExhibit - Handler to submit a new rating.
+ * @param {boolean} props.isSubmittingRating - Loading state for rating submission.
+ * @param {string} props.subtitle - Formatted subtitle string (categories, etc.).
+ */
 const ExhibitHeader = ({ 
   exhibit, 
   user, 
@@ -22,12 +37,13 @@ const ExhibitHeader = ({
   return (
     <div className="exhibit-bottomsheet-header" style={{ position: 'relative', paddingTop: 0, paddingBottom: 2 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 0, marginTop: 0 }}>
-        {/* Title and rating section */}
+        {/* Left Column: Title, Aggregate Rating, Location */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, minWidth: 0, overflow: 'hidden', gap: 6 }}>
           <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.35rem', textAlign: 'left', lineHeight: 1.18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
             {exhibit.name || exhibit.title}
           </h2>
           
+          {/* Aggregate Rating Display */}
           {typeof exhibit.rating === 'number' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -42,7 +58,7 @@ const ExhibitHeader = ({
               
               {user && (
                 <>
-                  {/* Interactive star rating for logged-in users */}
+                  {/* Interactive Star Rating for User Input */}
                   <span style={{ color: '#888', fontSize: '0.9rem', margin: '0 4px' }}>•</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -81,7 +97,7 @@ const ExhibitHeader = ({
             <div className="exhibit-bottomsheet-location" style={{fontSize: '1rem', color: '#888', marginTop: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 320}}>{exhibit.location}</div>
           )}
         </div>
-        {/* Status badge and favorite toggle */}
+        {/* Right Column: Status Badge and Favorite Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
           {exhibit.status && (
             <span style={{

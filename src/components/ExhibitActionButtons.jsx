@@ -1,5 +1,17 @@
 import React from 'react';
 
+/**
+ * ExhibitActionButtons Component
+ * Renders the primary action buttons for the exhibit bottom sheet.
+ * Handles navigation route creation and description pagination.
+ *
+ * @param {Object} props
+ * @param {boolean} props.isCreatingRoute - Loading state during route calculation.
+ * @param {function} props.onCreateRoute - Handler to initiate navigation to this exhibit.
+ * @param {string[]} props.pages - Array of description text pages.
+ * @param {number} props.page - Current page index (0-based).
+ * @param {function} props.setPage - State setter to update current page index.
+ */
 const ExhibitActionButtons = ({ isCreatingRoute, onCreateRoute, pages, page, setPage }) => {
   return (
     <div style={{
@@ -16,7 +28,8 @@ const ExhibitActionButtons = ({ isCreatingRoute, onCreateRoute, pages, page, set
       padding: '0 24px',
       pointerEvents: 'none',
     }}>
-      {/* Navigate / Create Route Button */}
+      {/* Navigate Button: Triggers route calculation from user location */}
+      {/* Shows loading state while API request is in progress */}
       <button
         onClick={onCreateRoute}
         disabled={isCreatingRoute}
@@ -61,7 +74,8 @@ const ExhibitActionButtons = ({ isCreatingRoute, onCreateRoute, pages, page, set
           </>
         )}
       </button>
-      {/* More Details / Pagination Button */}
+      {/* Pagination Button: Cycles through description pages if multiple exist */}
+      {/* Visual feedback includes current page number (e.g., 1/3) */}
       <button
         style={{
           background: '#BBD689',
@@ -86,6 +100,7 @@ const ExhibitActionButtons = ({ isCreatingRoute, onCreateRoute, pages, page, set
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
+          // Cycle to next page, wrapping around to 0
           if (pages.length > 1) {
             const nextPage = (page + 1) % pages.length;
             setPage(nextPage);

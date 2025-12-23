@@ -1,40 +1,34 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { addToFavourites, removeFromFavourites, getUserCoordinates } from '../api/users';
-import { getExhibitAudio, rateExhibit } from '../api/exhibits';
-import { createRoute } from '../api/routes';
+import { addToFavourites, removeFromFavourites } from '../api/users';
+import { rateExhibit } from '../api/exhibits';
+import { splitTextIntoPages } from '../utils/helpers';
+import { useExhibitAudio } from './useExhibitAudio';
+import { useExhibitRoute } from './useExhibitRoute';
 
-function splitTextIntoPages(text, maxLen = 400) {
-  if (!text) return [];
-  if (text.length <= maxLen) return [text];
-  const result = [];
-  let start = 0;
-  while (start < text.length) {
-    let end = start + maxLen;
-    if (end < text.length) {
-      let spaceIdx = text.lastIndexOf(' ', end);
-      if (spaceIdx > start) end = spaceIdx;
-    }
-    result.push(text.slice(start, end).trim());
-    start = end;
-  }
-  return result;
-}
-
+/**
+ * Custom hook to manage the business logic for the Exhibit Bottom Sheet.
+ * Orchestrates audio, routing, favorites, and ratings.
+ *
+ * @param {Object} exhibit - The exhibit data object.
+ * @param {function} onClose - Callback to close the bottom sheet.
+ * @returns {Object} State and handlers for the UI.
+ */
 export const useExhibitLogic = (exhibit, onClose) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [audioError, setAudioError] = useState(null);
-  const [isCreatingRoute, setIsCreatingRoute] = useState(false);
-  const [routeError, setRouteError] = useState(null);
   const [userRating, setUserRating] = useState(null);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
-  const audioRef = useRef(null);
 
+  // Extract ID safely from potentially different property names
+  const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
+  
+  // Composition of smaller hooks for specific features
+  const { isPlayingAudio, audioError, handlePlayAudio, audioRef, setIsPlayingAudio, setAudioError } = useExhibitAudio(exhibitId);
+  const { isCreatingRoute, routeError, handleCreateRoute, setRouteError } = useExhibitRoute(user, exhibit, onClose);
+
+  // Check if exhibit is already favorited on mount or exhibit change
   useMemo(() => {
     if (exhibit) {
       // Check local storage for favorite status
@@ -48,12 +42,12 @@ export const useExhibitLogic = (exhibit, onClose) => {
     }
   }, [exhibit]);
 
+  // Toggle favorite status in both backend and local storage
   const handleToggleFavourite = async (e) => {
     e.stopPropagation();
-    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
     if (!exhibitId) return;
 
-    // Helper to update local storage favorites
+    // Helper to update local storage favorites (optimistic UI update)
     const setLocalFavourite = (nextState) => {
       try {
         const stored = JSON.parse(localStorage.getItem('favourites') || '[]');
@@ -93,41 +87,9 @@ export const useExhibitLogic = (exhibit, onClose) => {
     }
   };
 
-  const handlePlayAudio = async () => {
-    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
-    if (!exhibitId) return;
-
-    try {
-      // Toggle audio playback
-      if (isPlayingAudio && audioRef.current) {
-        audioRef.current.pause();
-        setIsPlayingAudio(false);
-      } else {
-        setAudioError(null);
-        const audioBlob = await getExhibitAudio(exhibitId, 'online');
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        // Initialize or update audio element
-        if (!audioRef.current) {
-          audioRef.current = new Audio(audioUrl);
-          audioRef.current.onended = () => setIsPlayingAudio(false);
-        } else {
-          audioRef.current.src = audioUrl;
-        }
-        
-        await audioRef.current.play();
-        setIsPlayingAudio(true);
-      }
-    } catch (err) {
-      console.error('❌ Error playing audio:', err);
-      setAudioError('Failed to load audio guide');
-      setIsPlayingAudio(false);
-    }
-  };
-
+  // Handle user rating submission
   const handleRateExhibit = async (rating) => {
     if (!user) return;
-    const exhibitId = exhibit?.exhibitId || exhibit?.exhibit_id || exhibit?.id;
     if (!exhibitId) return;
     
     try {
@@ -137,7 +99,7 @@ export const useExhibitLogic = (exhibit, onClose) => {
       setUserRating(rating);
       
       try {
-        // Update local storage ratings
+        // Update local storage ratings to reflect change immediately in UI
         const storedRatings = JSON.parse(localStorage.getItem('ratings') || '[]');
         const existingIndex = storedRatings.findIndex(r => r.exhibit_id === exhibitId);
         const ratingData = {
@@ -162,74 +124,27 @@ export const useExhibitLogic = (exhibit, onClose) => {
     }
   };
 
+  // Cleanup audio resources when component unmounts
   useEffect(() => {
-    // Cleanup audio on unmount
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [audioRef]);
 
+  // Reset state when switching between exhibits
   useEffect(() => {
-    // Reset state when exhibit changes
     if (audioRef.current) {
       audioRef.current.pause();
       setIsPlayingAudio(false);
     }
     setAudioError(null);
     setRouteError(null);
-  }, [exhibit]);
+  }, [exhibit, audioRef, setIsPlayingAudio, setAudioError, setRouteError]);
 
-  const handleCreateRoute = async () => {
-    const exhibitId = exhibit?.exhibit_id || exhibit?.exhibitId;
-    if (!exhibitId) return;
-
-    try {
-      setIsCreatingRoute(true);
-      setRouteError(null);
-      const userId = (user?.id && typeof user.id === 'number' && user.id < 1000000) ? user.id : 1;
-      // Get current user location
-      const userCoords = await getUserCoordinates(userId);
-
-      if (!userCoords || (!userCoords.latitude && !userCoords.lat) || (!userCoords.longitude && !userCoords.lng)) {
-        throw new Error('Could not get your current location');
-      }
-
-      const lat = userCoords.latitude || userCoords.lat;
-      const lng = userCoords.longitude || userCoords.lng;
-      
-      const routeData = {
-        user_id: userId,
-        destination_id: exhibitId,
-        startLat: lat,
-        startLng: lng,
-      };
-
-      // Create route via API
-      const newRoute = await createRoute(routeData);
-      onClose();
-      navigate('/navigation', { state: { route: newRoute } });
-    } catch (err) {
-      console.error('❌ Error creating route:', err);
-      // Fallback route for demo/offline purposes
-      const fallbackRoute = {
-        route_id: 999,
-        instructions: ['Head north', 'Turn right'],
-        distance: 1200,
-        estimatedTime: 900,
-        arrivalTime: '12:00',
-        destination: { name: exhibit?.name || exhibit?.title || 'Exhibit' },
-      };
-      setRouteError(err.message || 'Backend unavailable, using fallback route.');
-      onClose();
-      navigate('/navigation', { state: { route: fallbackRoute } });
-    } finally {
-      setIsCreatingRoute(false);
-    }
-  };
-
+  // Format subtitle from categories
   const subtitle = useMemo(() => {
     if (!exhibit) return '';
     let parts = [];
@@ -238,10 +153,12 @@ export const useExhibitLogic = (exhibit, onClose) => {
     return parts.join(' | ');
   }, [exhibit]);
 
+  // Aggregate features list for display
   const features = useMemo(() => {
     if (!exhibit) return [];
     let arr = [];
     if (exhibit.features && Array.isArray(exhibit.features)) arr = arr.concat(exhibit.features);
+    // Add derived features based on boolean flags
     if (exhibit.wheelchairAccessible) arr.push('Wheelchair Accessible');
     if (exhibit.brailleSupport) arr.push('Braille Support');
     if (exhibit.audioGuideUrl || exhibit.audioGuide) arr.push('Audio Guide');
@@ -249,6 +166,7 @@ export const useExhibitLogic = (exhibit, onClose) => {
     return arr.filter(f => f !== 'Audio Guide Available');
   }, [exhibit]);
 
+  // Split long description text into multiple pages for readability
   const pages = useMemo(() => {
     if (!exhibit) return [];
     let arr = [];
