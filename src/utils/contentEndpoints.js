@@ -14,6 +14,7 @@ import {
  * Exhibit endpoints for searching, viewing, rating, and managing exhibits
  */
 export const EXHIBIT_ENDPOINTS = [
+  // Search for exhibits with query parameters
   GET(
     'exhibits-search',
     'Exhibits',
@@ -21,6 +22,7 @@ export const EXHIBIT_ENDPOINTS = [
     '/exhibits/search?exhibit_term=starry&mode=online',
     'Αναζήτηση εκθεμάτων'
   ),
+  // Retrieve detailed information for a specific exhibit
   GET(
     'exhibits-get',
     'Exhibits',
@@ -28,6 +30,7 @@ export const EXHIBIT_ENDPOINTS = [
     '/exhibits/1',
     'Λεπτομέρειες συγκεκριμένου εκθέματος'
   ),
+  // Fetch the audio guide file for an exhibit
   GET(
     'exhibits-audio',
     'Exhibits',
@@ -35,6 +38,7 @@ export const EXHIBIT_ENDPOINTS = [
     '/exhibits/1/audio',
     'Audio guide εκθέματος'
   ),
+  // Submit a user rating for an exhibit
   POST(
     'exhibits-rate',
     'Exhibits',
@@ -44,6 +48,7 @@ export const EXHIBIT_ENDPOINTS = [
     { rating: 5 },
     'user'
   ),
+  // Download exhibit content for offline access
   GET(
     'exhibits-download',
     'Exhibits',
@@ -51,6 +56,7 @@ export const EXHIBIT_ENDPOINTS = [
     '/downloads/exhibits/1',
     'Download για offline χρήση'
   ),
+  // Admin endpoint to create a new exhibit
   POST(
     'exhibits-create',
     'Exhibits',
@@ -60,6 +66,7 @@ export const EXHIBIT_ENDPOINTS = [
     generateTestExhibit,
     'admin'
   ),
+  // Admin endpoint to delete an exhibit
   DELETE(
     'exhibits-delete',
     'Exhibits',
@@ -75,6 +82,7 @@ export const EXHIBIT_ENDPOINTS = [
  * Map endpoints for uploading and managing museum maps
  */
 export const MAP_ENDPOINTS = [
+  // Admin endpoint to upload a new map image
   POST(
     'maps-upload',
     'Maps',
@@ -84,6 +92,14 @@ export const MAP_ENDPOINTS = [
     { mapData: 'base64_encoded_map_data', format: 'image/png' },
     'admin'
   ),
+McCabe Cyclomatic Complexity
+1.47
+1 file exceeds recommended value (4)
+
+Affects 0.97% of source code.
+
+
+Try to reduce the complexity of your methods. Maybe consider splitting complex methods into multiple simpler ones.  // Retrieve map metadata and image
   GET(
     'maps-get',
     'Maps',
@@ -91,6 +107,7 @@ export const MAP_ENDPOINTS = [
     '/maps/1',
     'Λήψη χάρτη'
   ),
+  // Download map for offline usage
   GET(
     'maps-download',
     'Maps',
@@ -98,6 +115,7 @@ export const MAP_ENDPOINTS = [
     '/downloads/maps/1',
     'Download χάρτη'
   ),
+  // Admin endpoint to delete a map
   DELETE(
     'maps-delete',
     'Maps',
@@ -113,6 +131,7 @@ export const MAP_ENDPOINTS = [
  * Destination endpoints for managing points of interest
  */
 export const DESTINATION_ENDPOINTS = [
+  // List all available destinations
   GET(
     'destinations-list',
     'Destinations',
@@ -120,6 +139,7 @@ export const DESTINATION_ENDPOINTS = [
     '/destinations',
     'Λίστα όλων των προορισμών'
   ),
+  // Admin endpoint to bulk upload destinations
   POST(
     'destinations-upload',
     'Destinations',
@@ -129,6 +149,7 @@ export const DESTINATION_ENDPOINTS = [
     generateTestDestination,
     'admin'
   ),
+  // Get details for a specific destination
   GET(
     'destinations-get',
     'Destinations',
@@ -136,6 +157,7 @@ export const DESTINATION_ENDPOINTS = [
     '/destinations/1',
     'Πληροφορίες προορισμού'
   ),
+  // Admin endpoint to delete a destination
   DELETE(
     'destinations-delete',
     'Destinations',
