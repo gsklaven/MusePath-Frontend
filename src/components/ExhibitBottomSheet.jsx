@@ -25,7 +25,7 @@
  * 
  * Dependencies: useAuth for user context, APIs for favorites/audio/routes, useNavigate for routing
  */
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { addToFavourites, removeFromFavourites, getUserCoordinates } from '../api/users';

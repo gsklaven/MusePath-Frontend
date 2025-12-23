@@ -55,16 +55,21 @@
  * - Users navigating to specific exhibits or destinations
  * - Custom routes with multiple stops created via CreateRoutePage
  */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getRouteDetails, deleteRoute } from '../api/routes';
 import { getUserCoordinates, updateUserCoordinates } from '../api/users';
 import { formatDuration, formatDistance } from '../utils/formatters';
-import Button from '../components/Button';
-import Card from '../components/Card';
+import { Button, Card } from '../components';
 import './NavigationPage.css';
 
+/**
+ * Renders the navigation page, providing turn-by-turn directions for a selected route.
+ * It displays the route overview, map, and step-by-step instructions.
+ *
+ * @returns {JSX.Element} The NavigationPage component.
+ */
 const NavigationPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -80,6 +85,7 @@ const NavigationPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [locationTracking, setLocationTracking] = useState(false);
 
+  // Effect to load initial route and user location data.
   useEffect(() => {
     // Load route details if available
     if (routeData?.route_id) {
@@ -89,7 +95,10 @@ const NavigationPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeData]);
 
-  // Track location every 5 seconds when tracking is enabled
+  /**
+   * Effect to track user location at a set interval when location tracking is enabled.
+   * This will call the `trackUserLocation` function every 5 seconds.
+   */
   useEffect(() => {
     let interval;
     if (locationTracking) {
@@ -103,6 +112,9 @@ const NavigationPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationTracking]);
 
+  /**
+   * Fetches the user's current coordinates from the API and updates the state.
+   */
   const loadUserLocation = async () => {
     try {
       console.log('📍 Loading user location...');
@@ -115,6 +127,10 @@ const NavigationPage = () => {
     }
   };
 
+  /**
+   * Simulates tracking the user's location by generating new coordinates
+   * and updating them on the backend.
+   */
   const trackUserLocation = async () => {
     // Simulate location update (in real app, would use navigator.geolocation)
     try {
@@ -130,6 +146,9 @@ const NavigationPage = () => {
     }
   };
 
+  /**
+   * Fetches the detailed information for the current route from the API.
+   */
   const loadRouteDetails = async () => {
     try {
       const details = await getRouteDetails(routeData.route_id);
@@ -139,6 +158,10 @@ const NavigationPage = () => {
     }
   };
 
+  /**
+   * Handles the cancellation of the navigation.
+   * It deletes the route from the backend and navigates back to the map page.
+   */
   const handleCancelNavigation = async () => {
     try {
       await deleteRoute(routeData.route_id);
@@ -149,12 +172,18 @@ const NavigationPage = () => {
     }
   };
 
+  /**
+   * Advances to the next step in the navigation instructions.
+   */
   const handleNextStep = () => {
     if (routeDetails && currentStep < routeDetails.instructions.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
+  /**
+   * Goes back to the previous step in the navigation instructions.
+   */
   const handlePrevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
