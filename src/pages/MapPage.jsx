@@ -53,8 +53,7 @@ import React, { useState } from 'react';
 import { getExhibitById, searchExhibits } from '../api/exhibits';
 import { useNavigate } from 'react-router-dom';
 import './MapPage.css';
-import ExhibitBottomSheet from '../components/ExhibitBottomSheet';
-import MapFabButton from '../components/MapFabButton';
+import { ExhibitBottomSheet, MapMarkers, MapSearchOverlay, MapRouteButton, MapFloatingButtons } from '../components';
 
 // Hardcoded mock data for 4 monuments representing museum exhibits with historical context
 const mockExhibits = [
@@ -190,26 +189,9 @@ const MapPage = () => {
           background: '#e3ecd6',
         }}
       />
+      
       {/* Markers */}
-      {mockExhibits.map((exhibit) => (
-        <img
-          key={exhibit.exhibitId}
-          src={process.env.PUBLIC_URL + exhibit.icon}
-          alt={exhibit.name}
-          className="map-marker-monument"
-          style={{
-            left: exhibit.mapPosition.left,
-            top: exhibit.mapPosition.top,
-            position: 'absolute',
-            zIndex: 2,
-            width: 40,
-            height: 40,
-            cursor: 'pointer',
-          }}
-          tabIndex={0}
-          onClick={() => handleMarkerClick(exhibit)}
-        />
-      ))}
+      <MapMarkers exhibits={mockExhibits} onMarkerClick={handleMarkerClick} />
 
       {/* Exhibit Bottom Sheet */}
       <ExhibitBottomSheet
@@ -219,161 +201,23 @@ const MapPage = () => {
       />
 
       {/* Top right floating buttons */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-          zIndex: 10,
-          background: '#fff',
-          borderRadius: 20,
-          boxShadow: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '8px 0',
-          width: 44,
-          height: 88,
-          justifyContent: 'center',
-        }}
-      >
-        <MapFabButton
-          icon="/assets/icons/gear.png"
-          alt="Settings"
-          ariaLabel="Settings"
-          onClick={() => navigate('/settings')}
-        />
-        {/* Green divider */}
-        <div style={{ width: '100%', height: 2, background: '#BBD689', borderRadius: 1, margin: '2px 0' }} />
-        <MapFabButton
-          icon="/assets/icons/layers-map.png"
-          alt="Map Layers"
-          ariaLabel="Map Layers"
-          onClick={() => {}}
-        />
-      </div>
+      <MapFloatingButtons 
+        onSettingsClick={() => navigate('/settings')} 
+        onLayersClick={() => {}} 
+      />
 
       {/* Generate Personalized Route Button */}
-      <button
-        className="generate-route-btn"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          bottom: 96,
-          transform: 'translateX(-50%)',
-          background: 'rgba(255,255,255,0.75)',
-          color: '#222',
-          border: 'none',
-          borderRadius: 20,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          fontSize: '1.08rem',
-          fontWeight: 600,
-          padding: '14px 22px 14px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          zIndex: 10,
-          cursor: 'pointer',
-          fontFamily: 'Montserrat, sans-serif',
-          transition: 'transform 0.18s cubic-bezier(.4,1.3,.6,1)',
-        }}
-        onClick={() => navigate('/personalized-route')}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateX(-50%) scale(1.07)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateX(-50%)'}
-      >
-        <img
-          src={process.env.PUBLIC_URL + '/assets/icons/sparkle.png'}
-          alt="Sparkle"
-          style={{ marginRight: 6, width: 32, height: 32, verticalAlign: 'middle', opacity: 1 }}
-        />
-        <span style={{marginLeft: 0, opacity: 1}}>Generate Personalized Route</span>
-      </button>
+      <MapRouteButton onClick={() => navigate('/personalized-route')} />
 
       {/* Search Bar */}
-      <div
-        className="search-bar-mockup"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          bottom: 24,
-          transform: 'translateX(-50%)',
-          width: '90%',
-          maxWidth: 420,
-          zIndex: 10,
-          fontFamily: 'Montserrat, sans-serif',
-        }}
-      >
-        <form onSubmit={handleSearch}>
-          <div className="search-bar-mockup-input" style={{ display: 'flex', alignItems: 'center', background: '#e3ecd6', borderRadius: 16, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontFamily: 'Montserrat, sans-serif' }}>
-            {/* Menu icon on the left */}
-            <img
-              src={process.env.PUBLIC_URL + '/assets/icons/menu.png'}
-              alt="Menu"
-              style={{ marginLeft: 12, marginRight: 8, width: 24, height: 24, cursor: 'pointer' }}
-            />
-            <input
-              type="text"
-              placeholder="Search Exhibit"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                border: 'none',
-                outline: 'none',
-                background: 'transparent',
-                fontSize: '1.1rem',
-                color: '#222',
-                width: '100%',
-                fontFamily: 'Montserrat, sans-serif',
-              }}
-            />
-            {/* Search icon on the right */}
-            <button type="submit" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-              <img
-                src={process.env.PUBLIC_URL + '/assets/icons/search.png'}
-                alt="Search"
-                style={{ marginLeft: 8, marginRight: 12, width: 22, height: 22, color: '#7f8c8d' }}
-              />
-            </button>
-          </div>
-        </form>
-
-        {/* Search Results */}
-        {showSearchResults && (
-          <div style={{
-            marginTop: 8,
-            background: '#fff',
-            borderRadius: 12,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            maxHeight: 300,
-            overflowY: 'auto',
-            padding: 8,
-          }}>
-            {searchResults.length > 0 ? (
-              searchResults.map((result) => (
-                <div
-                  key={result.exhibitId || result.exhibit_id}
-                  onClick={() => handleSearchResultClick(result)}
-                  style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid #eee',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <div style={{ fontWeight: 600, color: '#222' }}>{result.title}</div>
-                  {result.subtitle && <div style={{ fontSize: '0.9rem', color: '#666', marginTop: 4 }}>{result.subtitle}</div>}
-                </div>
-              ))
-            ) : (
-              <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
-                No exhibits found
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      <MapSearchOverlay 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onSearchSubmit={handleSearch}
+        searchResults={searchResults}
+        showResults={showSearchResults}
+        onResultClick={handleSearchResultClick}
+      />
     </div>
   );
 };

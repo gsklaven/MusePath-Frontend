@@ -8,166 +8,21 @@ import React, { useState } from 'react';
 import apiClient from '../api/client';
 import { ALL_ENDPOINTS } from '../utils/apiEndpoints';
 import * as authApi from '../api/auth';
+import { 
+  validateEndpoint, 
+  sanitizeSampleData, 
+  executeRequest, 
+  createSuccessResult, 
+  createErrorResult, 
+  logTestResult, 
+  safeSerialize 
+} from '../utils/apiTestHelpers';
+import { ApiTestEndpointCard, ApiTestStats } from '../components';
 import './ApiTestPage.css';
 
 // Test user credentials (matching mock data)
 const ADMIN_USER = { username: 'john_smith', password: 'Password123!' };
 const NORMAL_USER = { username: 'john_smith', password: 'Password123!' };
-
-/**
- * Safely serializes an object to JSON, handling circular references and other errors.
- * @param {*} obj - The object to serialize.
- * @returns {string|null} The serialized JSON string, a string representation, or null if serialization fails.
- */
-const safeSerialize = (obj) => {
-  try {
-    return JSON.parse(JSON.stringify(obj));
-  } catch (e) {
-    try {
-      return String(obj);
-    } catch (e2) {
-      return null;
-    }
-  }
-};
-
-/**
- * Validates an endpoint path for security, ensuring it's a valid string and not a traversal attempt.
- * @param {string} path - The endpoint path to validate.
- * @returns {boolean} True if the path is valid.
- */
-const isValidPath = (path) => {
-  return typeof path === 'string' 
-    && path.length > 0 
-    && !path.includes('..') 
-    && path.startsWith('/');
-};
-
-/**
- * Validates that the HTTP method is one of the allowed methods.
- * @param {string} method - The HTTP method to validate.
- * @returns {boolean} True if the method is allowed.
- */
-const isValidMethod = (method) => {
-  const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
-  return method && allowedMethods.includes(method);
-};
-
-/**
- * Validates the structure of an endpoint configuration object.
- * @param {object} endpoint - The endpoint configuration object.
- * @returns {{isValid: boolean, error: string|null}} An object indicating if the endpoint is valid and an error message if not.
- */
-const validateEndpoint = (endpoint) => {
-  if (!endpoint || typeof endpoint !== 'object') {
-    return { isValid: false, error: 'Invalid endpoint object' };
-  }
-  
-  if (!isValidPath(endpoint.path)) {
-    return { isValid: false, error: 'Invalid endpoint path format' };
-  }
-  
-  if (!isValidMethod(endpoint.method)) {
-    return { isValid: false, error: 'Invalid endpoint method' };
-  }
-  
-  return { isValid: true, error: null };
-};
-
-/**
- * Sanitizes the sample data for an API request. If the data is a function, it's executed to get fresh data.
- * @param {*} sampleData - The data to sanitize, which can be an object or a function.
- * @returns {object} A sanitized data object ready for the request body.
- */
-const sanitizeSampleData = (sampleData) => {
-  if (!sampleData) return {};
-  
-  // If sampleData is a function, call it to get fresh data
-  if (typeof sampleData === 'function') {
-    try {
-      const result = sampleData();
-      return safeSerialize(result);
-    } catch (error) {
-      console.warn('Error calling sampleData function:', error);
-      return {};
-    }
-  }
-  
-  if (typeof sampleData === 'object' && sampleData !== null) {
-    return safeSerialize(sampleData);
-  }
-  
-  console.warn('Invalid sampleData type, using empty object');
-  return {};
-};
-
-/**
- * Executes an HTTP request using the API client based on the specified method.
- * @param {string} method - The HTTP method (GET, POST, PUT, DELETE).
- * @param {string} path - The API endpoint path.
- * @param {object} data - The request body data for POST and PUT requests.
- * @returns {Promise<object>} A promise that resolves with the Axios response.
- */
-const executeRequest = async (method, path, data) => {
-  const config = {};
-  
-  switch (method) {
-    case 'GET':
-      return await apiClient.get(path, config);
-    case 'POST':
-      return await apiClient.post(path, data, config);
-    case 'PUT':
-      return await apiClient.put(path, data, config);
-    case 'DELETE':
-      return await apiClient.delete(path, config);
-    default:
-      throw new Error(`Unsupported method: ${method}`);
-  }
-};
-
-/**
- * Creates a standardized success result object for the UI.
- * @param {object} response - The Axios response object.
- * @param {number} duration - The request duration in milliseconds.
- * @returns {object} A success result object.
- */
-const createSuccessResult = (response, duration) => {
-  return {
-    success: true,
-    status: typeof response.status === 'number' ? response.status : 200,
-    data: safeSerialize(response.data),
-    duration: duration,
-    error: null,
-  };
-};
-
-/**
- * Creates a standardized error result object for the UI.
- * @param {Error} error - The error object caught during the request.
- * @param {number} duration - The request duration in milliseconds.
- * @returns {object} An error result object.
- */
-const createErrorResult = (error, duration) => {
-  return {
-    success: false,
-    status: error.response?.status || 'ERROR',
-    data: safeSerialize(error.response?.data || null),
-    duration: duration,
-    error: String(error.message),
-  };
-};
-
-/**
- * Logs the result of an API test to the console for debugging.
- * @param {boolean} success - Whether the test was successful.
- * @param {string} method - The HTTP method used.
- * @param {string} path - The API endpoint path.
- * @param {object} details - Additional details about the test result.
- */
-const logTestResult = (success, method, path, details) => {
-  const icon = success ? '✅ Success' : '❌ Failed';
-  console.log('%s: %s %s', icon, String(method), String(path), details);
-};
 
 /**
  * Renders the API test page, a dashboard for manually testing all backend endpoints.
@@ -434,28 +289,12 @@ const ApiTestPage = () => {
 
       {/* Main content area with statistics and endpoint cards */}
       <div className="api-test-content">
-        <div className="stats-bar">
-          <div className="stat">
-            <span className="stat-label">Total Endpoints:</span>
-            <span className="stat-value">{ALL_ENDPOINTS.length}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Tested:</span>
-            <span className="stat-value">{Object.keys(results).length}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Successful:</span>
-            <span className="stat-value success">
-              {Object.values(results).filter((r) => r.success).length}
-            </span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Failed:</span>
-            <span className="stat-value error">
-              {Object.values(results).filter((r) => !r.success).length}
-            </span>
-          </div>
-        </div>
+        <ApiTestStats 
+          total={ALL_ENDPOINTS.length}
+          tested={Object.keys(results).length}
+          successful={Object.values(results).filter((r) => r.success).length}
+          failed={Object.values(results).filter((r) => !r.success).length}
+        />
 
         {/* Render endpoints grouped by category */}
         {Object.entries(groupedEndpoints).map(([category, categoryEndpoints]) => (
@@ -464,73 +303,13 @@ const ApiTestPage = () => {
             
             <div className="endpoints-grid">
               {categoryEndpoints.map((endpoint) => (
-                <div key={endpoint.id} className="endpoint-card">
-                  <div className="endpoint-header">
-                    <div className="endpoint-info">
-                      <span className={`method-badge ${endpoint.method.toLowerCase()}`}>
-                        {endpoint.method}
-                      </span>
-                      <h3>{endpoint.name}</h3>
-                      {endpoint.requiresAuth && (
-                        <span className="auth-badge">
-                          {endpoint.requiresAuth === 'admin' ? '🔒 Admin' : '🔐 User'}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => testEndpoint(endpoint)}
-                      disabled={loading[endpoint.id]}
-                      className="btn btn-test"
-                    >
-                      {loading[endpoint.id] ? '⏳ Testing...' : '▶️ Run'}
-                    </button>
-                  </div>
-
-                  <div className="endpoint-details">
-                    <p className="endpoint-description">{endpoint.description}</p>
-                    <code className="endpoint-path">{endpoint.path}</code>
-                  </div>
-
-                  {/* Display sample request body if available */}
-                  {endpoint.sampleData && (
-                    <details className="sample-data">
-                      <summary>📝 Sample Request Body</summary>
-                      <pre>{JSON.stringify(
-                        typeof endpoint.sampleData === 'function' 
-                          ? endpoint.sampleData() 
-                          : endpoint.sampleData, 
-                        null, 
-                        2
-                      )}</pre>
-                    </details>
-                  )}
-
-                  {/* Display the result of the API test */}
-                  {results[endpoint.id] && (
-                    <div className={`result-box ${results[endpoint.id].success ? 'success' : 'error'}`}>
-                      <div className="result-header">
-                        <span className="result-status">
-                          {results[endpoint.id].success ? '✓' : '✗'} 
-                          Status: {results[endpoint.id].status}
-                        </span>
-                        <span className="result-duration">
-                          ⏱️ {results[endpoint.id].duration}ms
-                        </span>
-                      </div>
-
-                      {results[endpoint.id].error ? (
-                        <div className="result-error">
-                          <strong>Error:</strong> {results[endpoint.id].error}
-                        </div>
-                      ) : (
-                        <details className="result-data" open={results[endpoint.id].success}>
-                          <summary>📦 Response Data</summary>
-                          <pre>{JSON.stringify(results[endpoint.id].data, null, 2)}</pre>
-                        </details>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <ApiTestEndpointCard
+                  key={endpoint.id}
+                  endpoint={endpoint}
+                  loading={loading[endpoint.id]}
+                  result={results[endpoint.id]}
+                  onTest={testEndpoint}
+                />
               ))}
             </div>
           </div>
