@@ -1,17 +1,14 @@
 /**
  * Application Constants
  *
- * Centralized configuration values used throughout the MusePath application.
- * Organized by functional domain for better maintainability and discoverability.
- *
- * Usage Guidelines:
- * - Import only needed constants: import { DEFAULT_ZOOM, EXHIBIT_STATUS } from './constants'
- * - Never modify constants at runtime - treat as immutable
- * - Add new constants to appropriate section with JSDoc comments
+ * Centralized configuration values and enumerations for the MusePath application.
+ * These values are immutable and organized by domain.
  *
  * @module utils/constants
- * @description Provides immutable configuration and enumeration values for the MusePath frontend.
  */
+
+// Helper to enforce immutability
+const freeze = Object.freeze;
 
 // ==========================================
 // API Configuration
@@ -38,34 +35,25 @@ export const DEFAULT_WALKING_SPEED = 5;
 // Map Configuration
 // ==========================================
 
-/**
- * Default map settings
- * Default map ID
- * @type {number}
- */
-export const DEFAULT_MAP_ID = 1;
-
-/**
- * Default map zoom level
- * @type {number}
- */
-export const DEFAULT_ZOOM = 1;
-
-/**
- * Default map rotation in degrees
- * @type {number}
- */
-export const DEFAULT_ROTATION = 0;
+// Map default values
+const MAP_ID = 1;
+const MAP_ZOOM = 1;
+const MAP_ROTATION = 0;
 
 /**
  * Default map settings object
  * @type {Object.<string, number>}
  */
-export const MAP_DEFAULTS = Object.freeze({
-  ID: DEFAULT_MAP_ID,
-  ZOOM: DEFAULT_ZOOM,
-  ROTATION: DEFAULT_ROTATION,
+export const MAP_DEFAULTS = freeze({
+  ID: MAP_ID,
+  ZOOM: MAP_ZOOM,
+  ROTATION: MAP_ROTATION,
 });
+
+// Export individual constants for legacy support/convenience
+export const DEFAULT_MAP_ID = MAP_ID;
+export const DEFAULT_ZOOM = MAP_ZOOM;
+export const DEFAULT_ROTATION = MAP_ROTATION;
 
 // ==========================================
 // Exhibit Categories
@@ -75,7 +63,7 @@ export const MAP_DEFAULTS = Object.freeze({
  * Available exhibit categories for filtering and classification
  * @type {string[]}
  */
-export const EXHIBIT_CATEGORIES = Object.freeze([
+export const EXHIBIT_CATEGORIES = freeze([
   'Art',
   'History',
   'Science',
@@ -95,7 +83,7 @@ export const EXHIBIT_CATEGORIES = Object.freeze([
  * Used for personalizing exhibit recommendations
  * @type {string[]}
  */
-export const HISTORICAL_PERIODS = Object.freeze([
+export const HISTORICAL_PERIODS = freeze([
   'Ancient Civilizations',
   'Medieval Period',
   'Renaissance',
@@ -108,7 +96,7 @@ export const HISTORICAL_PERIODS = Object.freeze([
  * Used in multi-select questionnaire step
  * @type {string[]}
  */
-export const ARTISTS_CIVILIZATIONS = Object.freeze([
+export const ARTISTS_CIVILIZATIONS = freeze([
   'Ancient Greece',
   'Ancient Rome',
   'Ancient Egypt',
@@ -126,7 +114,7 @@ export const ARTISTS_CIVILIZATIONS = Object.freeze([
  * Centralized to prevent typos and enable easy refactoring
  * @type {Object.<string, string>}
  */
-export const STORAGE_KEYS = Object.freeze({
+export const STORAGE_KEYS = freeze({
   /** User authentication and profile data */
   USER: 'user',
   /** Downloaded maps for offline use */
@@ -145,7 +133,7 @@ export const STORAGE_KEYS = Object.freeze({
  * Possible states for route lifecycle
  * @type {Object.<string, string>}
  */
-export const ROUTE_STATUS = Object.freeze({
+export const ROUTE_STATUS = freeze({
   /** Route being planned, not yet active */
   PLANNING: 'planning',
   /** Currently navigating this route */
@@ -165,7 +153,7 @@ export const ROUTE_STATUS = Object.freeze({
  * Determines if exhibit can be visited
  * @type {Object.<string, string>}
  */
-export const EXHIBIT_STATUS = Object.freeze({
+export const EXHIBIT_STATUS = freeze({
   /** Exhibit open and available */
   OPEN: 'open',
   /** Exhibit closed to visitors */
@@ -183,7 +171,7 @@ export const EXHIBIT_STATUS = Object.freeze({
  * Used for visitor flow management
  * @type {Object.<string, string>}
  */
-export const CROWD_LEVELS = Object.freeze({
+export const CROWD_LEVELS = freeze({
   /** Few visitors, minimal wait times */
   LOW: 'low',
   /** Moderate visitors, some wait times */
@@ -201,7 +189,7 @@ export const CROWD_LEVELS = Object.freeze({
  * Determines styling and icon
  * @type {Object.<string, string>}
  */
-export const NOTIFICATION_TYPES = Object.freeze({
+export const NOTIFICATION_TYPES = freeze({
   /** Informational message */
   INFO: 'info',
   /** Warning or caution */
@@ -216,57 +204,43 @@ export const NOTIFICATION_TYPES = Object.freeze({
 // Validation Constants
 // ==========================================
 
-/**
- * Validation limits
- * Minimum password length requirement
- * @type {number}
- */
-export const MIN_PASSWORD_LENGTH = 6;
-
-/**
- * Minimum allowed rating value
- * @type {number}
- */
-export const MIN_RATING = 1;
-
-/**
- * Maximum allowed rating value
- * @type {number}
- */
-export const MAX_RATING = 5;
+// Validation limits
+const PASS_MIN_LEN = 6;
+const RATING_MIN = 1;
+const RATING_MAX = 5;
 
 /**
  * Validation limits object
  * @type {Object.<string, number>}
  */
-export const VALIDATION = Object.freeze({
-  MIN_PASSWORD_LENGTH,
-  MIN_RATING,
-  MAX_RATING,
+export const VALIDATION = freeze({
+  MIN_PASSWORD_LENGTH: PASS_MIN_LEN,
+  MIN_RATING: RATING_MIN,
+  MAX_RATING: RATING_MAX,
 });
+
+// Export individual validation constants
+export const MIN_PASSWORD_LENGTH = PASS_MIN_LEN;
+export const MIN_RATING = RATING_MIN;
+export const MAX_RATING = RATING_MAX;
 
 // ==========================================
 // Timing Constants
 // ==========================================
 
-/**
- * Timing intervals in milliseconds
- * API request delay in milliseconds
- * @type {number}
- */
-export const API_REQUEST_DELAY = 1000;
-
-/**
- * Location update interval in milliseconds
- * @type {number}
- */
-export const LOCATION_UPDATE_INTERVAL = 5000;
+// Timing intervals (ms)
+const DELAY_API = 1000;
+const INTERVAL_LOC = 5000;
 
 /**
  * Timing intervals object
  * @type {Object.<string, number>}
  */
-export const TIMING = Object.freeze({
-  API_REQUEST_DELAY,
-  LOCATION_UPDATE_INTERVAL,
+export const TIMING = freeze({
+  API_REQUEST_DELAY: DELAY_API,
+  LOCATION_UPDATE_INTERVAL: INTERVAL_LOC,
 });
+
+// Export individual timing constants
+export const API_REQUEST_DELAY = DELAY_API;
+export const LOCATION_UPDATE_INTERVAL = INTERVAL_LOC;
