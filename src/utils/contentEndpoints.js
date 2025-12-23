@@ -1,5 +1,6 @@
 /**
  * Content API Endpoints
+ * 
  * Definitions for endpoints related to museum content: Exhibits, Maps, and Destinations.
  */
 import {
@@ -15,154 +16,172 @@ const CAT_EXHIBITS = 'Exhibits';
 const CAT_MAPS = 'Maps';
 const CAT_DESTINATIONS = 'Destinations';
 
+// Exhibits
+const exhibitsSearch = GET(
+  'exhibits-search',
+  CAT_EXHIBITS,
+  'Search Exhibits',
+  '/exhibits/search?exhibit_term=starry&mode=online',
+  'Αναζήτηση εκθεμάτων'
+);
+
+const exhibitsGet = GET(
+  'exhibits-get',
+  CAT_EXHIBITS,
+  'Get Exhibit by ID',
+  '/exhibits/1',
+  'Λεπτομέρειες συγκεκριμένου εκθέματος'
+);
+
+const exhibitsAudio = GET(
+  'exhibits-audio',
+  CAT_EXHIBITS,
+  'Get Audio Guide',
+  '/exhibits/1/audio',
+  'Audio guide εκθέματος'
+);
+
+const exhibitsRate = POST(
+  'exhibits-rate',
+  CAT_EXHIBITS,
+  'Rate Exhibit',
+  '/exhibits/1/ratings',
+  'Αξιολόγηση εκθέματος',
+  { rating: 5 },
+  'user'
+);
+
+const exhibitsDownload = GET(
+  'exhibits-download',
+  CAT_EXHIBITS,
+  'Download Exhibit',
+  '/downloads/exhibits/1',
+  'Download για offline χρήση'
+);
+
+const exhibitsCreate = POST(
+  'exhibits-create',
+  CAT_EXHIBITS,
+  'Create Exhibit (Admin)',
+  '/exhibits',
+  'Δημιουργία νέου εκθέματος (admin only)',
+  generateTestExhibit,
+  'admin'
+);
+
+const exhibitsDelete = DELETE(
+  'exhibits-delete',
+  CAT_EXHIBITS,
+  'Delete Exhibit (Admin)',
+  '/exhibits/999',
+  'Διαγραφή εκθέματος (admin only)',
+  'admin',
+  'exhibits-create'
+);
+
 /**
- * Exhibit endpoints for searching, viewing, rating, and managing exhibits
+ * Exhibit management endpoints
  */
 export const EXHIBIT_ENDPOINTS = [
-  // Search for exhibits with query parameters
-  GET(
-    'exhibits-search',
-    CAT_EXHIBITS,
-    'Search Exhibits',
-    '/exhibits/search?exhibit_term=starry&mode=online',
-    'Αναζήτηση εκθεμάτων'
-  ),
-  // Retrieve detailed information for a specific exhibit
-  GET(
-    'exhibits-get',
-    CAT_EXHIBITS,
-    'Get Exhibit by ID',
-    '/exhibits/1',
-    'Λεπτομέρειες συγκεκριμένου εκθέματος'
-  ),
-  // Fetch the audio guide file for an exhibit
-  GET(
-    'exhibits-audio',
-    CAT_EXHIBITS,
-    'Get Audio Guide',
-    '/exhibits/1/audio',
-    'Audio guide εκθέματος'
-  ),
-  // Submit a user rating for an exhibit
-  POST(
-    'exhibits-rate',
-    CAT_EXHIBITS,
-    'Rate Exhibit',
-    '/exhibits/1/ratings',
-    'Αξιολόγηση εκθέματος',
-    { rating: 5 },
-    'user'
-  ),
-  // Download exhibit content for offline access
-  GET(
-    'exhibits-download',
-    CAT_EXHIBITS,
-    'Download Exhibit',
-    '/downloads/exhibits/1',
-    'Download για offline χρήση'
-  ),
-  // Admin endpoint to create a new exhibit
-  POST(
-    'exhibits-create',
-    CAT_EXHIBITS,
-    'Create Exhibit (Admin)',
-    '/exhibits',
-    'Δημιουργία νέου εκθέματος (admin only)',
-    generateTestExhibit,
-    'admin'
-  ),
-  // Admin endpoint to delete an exhibit
-  DELETE(
-    'exhibits-delete',
-    CAT_EXHIBITS,
-    'Delete Exhibit (Admin)',
-    '/exhibits/999',
-    'Διαγραφή εκθέματος (admin only)',
-    'admin',
-    'exhibits-create'
-  ),
+  exhibitsSearch,
+  exhibitsGet,
+  exhibitsAudio,
+  exhibitsRate,
+  exhibitsDownload,
+  exhibitsCreate,
+  exhibitsDelete,
 ];
 
+// Maps
+const mapsUpload = POST(
+  'maps-upload',
+  CAT_MAPS,
+  'Upload Map',
+  '/maps',
+  'Upload χάρτη',
+  { mapData: 'base64_encoded_map_data', format: 'image/png' },
+  'admin'
+);
+
+const mapsGet = GET(
+  'maps-get',
+  CAT_MAPS,
+  'Get Map by ID',
+  '/maps/1',
+  'Λήψη χάρτη'
+);
+
+const mapsDownload = GET(
+  'maps-download',
+  CAT_MAPS,
+  'Download Map',
+  '/downloads/maps/1',
+  'Download χάρτη'
+);
+
+const mapsDelete = DELETE(
+  'maps-delete',
+  CAT_MAPS,
+  'Delete Map (Admin)',
+  '/maps/999',
+  'Διαγραφή χάρτη (admin only)',
+  'admin',
+  'maps-upload'
+);
+
 /**
- * Map endpoints for uploading and managing museum maps
+ * Map management endpoints
  */
 export const MAP_ENDPOINTS = [
-  // Admin endpoint to upload a new map image
-  POST(
-    'maps-upload',
-    CAT_MAPS,
-    'Upload Map',
-    '/maps',
-    'Upload χάρτη',
-    { mapData: 'base64_encoded_map_data', format: 'image/png' },
-    'admin'
-  ),
-  // Retrieve map metadata and image
-  GET(
-    'maps-get',
-    CAT_MAPS,
-    'Get Map by ID',
-    '/maps/1',
-    'Λήψη χάρτη'
-  ),
-  // Download map for offline usage
-  GET(
-    'maps-download',
-    CAT_MAPS,
-    'Download Map',
-    '/downloads/maps/1',
-    'Download χάρτη'
-  ),
-  // Admin endpoint to delete a map
-  DELETE(
-    'maps-delete',
-    CAT_MAPS,
-    'Delete Map (Admin)',
-    '/maps/999',
-    'Διαγραφή χάρτη (admin only)',
-    'admin',
-    'maps-upload'
-  ),
+  mapsUpload,
+  mapsGet,
+  mapsDownload,
+  mapsDelete,
 ];
 
+// Destinations
+const destinationsList = GET(
+  'destinations-list',
+  CAT_DESTINATIONS,
+  'List Destinations',
+  '/destinations',
+  'Λίστα όλων των προορισμών'
+);
+
+const destinationsUpload = POST(
+  'destinations-upload',
+  CAT_DESTINATIONS,
+  'Upload Destinations',
+  '/destinations',
+  'Upload προορισμών',
+  generateTestDestination,
+  'admin'
+);
+
+const destinationsGet = GET(
+  'destinations-get',
+  CAT_DESTINATIONS,
+  'Get Destination Info',
+  '/destinations/1',
+  'Πληροφορίες προορισμού'
+);
+
+const destinationsDelete = DELETE(
+  'destinations-delete',
+  CAT_DESTINATIONS,
+  'Delete Destination (Admin)',
+  '/destinations/999',
+  'Διαγραφή προορισμού (admin only)',
+  'admin',
+  'destinations-upload'
+);
+
 /**
- * Destination endpoints for managing points of interest
+ * Destination management endpoints
  */
 export const DESTINATION_ENDPOINTS = [
-  // List all available destinations
-  GET(
-    'destinations-list',
-    CAT_DESTINATIONS,
-    'List Destinations',
-    '/destinations',
-    'Λίστα όλων των προορισμών'
-  ),
-  // Admin endpoint to bulk upload destinations
-  POST(
-    'destinations-upload',
-    CAT_DESTINATIONS,
-    'Upload Destinations',
-    '/destinations',
-    'Upload προορισμών',
-    generateTestDestination,
-    'admin'
-  ),
-  // Get details for a specific destination
-  GET(
-    'destinations-get',
-    CAT_DESTINATIONS,
-    'Get Destination Info',
-    '/destinations/1',
-    'Πληροφορίες προορισμού'
-  ),
-  // Admin endpoint to delete a destination
-  DELETE(
-    'destinations-delete',
-    CAT_DESTINATIONS,
-    'Delete Destination (Admin)',
-    '/destinations/999',
-    'Διαγραφή προορισμού (admin only)',
-    'admin',
-    'destinations-upload'
-  ),
+  destinationsList,
+  destinationsUpload,
+  destinationsGet,
+  destinationsDelete,
 ];
