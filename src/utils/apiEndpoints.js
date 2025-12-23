@@ -8,6 +8,7 @@
  * @module apiEndpoints
  */
 
+
 // ============================================================================
 // Core Endpoint Builder
 // ============================================================================
@@ -116,7 +117,7 @@ const DELETE = (id, category, name, path, description, requiresAuth = null, crea
  */
 const generateTestUser = () => {
   const timestamp = Date.now();
-  const randomId = Math.random().toString(36).substr(2, 5);
+  const randomId = Math.random().toString(36).substring(2, 7);
   
   return {
     username: `test_user_${timestamp}_${randomId}`,
