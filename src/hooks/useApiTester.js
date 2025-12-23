@@ -1,3 +1,10 @@
+/**
+ * API Tester Hook
+ * 
+ * A custom hook that provides functionality for testing API endpoints.
+ * It handles authentication, request execution, result tracking, and
+ * connection status monitoring.
+ */
 import { useState } from 'react';
 import apiClient from '../api/client';
 import * as authApi from '../api/auth';
@@ -15,6 +22,13 @@ import {
 const ADMIN_USER = { username: 'john_smith', password: 'Password123!' };
 const NORMAL_USER = { username: 'john_smith', password: 'Password123!' };
 
+/**
+ * Custom hook for testing API endpoints.
+ * Manages state for test results, loading, connection status, and authentication.
+ * Provides methods to run individual tests, all tests, and check connection.
+ * 
+ * @returns {Object} ApiTester interface
+ */
 export const useApiTester = () => {
   // State for test results, loading status, connection, and auth
   const [results, setResults] = useState({});
@@ -22,7 +36,13 @@ export const useApiTester = () => {
   const [connectionStatus, setConnectionStatus] = useState(null);
   const [authStatus, setAuthStatus] = useState({ loggedIn: false, as: null });
 
-  // Logs in a user with the given credentials and role
+  /**
+   * Logs in a user with the given credentials and role.
+   * Updates the authStatus state.
+   * 
+   * @param {Object} user - User credentials {username, password}
+   * @param {string} role - Role name ('admin' or 'user')
+   */
   const login = async (user, role) => {
     try {
       await authApi.login(user.username, user.password);
@@ -34,7 +54,10 @@ export const useApiTester = () => {
     }
   };
 
-  // Logs out the current user
+  /**
+   * Logs out the current user.
+   * Updates the authStatus state.
+   */
   const logout = async () => {
     try {
       await authApi.logout();
@@ -46,7 +69,12 @@ export const useApiTester = () => {
     }
   };
 
-  // Orchestrates the testing of a single API endpoint
+  /**
+   * Orchestrates the testing of a single API endpoint.
+   * Handles validation, dependency creation, authentication, execution, and result logging.
+   * 
+   * @param {Object} endpoint - The endpoint configuration object to test.
+   */
   const testEndpoint = async (endpoint) => {
     setLoading((prev) => ({ ...prev, [endpoint.id]: true }));
     
@@ -161,7 +189,9 @@ export const useApiTester = () => {
     }
   };
 
-  // Tests all defined endpoints sequentially
+  /**
+   * Tests all defined endpoints sequentially with a delay between requests.
+   */
   const testAllEndpoints = async () => {
     console.log('🚀 Starting to test all endpoints...');
     console.log('⏱️  Delay between requests: 1000ms');
@@ -175,7 +205,9 @@ export const useApiTester = () => {
     console.log('✅ Finished testing all endpoints');
   };
 
-  // Checks the backend connection by hitting the /health endpoint
+  /**
+   * Checks the backend connection by hitting the /health endpoint.
+   */
   const checkConnection = async () => {
     console.log('🔌 Checking connection to backend...');
     

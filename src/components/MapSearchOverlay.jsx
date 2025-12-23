@@ -3,6 +3,14 @@ import React from 'react';
 /**
  * MapSearchOverlay Component
  * Renders the search bar and search results overlay on the map.
+ * 
+ * @param {Object} props
+ * @param {string} props.searchTerm - Current value of the search input.
+ * @param {function} props.onSearchChange - Callback when search input changes.
+ * @param {function} props.onSearchSubmit - Callback when search form is submitted.
+ * @param {Array} props.searchResults - Array of exhibit objects matching the search.
+ * @param {boolean} props.showResults - Whether to display the results dropdown.
+ * @param {function} props.onResultClick - Callback when a search result is clicked.
  */
 const MapSearchOverlay = ({ 
   searchTerm, 
@@ -29,11 +37,13 @@ const MapSearchOverlay = ({
       <form onSubmit={onSearchSubmit}>
         {/* Search input container with menu icon */}
         <div className="search-bar-mockup-input" style={{ display: 'flex', alignItems: 'center', background: '#e3ecd6', borderRadius: 16, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontFamily: 'Montserrat, sans-serif' }}>
+          {/* Menu Icon (currently decorative/placeholder) */}
           <img
             src={process.env.PUBLIC_URL + '/assets/icons/menu.png'}
             alt="Menu"
             style={{ marginLeft: 12, marginRight: 8, width: 24, height: 24, cursor: 'pointer' }}
           />
+          {/* Main Search Input */}
           <input
             type="text"
             placeholder="Search Exhibit"
@@ -49,6 +59,7 @@ const MapSearchOverlay = ({
               fontFamily: 'Montserrat, sans-serif',
             }}
           />
+          {/* Search Submit Button */}
           <button type="submit" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
             <img
               src={process.env.PUBLIC_URL + '/assets/icons/search.png'}
@@ -85,6 +96,7 @@ const MapSearchOverlay = ({
               </div>
             ))
           ) : (
+            // Empty state message
             <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>No exhibits found</div>
           )}
         </div>
