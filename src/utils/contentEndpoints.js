@@ -10,6 +10,11 @@ import {
   generateTestDestination
 } from './endpointBuilders';
 
+// Category constants to reduce vocabulary size
+const CAT_EXHIBITS = 'Exhibits';
+const CAT_MAPS = 'Maps';
+const CAT_DESTINATIONS = 'Destinations';
+
 /**
  * Exhibit endpoints for searching, viewing, rating, and managing exhibits
  */
@@ -17,7 +22,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Search for exhibits with query parameters
   GET(
     'exhibits-search',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Search Exhibits',
     '/exhibits/search?exhibit_term=starry&mode=online',
     'Αναζήτηση εκθεμάτων'
@@ -25,7 +30,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Retrieve detailed information for a specific exhibit
   GET(
     'exhibits-get',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Get Exhibit by ID',
     '/exhibits/1',
     'Λεπτομέρειες συγκεκριμένου εκθέματος'
@@ -33,7 +38,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Fetch the audio guide file for an exhibit
   GET(
     'exhibits-audio',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Get Audio Guide',
     '/exhibits/1/audio',
     'Audio guide εκθέματος'
@@ -41,7 +46,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Submit a user rating for an exhibit
   POST(
     'exhibits-rate',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Rate Exhibit',
     '/exhibits/1/ratings',
     'Αξιολόγηση εκθέματος',
@@ -51,7 +56,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Download exhibit content for offline access
   GET(
     'exhibits-download',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Download Exhibit',
     '/downloads/exhibits/1',
     'Download για offline χρήση'
@@ -59,7 +64,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Admin endpoint to create a new exhibit
   POST(
     'exhibits-create',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Create Exhibit (Admin)',
     '/exhibits',
     'Δημιουργία νέου εκθέματος (admin only)',
@@ -69,7 +74,7 @@ export const EXHIBIT_ENDPOINTS = [
   // Admin endpoint to delete an exhibit
   DELETE(
     'exhibits-delete',
-    'Exhibits',
+    CAT_EXHIBITS,
     'Delete Exhibit (Admin)',
     '/exhibits/999',
     'Διαγραφή εκθέματος (admin only)',
@@ -85,7 +90,7 @@ export const MAP_ENDPOINTS = [
   // Admin endpoint to upload a new map image
   POST(
     'maps-upload',
-    'Maps',
+    CAT_MAPS,
     'Upload Map',
     '/maps',
     'Upload χάρτη',
@@ -95,7 +100,7 @@ export const MAP_ENDPOINTS = [
   // Retrieve map metadata and image
   GET(
     'maps-get',
-    'Maps',
+    CAT_MAPS,
     'Get Map by ID',
     '/maps/1',
     'Λήψη χάρτη'
@@ -103,7 +108,7 @@ export const MAP_ENDPOINTS = [
   // Download map for offline usage
   GET(
     'maps-download',
-    'Maps',
+    CAT_MAPS,
     'Download Map',
     '/downloads/maps/1',
     'Download χάρτη'
@@ -111,7 +116,7 @@ export const MAP_ENDPOINTS = [
   // Admin endpoint to delete a map
   DELETE(
     'maps-delete',
-    'Maps',
+    CAT_MAPS,
     'Delete Map (Admin)',
     '/maps/999',
     'Διαγραφή χάρτη (admin only)',
@@ -127,7 +132,7 @@ export const DESTINATION_ENDPOINTS = [
   // List all available destinations
   GET(
     'destinations-list',
-    'Destinations',
+    CAT_DESTINATIONS,
     'List Destinations',
     '/destinations',
     'Λίστα όλων των προορισμών'
@@ -135,7 +140,7 @@ export const DESTINATION_ENDPOINTS = [
   // Admin endpoint to bulk upload destinations
   POST(
     'destinations-upload',
-    'Destinations',
+    CAT_DESTINATIONS,
     'Upload Destinations',
     '/destinations',
     'Upload προορισμών',
@@ -145,7 +150,7 @@ export const DESTINATION_ENDPOINTS = [
   // Get details for a specific destination
   GET(
     'destinations-get',
-    'Destinations',
+    CAT_DESTINATIONS,
     'Get Destination Info',
     '/destinations/1',
     'Πληροφορίες προορισμού'
@@ -153,7 +158,7 @@ export const DESTINATION_ENDPOINTS = [
   // Admin endpoint to delete a destination
   DELETE(
     'destinations-delete',
-    'Destinations',
+    CAT_DESTINATIONS,
     'Delete Destination (Admin)',
     '/destinations/999',
     'Διαγραφή προορισμού (admin only)',
