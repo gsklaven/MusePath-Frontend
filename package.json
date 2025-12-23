@@ -12,11 +12,11 @@
     "react-zoom-pan-pinch": "^3.7.0"
   },
   "overrides": {
-  "nth-check": "^2.1.1",
-  "postcss": "^8.4.31",
-  "webpack-dev-server": "^5.2.1",
-  "systeminformation": "^5.27.14"
-},
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "4.15.2",
+    "systeminformation": "^5.27.14"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -23,10 +23,6 @@ export const MAP_DEFAULTS = {
   ROTATION: 0,
 };
 
-export const DEFAULT_MAP_ID = MAP_DEFAULTS.ID;
-export const DEFAULT_ZOOM = MAP_DEFAULTS.ZOOM;
-export const DEFAULT_ROTATION = MAP_DEFAULTS.ROTATION;
-
 // ==========================================
 // Exhibit Categories
 // ==========================================
@@ -173,10 +169,6 @@ export const VALIDATION = {
   MAX_RATING: 5,
 };
 
-export const MIN_PASSWORD_LENGTH = VALIDATION.MIN_PASSWORD_LENGTH;
-export const MIN_RATING = VALIDATION.MIN_RATING;
-export const MAX_RATING = VALIDATION.MAX_RATING;
-
 // ==========================================
 // Timing Constants
 // ==========================================
@@ -189,6 +181,3 @@ export const TIMING = {
   API_REQUEST_DELAY: 1000,
   LOCATION_UPDATE_INTERVAL: 5000,
 };
-
-export const API_REQUEST_DELAY = TIMING.API_REQUEST_DELAY;
-export const LOCATION_UPDATE_INTERVAL = TIMING.LOCATION_UPDATE_INTERVAL;
