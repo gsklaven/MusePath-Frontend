@@ -27,6 +27,7 @@ const MapSearchOverlay = ({
       }}
     >
       <form onSubmit={onSearchSubmit}>
+        {/* Search input container with menu icon */}
         <div className="search-bar-mockup-input" style={{ display: 'flex', alignItems: 'center', background: '#e3ecd6', borderRadius: 16, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontFamily: 'Montserrat, sans-serif' }}>
           <img
             src={process.env.PUBLIC_URL + '/assets/icons/menu.png'}
@@ -58,6 +59,7 @@ const MapSearchOverlay = ({
         </div>
       </form>
 
+      {/* Results dropdown overlay */}
       {showResults && (
         <div style={{
           marginTop: 8,
@@ -69,6 +71,7 @@ const MapSearchOverlay = ({
           padding: 8,
         }}>
           {searchResults.length > 0 ? (
+            // Map through search results
             searchResults.map((result) => (
               <div
                 key={result.exhibitId || result.exhibit_id}
