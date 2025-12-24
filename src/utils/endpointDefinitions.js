@@ -16,18 +16,20 @@ export * from './exhibitEndpoints';
 export * from './mapEndpoints';
 export * from './destinationEndpoints';
 
+const ENDPOINT_GROUPS = [
+  HEALTH_ENDPOINTS,
+  AUTH_ENDPOINTS,
+  EXHIBIT_ENDPOINTS,
+  ROUTE_ENDPOINTS,
+  USER_ENDPOINTS,
+  MAP_ENDPOINTS,
+  DESTINATION_ENDPOINTS,
+  COORDINATE_ENDPOINTS,
+  SYSTEM_ENDPOINTS,
+];
+
 /**
  * All endpoints combined for comprehensive iteration
  * @type {Array<Object>}
  */
-export const ALL_ENDPOINTS = [
-  ...(HEALTH_ENDPOINTS || []),
-  ...(AUTH_ENDPOINTS || []),
-  ...(EXHIBIT_ENDPOINTS || []),
-  ...(ROUTE_ENDPOINTS || []),
-  ...(USER_ENDPOINTS || []),
-  ...(MAP_ENDPOINTS || []),
-  ...(DESTINATION_ENDPOINTS || []),
-  ...(COORDINATE_ENDPOINTS || []),
-  ...(SYSTEM_ENDPOINTS || []),
-];
+export const ALL_ENDPOINTS = ENDPOINT_GROUPS.reduce((acc, group) => acc.concat(group || []), []);
