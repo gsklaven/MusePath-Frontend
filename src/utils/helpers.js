@@ -104,3 +104,21 @@ export const debounce = (func, wait) => {
     timeout = setTimeout(later, wait);
   };
 };
+
+// Split long text into readable pages
+export const splitTextIntoPages = (text, maxLen = 400) => {
+  if (!text) return [];
+  if (text.length <= maxLen) return [text];
+  const result = [];
+  let start = 0;
+  while (start < text.length) {
+    let end = start + maxLen;
+    if (end < text.length) {
+      let spaceIdx = text.lastIndexOf(' ', end);
+      if (spaceIdx > start) end = spaceIdx;
+    }
+    result.push(text.slice(start, end).trim());
+    start = end;
+  }
+  return result;
+};

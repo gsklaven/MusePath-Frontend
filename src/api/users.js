@@ -14,11 +14,11 @@ export const addToFavourites = async (userId, exhibitId) => {
   const uid = Number(userId);
   const eid = Number(exhibitId);
 
-  console.log(`🔍 API Call: POST /users/${String(uid)}/favourites (exhibitId=${String(eid)})`);
+  console.log('🔍 API Call: POST /users/%s/favourites (exhibitId=%s)', String(uid), String(eid));
   const response = await apiClient.post(`/users/${uid}/favourites`, {
     exhibit_id: eid,
   });
-  console.log(`✅ Response: POST /users/${String(uid)}/favourites`, response.data);
+  console.log('✅ Response: POST /users/%s/favourites', String(uid), response.data);
   return response.data;
 };
 
@@ -52,9 +52,9 @@ export const getUserCoordinates = async (userId) => {
   const uid = Number(userId);
   if (!isValidId(uid)) throw new TypeError('Invalid userId');
 
-  console.log(`📍 API Call: GET /coordinates/${String(uid)}`);
+  console.log('📍 API Call: GET /coordinates/%s', String(uid));
   const response = await apiClient.get(`/coordinates/${uid}`);
-  console.log(`✅ Response: GET /coordinates/${String(uid)}`, response.data);
+  console.log('✅ Response: GET /coordinates/%s', String(uid), response.data);
   // Backend returns { success, data, message, error }
   // We need the actual coordinate data
   return response.data && response.data.data ? response.data.data : response.data;

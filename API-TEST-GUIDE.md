@@ -39,7 +39,7 @@ npm start
 ### 3. Ανοίξτε την API Test Page
 Πηγαίνετε στο browser:
 ```
-http://localhost:3001/api-test
+http://localhost:3000/api-test
 ```
 
 ### 4. Ελέγξτε τη Σύνδεση

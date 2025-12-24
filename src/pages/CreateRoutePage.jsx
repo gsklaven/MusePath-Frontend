@@ -1,48 +1,12 @@
 /**
  * CreateRoutePage Component
- * 
  * Custom route builder allowing users to create personalized museum paths.
- * Enables selection of final destination and intermediate exhibit stops with
- * route calculation and navigation integration.
- * 
- * User Flow:
- * 1. Select final destination from available museum destinations list
- * 2. Optionally add intermediate exhibit stops via search functionality
- * 3. Review selected stops with ability to remove unwanted ones
- * 4. Calculate optimized route considering all waypoints
- * 5. Navigate to NavigationPage with calculated route data
- * 
- * Features:
- * - Destination Selection: Browse and select from available museum destinations
- * - Search Integration: Search for exhibits to add as intermediate stops
- * - Stop Management: Add, remove, and reorder stops in the route
- * - Route Calculation: Calculates optimal path using backend route API
- * - Current Location: Automatically uses user's GPS location as starting point
- * - Navigation State: Passes route data to NavigationPage via React Router state
- * 
- * State Management:
- * - destination: Selected final destination object
- * - destinations: List of available destinations from backend
- * - stops: Array of intermediate exhibit stops
- * - searchResults: Exhibits matching user's search query
- * - showDestinations/showAddStops: Toggle visibility of selection panels
- * - startPoint: Display text for starting location (default: "Current Location")
- * 
- * Props via Router State:
- * - location.state.destination: Pre-selected destination (optional)
- * - location.state.location: User's current GPS coordinates
- * 
- * API Integrations:
- * - getDestinations(): Fetches list of available destinations
- * - getDestinationById(): Gets detailed destination information
- * - searchExhibits(): Searches exhibits for adding as stops
- * - calculateRoute(): Computes optimal route with all waypoints
  */
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { calculateRoute, searchExhibits, getDestinations, getDestinationById } from '../api';
-import { Header, Button, Card, SearchBar } from '../components';
+import { Header, Button, Card, RouteDestinationSelector, RouteStopList, RouteStopSearch } from '../components';
 import './CreateRoutePage.css';
 
 const CreateRoutePage = () => {
@@ -70,6 +34,7 @@ const CreateRoutePage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fetch available destinations from API
   const loadDestinations = async () => {
     try {
       setLoadingDestinations(true);
@@ -86,6 +51,7 @@ const CreateRoutePage = () => {
     }
   };
 
+  // Handle destination selection and fetch details
   const handleSelectDestination = async (dest) => {
     try {
       console.log('🎯 Selected destination:', dest.destination_id);
@@ -95,6 +61,7 @@ const CreateRoutePage = () => {
       const destData = data && data.data ? data.data : data;
       
       setDestination(destData);
+      // Hide selector after selection
       setShowDestinations(false);
     } catch (err) {
       console.error('Error loading destination details:', err);
@@ -103,9 +70,11 @@ const CreateRoutePage = () => {
     }
   };
 
+  // Search for exhibits to add as stops
   const handleSearch = async (searchTerm) => {
     console.log('🔎 handleSearch called with:', searchTerm);
     
+    // Return early if search term is empty
     if (!searchTerm.trim()) {
       setSearchResults([]);
       return;
@@ -119,17 +88,23 @@ const CreateRoutePage = () => {
     }
   };
 
+  // Add a stop to the route
   const handleAddStop = (stop) => {
+    // Append new stop to existing stops list
     setStops([...stops, stop]);
     setSearchResults([]);
   };
 
+  // Remove a stop from the route
   const handleRemoveStop = (index) => {
+    // Filter out the stop at the given index
     setStops(stops.filter((_, i) => i !== index));
   };
 
+  // Calculate route and navigate to navigation page
   const handleNavigate = async () => {
     try {
+      // Call API to calculate optimal route path
       const route = await calculateRoute(
         user.id,
         destination.destination_id,
@@ -137,6 +112,7 @@ const CreateRoutePage = () => {
         userLocation.lng
       );
       
+      // Pass route data to navigation page via state
       navigate('/navigation', { 
         state: { 
           route,
@@ -151,6 +127,7 @@ const CreateRoutePage = () => {
   };
 
   const handleCancel = () => {
+    // Return to map view without saving
     navigate('/map');
   };
 
@@ -167,46 +144,14 @@ const CreateRoutePage = () => {
           </div>
 
           {showDestinations ? (
-            <div className="destinations-section">
-              <h2>Select Destination</h2>
-              {loadingDestinations ? (
-                <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>Loading destinations...</div>
-              ) : destinations.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 20, color: '#999' }}>No destinations available</div>
-              ) : (
-                <div className="destinations-list" style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
-                  {destinations.map((dest) => (
-                    <Card
-                      key={dest.destination_id}
-                      className="destination-card"
-                      onClick={() => handleSelectDestination(dest)}
-                      style={{
-                        cursor: 'pointer',
-                        padding: 16,
-                        border: '2px solid #e3ecd6',
-                        transition: 'all 0.2s',
-                      }}
-                    >
-                      <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: 4 }}>
-                        {dest.name || `Destination ${dest.destination_id}`}
-                      </div>
-                      {dest.type && (
-                        <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                          Type: {dest.type}
-                        </div>
-                      )}
-                      {dest.coordinates && (
-                        <div style={{ fontSize: '0.85rem', color: '#999', marginTop: 4 }}>
-                          📍 Lat: {dest.coordinates.lat?.toFixed(4)}, Lng: {dest.coordinates.lng?.toFixed(4)}
-                        </div>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
+            <RouteDestinationSelector 
+              destinations={destinations}
+              loading={loadingDestinations}
+              onSelect={handleSelectDestination}
+            />
           ) : (
             <>
+              {/* Route configuration form */}
               <div className="route-details">
                 <div className="route-item">
                   <label>Starting Point</label>
@@ -232,51 +177,15 @@ const CreateRoutePage = () => {
                   </div>
                 </div>
 
-                {stops.length > 0 && (
-                  <div className="route-item">
-                    <label>Stops ({stops.length})</label>
-                    <div className="stops-list">
-                      {stops.map((stop, index) => (
-                        <div key={index} className="stop-item">
-                          <span>{stop.title}</span>
-                          <button onClick={() => handleRemoveStop(index)}>✕</button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <RouteStopList stops={stops} onRemove={handleRemoveStop} />
 
-                <Button 
-                  variant="secondary" 
-                  onClick={() => setShowAddStops(!showAddStops)}
-                  className="add-stops-btn"
-                >
-                  {showAddStops ? '- Cancel Adding Stops' : '+ Add Stops'}
-                </Button>
-
-                {showAddStops && (
-                  <div className="add-stops-section">
-                    <SearchBar 
-                      onSearch={handleSearch}
-                      placeholder="Search for exhibits to add..."
-                    />
-                    
-                    {searchResults.length > 0 && (
-                      <div className="search-results">
-                        {searchResults.map(result => (
-                          <Card 
-                            key={result.exhibit_id}
-                            className="result-card"
-                            onClick={() => handleAddStop(result)}
-                          >
-                            <span>{result.title}</span>
-                            <span className="add-icon">+</span>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <RouteStopSearch 
+                  show={showAddStops}
+                  onToggle={() => setShowAddStops(!showAddStops)}
+                  onSearch={handleSearch}
+                  searchResults={searchResults}
+                  onAdd={handleAddStop}
+                />
               </div>
 
               <div className="route-actions">

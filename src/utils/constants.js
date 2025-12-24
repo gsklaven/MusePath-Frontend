@@ -1,232 +1,80 @@
 /**
  * Application Constants
- *
- * Centralized configuration values used throughout the MusePath application.
- * Organized by functional domain for better maintainability and discoverability.
- *
- * Usage Guidelines:
- * - Import only needed constants: import { DEFAULT_ZOOM, EXHIBIT_STATUS } from './constants'
- * - Never modify constants at runtime - treat as immutable
- * - Add new constants to appropriate section with JSDoc comments
- *
+ * Central configuration for the museum navigation app
  * @module utils/constants
- * @description Provides immutable configuration and enumeration values for the MusePath frontend.
  */
 
-// ==========================================
-// API Configuration
-// ==========================================
-
-/**
- * Base URL for backend API endpoints
- * Falls back to localhost if environment variable not set
- * @type {string}
- */
+// API endpoint base URL from environment or default test server
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.server.test/v1';
 
-// ==========================================
-// Navigation & Movement
-// ==========================================
+// Default map configuration: initial map ID, zoom level, and rotation angle
+export const MAP_DEFAULTS = { ID: 1, ZOOM: 1, ROTATION: 0 };
 
-/**
- * Default walking speed for route calculations
- * @type {number} Speed in kilometers per hour
- */
-export const DEFAULT_WALKING_SPEED = 5;
-
-// ==========================================
-// Map Configuration
-// ==========================================
-
-/**
- * Default map settings
- * @type {Object.<string, number>}
- */
-export const MAP_DEFAULTS = {
-  ID: 1,
-  ZOOM: 1,
-  ROTATION: 0,
-};
-
-export const DEFAULT_MAP_ID = MAP_DEFAULTS.ID;
-export const DEFAULT_ZOOM = MAP_DEFAULTS.ZOOM;
-export const DEFAULT_ROTATION = MAP_DEFAULTS.ROTATION;
-
-// ==========================================
-// Exhibit Categories
-// ==========================================
-
-/**
- * Available exhibit categories for filtering and classification
- * @type {string[]}
- */
+// Categories available for exhibit classification and filtering
 export const EXHIBIT_CATEGORIES = [
-  'Art',
-  'History',
-  'Science',
-  'Culture',
-  'Modern Art',
-  'Ancient Greece',
-  'Sculpture',
-  'Painting',
+  'Art', 'History', 'Science', 'Culture',
+  'Modern Art', 'Ancient Greece', 'Sculpture', 'Painting',
 ];
 
-// ==========================================
-// User Preference Options
-// ==========================================
-
-/**
- * Historical periods available in questionnaire
- * Used for personalizing exhibit recommendations
- * @type {string[]}
- */
+// Historical period options for user preference questionnaire
 export const HISTORICAL_PERIODS = [
-  'Ancient Civilizations',
-  'Medieval Period',
-  'Renaissance',
-  'Modern Era',
-  'Contemporary',
+  'Ancient Civilizations', 'Medieval Period', 'Renaissance',
+  'Modern Era', 'Contemporary',
 ];
 
-/**
- * Artists and civilizations for preference selection
- * Used in multi-select questionnaire step
- * @type {string[]}
- */
+// Artist and civilization options for preference selection
 export const ARTISTS_CIVILIZATIONS = [
-  'Ancient Greece',
-  'Ancient Rome',
-  'Ancient Egypt',
-  'Renaissance Masters',
-  'Impressionists',
-  'Modern Artists',
+  'Ancient Greece', 'Ancient Rome', 'Ancient Egypt',
+  'Renaissance Masters', 'Impressionists', 'Modern Artists',
 ];
 
-// ==========================================
-// Local Storage Keys
-// ==========================================
-
-/**
- * LocalStorage key identifiers
- * Centralized to prevent typos and enable easy refactoring
- * @type {Object.<string, string>}
- */
+// LocalStorage keys for persisting user data and offline content
 export const STORAGE_KEYS = {
-  /** User authentication and profile data */
-  USER: 'user',
-  /** Downloaded maps for offline use */
-  OFFLINE_MAPS: 'offline_maps',
-  /** Downloaded exhibits for offline use */
-  OFFLINE_EXHIBITS: 'offline_exhibits',
-  /** Pending synchronization queue */
-  PENDING_SYNC: 'pending_sync',
+  USER: 'user',                      // User profile and auth token
+  OFFLINE_MAPS: 'offline_maps',      // Cached map images
+  OFFLINE_EXHIBITS: 'offline_exhibits', // Cached exhibit data
+  PENDING_SYNC: 'pending_sync',      // Queue for sync when online
 };
 
-// ==========================================
-// Route Status Values
-// ==========================================
-
-/**
- * Possible states for route lifecycle
- * @type {Object.<string, string>}
- */
+// Route lifecycle states from planning through completion
 export const ROUTE_STATUS = {
-  /** Route being planned, not yet active */
-  PLANNING: 'planning',
-  /** Currently navigating this route */
-  ACTIVE: 'active',
-  /** Route finished successfully */
-  COMPLETED: 'completed',
-  /** Route cancelled by user */
-  CANCELLED: 'cancelled',
+  PLANNING: 'planning',    // Being created, not started
+  ACTIVE: 'active',        // Currently navigating
+  COMPLETED: 'completed',  // Successfully finished
+  CANCELLED: 'cancelled',  // Abandoned by user
 };
 
-// ==========================================
-// Exhibit Status Values
-// ==========================================
-
-/**
- * Exhibit availability states
- * Determines if exhibit can be visited
- * @type {Object.<string, string>}
- */
+// Exhibit availability states determining visitor access
 export const EXHIBIT_STATUS = {
-  /** Exhibit open and available */
-  OPEN: 'open',
-  /** Exhibit closed to visitors */
-  CLOSED: 'closed',
-  /** Exhibit temporarily unavailable */
-  UNDER_MAINTENANCE: 'under_maintenance',
+  OPEN: 'open',                          // Available for viewing
+  CLOSED: 'closed',                      // Not accessible
+  UNDER_MAINTENANCE: 'under_maintenance', // Temporarily unavailable
 };
 
-// ==========================================
-// Crowd Level Indicators
-// ==========================================
-
-/**
- * Crowd density levels for exhibits and areas
- * Used for visitor flow management
- * @type {Object.<string, string>}
- */
-export const CROWD_LEVELS = {
-  /** Few visitors, minimal wait times */
-  LOW: 'low',
-  /** Moderate visitors, some wait times */
-  MEDIUM: 'medium',
-  /** Many visitors, expect delays */
-  HIGH: 'high',
+// Crowd density levels for visitor flow management
+export const CROWD_LEVELS = { 
+  LOW: 'low',       // Minimal wait times
+  MEDIUM: 'medium', // Moderate crowds
+  HIGH: 'high',     // Heavy congestion
 };
 
-// ==========================================
-// Notification Types
-// ==========================================
-
-/**
- * Notification message types for UI feedback
- * Determines styling and icon
- * @type {Object.<string, string>}
- */
+// Notification types for UI feedback messages
 export const NOTIFICATION_TYPES = {
-  /** Informational message */
-  INFO: 'info',
-  /** Warning or caution */
-  WARNING: 'warning',
-  /** Error or failure */
-  ERROR: 'error',
-  /** Success confirmation */
-  SUCCESS: 'success',
+  INFO: 'info',        // Informational
+  WARNING: 'warning',  // Caution needed
+  ERROR: 'error',      // Failure state
+  SUCCESS: 'success',  // Successful operation
 };
 
-// ==========================================
-// Validation Constants
-// ==========================================
-
-/**
- * Validation limits
- * @type {Object.<string, number>}
- */
-export const VALIDATION = {
-  MIN_PASSWORD_LENGTH: 6,
-  MIN_RATING: 1,
-  MAX_RATING: 5,
+// Input validation rules and constraints
+export const VALIDATION = { 
+  MIN_PASSWORD_LENGTH: 6,  // Minimum chars for security
+  MIN_RATING: 1,           // Lowest star rating
+  MAX_RATING: 5,           // Highest star rating
 };
 
-export const MIN_PASSWORD_LENGTH = VALIDATION.MIN_PASSWORD_LENGTH;
-export const MIN_RATING = VALIDATION.MIN_RATING;
-export const MAX_RATING = VALIDATION.MAX_RATING;
-
-// ==========================================
-// Timing Constants
-// ==========================================
-
-/**
- * Timing intervals in milliseconds
- * @type {Object.<string, number>}
- */
-export const TIMING = {
-  API_REQUEST_DELAY: 1000,
-  LOCATION_UPDATE_INTERVAL: 5000,
+// Timing intervals in milliseconds for polling and delays
+export const TIMING = { 
+  API_REQUEST_DELAY: 1000,         // Search input debounce
+  LOCATION_UPDATE_INTERVAL: 5000,  // GPS polling rate
 };
-
-export const API_REQUEST_DELAY = TIMING.API_REQUEST_DELAY;
-export const LOCATION_UPDATE_INTERVAL = TIMING.LOCATION_UPDATE_INTERVAL;
