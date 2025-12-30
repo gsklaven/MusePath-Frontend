@@ -25,7 +25,7 @@ export const getExhibitById = async (exhibitId, mode = 'online') => {
   const response = await apiClient.get(`/exhibits/${exhibitId}`, {
     params: { mode },
   });
-  console.log('✅ Response: GET /exhibits/%s', String(exhibitId), response.data);
+  console.log('✅ Response: GET /exhibits/%s', exhibitId, response.data);
   return response.data;
 };
 

@@ -19,7 +19,7 @@ export const getMapById = async (mapId, zoom = null, rotation = null, mode = 'on
   const response = await apiClient.get(`/maps/${mapId}`, {
     params: { zoom, rotation, mode },
   });
-  console.log('✅ Response: GET /maps/%s', String(mapId), response.data);
+  console.log('✅ Response: GET /maps/%s', mapId, response.data);
   return response.data;
 };
 
